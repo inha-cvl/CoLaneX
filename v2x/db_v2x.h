@@ -55,6 +55,7 @@
 
 /***************************** Include ***************************************/
 #include <stdint.h>
+#include "MessageFrame.h"
 
 /***************************** Definition ************************************/
 
@@ -261,6 +262,8 @@ typedef struct DB_V2X {
     uint16_t                                    usSwVer;
     uint32_t                                    ulPayloadLength;
     uint32_t                                    ulPacketCrc32;
+    /* OBIGO-knkim  Custom  */
+    MessageFrame_t                             data;
 } DB_V2X_T;
 
 /***************************** Function Protype ******************************/

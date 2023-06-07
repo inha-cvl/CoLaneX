@@ -409,7 +409,7 @@ void *v2x_tx_cmd_process(void *arg)
 	// Payload = KETI Format
 	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
 
-	db_v2x_tmp_p = malloc(db_v2x_tmp_size);
+	db_v2x_tmp_p = malloc(db_v2x_tmp_size); //DB_V2X_T
 	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
 
 	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
@@ -425,9 +425,22 @@ void *v2x_tx_cmd_process(void *arg)
 	db_v2x_tmp_p->usHwVer = 0;
 	db_v2x_tmp_p->usSwVer = 0;
 	db_v2x_tmp_p->ulPayloadLength = SAMPLE_V2X_MSG_LEN;
-	//db_v2x_tmp_p->ulPayloadCrc32 = 0; // mingu
+	//db_v2x_tmp_p->ulPacketCrc32 = SAMPLE_V2X_MSG_LEN;
 
-	memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size);
+	MessageFrame_t msg;
+	msg.messageId = 20;
+	msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
+
+	BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
+
+	ptrBSM->coreData.id.buf = (uint8_t *)malloc(4);
+	ptrBSM->coreData.id.size = 4;
+
+	ptrBSM->coreData.lat = 32.353535;
+
+	db_v2x_tmp_p->data = msg;
+
+	memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
 
 	printf("\nV2X TX PDU>>\n"
 		   "  magic_num        : 0x%04X\n"
