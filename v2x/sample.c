@@ -231,6 +231,7 @@ int parsing_option(int argc, char *argv[])
 
 int connect_v2x_socket(void)
 {
+	printf("Cooectigomn");
 	int res = -1; // failure
 
 	// Create the socket
@@ -366,6 +367,7 @@ int v2x_wsr_cmd_process(void)
 		   ntohl(ws_resp.psid));
 
 	res = 0;
+	
 	return res;
 }
 
@@ -381,7 +383,7 @@ void *v2x_tx_cmd_process(void *arg)
 	Ext_V2X_TxPDU_t *v2x_tx_pdu_p = NULL;
 	DB_V2X_T *db_v2x_tmp_p = NULL;
 
-	v2x_tx_pdu_p = malloc(v2x_tx_pdu_size);
+	v2x_tx_pdu_p = malloc(v2x_tx_pdu_size); 
 	memset(v2x_tx_pdu_p, 0, sizeof(Ext_V2X_TxPDU_t));
 
 	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
@@ -441,7 +443,7 @@ void *v2x_tx_cmd_process(void *arg)
 	db_v2x_tmp_p->data = msg;
 
 	memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
-
+	
 	printf("\nV2X TX PDU>>\n"
 		   "  magic_num        : 0x%04X\n"
 		   "  ver              : 0x%04X\n"
@@ -482,8 +484,10 @@ void *v2x_tx_cmd_process(void *arg)
 	//for (i = 0; i < tx_cnt_g; i++)
 	while( 1 )
 	{
+		
 		// Send the request
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
+		printf("%ld", n);
 		if (n < 0)
 		{
 			perror("send() failed");
@@ -494,11 +498,11 @@ void *v2x_tx_cmd_process(void *arg)
 			fprintf(stderr, "send() sent a different number of bytes than expected\n");
 			break;
 		}
-		else
-		{
-			//printf(" tx send success(%ld bytes) : [%u/%u]\n", n, i + 1, tx_cnt_g);
-			printf(" tx send success(%ld bytes)\n", n);
-		}
+		// else
+		// {
+		// 	//printf(" tx send success(%ld bytes) : [%u/%u]\n", n, i + 1, tx_cnt_g);
+		// 	//printf(" tx send success(%ld bytes)\n", n);
+		// }
 
 		usleep((1000 * tx_delay_g));
 	}
@@ -513,23 +517,33 @@ void *v2x_tx_cmd_process(void *arg)
 void *v2x_rx_cmd_process(void *arg)
 {
 	(void)arg;
-
+	printf("Here");
 	uint8_t buf[4096] = {0};
 	int n = -1;
 	time_t start_time = time(NULL);
+
 	
+	int db_v2x_tmp_size = sizeof(DB_V2X_T) + sizeof(MessageFrame_t);
+	int v2x_rx_pdu_size = sizeof(Ext_V2X_RxPDU_t) + db_v2x_tmp_size;
+
+	DB_V2X_T *db_v2x_tmp_p=NULL;
+	MessageFrame_t *msgFrame = NULL;
+	Ext_V2X_RxPDU_t v2x_rx_pdu_p;
+	memset(&v2x_rx_pdu_p, 0,v2x_rx_pdu_size);	
 
 	while (1)
 	{
+		
 		time_t current_time = time(NULL);
 		if (current_time - start_time >= delay_time_sec_g)
 		{
 			break;
 		}
-		
-		n = recv(sock_g, buf, sizeof(buf), 0);
 
-		if (n < 0){
+		n = recv(sock_g, &v2x_rx_pdu_p, v2x_rx_pdu_size, 0);
+		//n = recv(sock_g, buf, sizeof(buf), 0);
+		if (n < 0)
+		{
 			if (errno != EAGAIN && errno != EWOULDBLOCK)
 			{
 				perror("recv() failed");
@@ -537,10 +551,12 @@ void *v2x_rx_cmd_process(void *arg)
 			}
 			else
 			{
+				printf("wait. . . \n");
 				usleep(10000);
 				continue;
 			}
-		}else if (n == 0)
+		}
+		else if (n == 0)
 		{
 			fprintf(stderr, "recv() connection closed by peer\n");
 			break;
@@ -548,29 +564,58 @@ void *v2x_rx_cmd_process(void *arg)
 		else
 		{
 			printf("recv() success : len[%u]\n", n);
-		}
-	}
-	
 
-	return NULL;
+			printf("\nV2X RX PDU>>\n"
+			"  magic num : 0x%04x\n"
+			"  ver       : 0x%04x\n"
+			"  v2x_msg length : %d\n",
+			ntohs(v2x_rx_pdu_p.magic_num),
+			ntohs(v2x_rx_pdu_p.ver), 
+			ntohs(v2x_rx_pdu_p.v2x_msg.length));
+			db_v2x_tmp_p = malloc(db_v2x_tmp_size);
+			memcpy(db_v2x_tmp_p, v2x_rx_pdu_p.v2x_msg.data, db_v2x_tmp_size);
+
+			printf("\nV2X RX Data>>\n"
+				   "  deivce ID    :  %d\n"
+				   "  Db Ver       :  %d\n"
+				   "  Hw Ver       :  %d\n"
+				   "  Payload Length :  %ld\n"
+				   "  data Size    :  %d\n",
+				   db_v2x_tmp_p->unDeviceId,
+				   db_v2x_tmp_p->usDbVer,
+				   db_v2x_tmp_p->usHwVer,
+				   db_v2x_tmp_p->ulPayloadLength,
+				   sizeof(db_v2x_tmp_p->data));
+
+					
+			msgFrame = malloc(sizeof(MessageFrame_t));
+			memcpy(msgFrame, &db_v2x_tmp_p->data, sizeof(MessageFrame_t));
+
+			printf("\nMessage Data\n"
+				   " size         :  %d\n"
+				   " latitude     :  %f\n",
+				   sizeof(msgFrame),
+				   msgFrame->value.choice.BasicSafetyMessage.coreData.lat);
+		}
+		usleep((1000 * tx_delay_g));
+	}
 }
 
 /* function : Process Commands */
 int process_commands(void)
 {
 	int res = -1; // failure
-	pthread_t tx_thread;
-	pthread_t rx_thread;
-	void *tx_thread_ret;
-	void *rx_thread_ret;
-
 	v2x_wsr_cmd_process();
+	v2x_rx_cmd_process(NULL);
+	// pthread_t tx_thread;
+	// pthread_t rx_thread;
+	// void *tx_thread_ret;
+	// void *rx_thread_ret;
 
-	pthread_create(&tx_thread, NULL, v2x_tx_cmd_process, NULL);
-	pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
-
-	pthread_join(tx_thread, &tx_thread_ret);
-	pthread_join(rx_thread, &rx_thread_ret);
+	// pthread_create(&tx_thread, NULL, v2x_tx_cmd_process, NULL);
+	// pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
+	// pthread_join(tx_thread, &tx_thread_ret);
+	// pthread_join(rx_thread, &rx_thread_ret);
 
 	return res;
 }
