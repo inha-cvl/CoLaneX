@@ -527,6 +527,7 @@ void *v2x_tx_cmd_process(void *arg)
 				   test->ePayloadType,
 				   ntohl(test->ulPayloadLength),
 				   ntohs(test->eRegionId));
+
 			MessageFrame_t *test_msg = NULL;
 			test_msg = malloc(ntohl(test->ulPayloadLength));
 			memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
@@ -545,6 +546,8 @@ void *v2x_tx_cmd_process(void *arg)
 				   test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
 				   test_msg->value.choice.BasicSafetyMessage.coreData.speed);
 			cnt += 1;
+			free(test);
+			free(test_msg);
 		}
 
 		usleep((1000 * tx_delay_g));
@@ -552,7 +555,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 	free(v2x_tx_pdu_p);
 	free(db_v2x_tmp_p);
-
+	
 	return NULL;
 }
 
@@ -567,7 +570,6 @@ void *v2x_rx_cmd_process(void *arg)
 	DB_V2X_T *db_v2x_tmp_p=NULL;
 	MessageFrame_t *msgFrame = NULL;
 	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
-
 
 
 	while (1)
@@ -642,7 +644,7 @@ void *v2x_rx_cmd_process(void *arg)
 			msgFrame = malloc(payload_length);
 			memcpy(msgFrame, &db_v2x_tmp_p->data, payload_length);
 
-			BasicSafetyMessage_t *ptrBSM = msgFrame->value.choice.BasicSafetyMessage;
+			BasicSafetyMessage_t *ptrBSM = &msgFrame->value.choice.BasicSafetyMessage;
 
 			printf("\nV2X RX Test Msg>>\n"
 				   "  ID         :  %ld\n"
@@ -660,6 +662,9 @@ void *v2x_rx_cmd_process(void *arg)
 		}
 		usleep((1000 * tx_delay_g));
 	}
+	free(v2x_rx_pdu_p);
+	free(db_v2x_tmp_p);
+	free(msgFrame);
 }
 
 /* function : Process Commands */
