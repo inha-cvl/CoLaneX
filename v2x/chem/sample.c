@@ -31,6 +31,7 @@
 #include "v2x_defs.h"
 #include "v2x_ext_type.h"
 #include "db_v2x.h"
+#include "math.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /* MACRO - for modify */
@@ -377,17 +378,18 @@ void *v2x_tx_cmd_process(void *arg)
 	(void)arg;
 
 	// Prepare the Ext_WSReq_t structure
-	int db_v2x_tmp_size = sizeof(DB_V2X_T) + SAMPLE_V2X_MSG_LEN;
+	int db_v2x_tmp_size = sizeof(DB_V2X_T) + sizeof(MessageFrame_t);//SAMPLE_V2X_MSG_LEN;
 	int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
 
 	Ext_V2X_TxPDU_t *v2x_tx_pdu_p = NULL;
 	DB_V2X_T *db_v2x_tmp_p = NULL;
 
-	v2x_tx_pdu_p = malloc(v2x_tx_pdu_size); 
+	v2x_tx_pdu_p = malloc(v2x_tx_pdu_size);
 	memset(v2x_tx_pdu_p, 0, sizeof(Ext_V2X_TxPDU_t));
 
 	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
 	v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
+	printf("0x%04x <-> 0x%04x \n",v2x_tx_pdu_p->e_payload_type, e_payload_type_g);
 	v2x_tx_pdu_p->psid = htonl(psid_g);
 	v2x_tx_pdu_p->tx_power = tx_power_g;
 	v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
@@ -410,13 +412,13 @@ void *v2x_tx_cmd_process(void *arg)
 
 	// Payload = KETI Format
 	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
-
+	printf("%d\n", db_v2x_tmp_size);
 	db_v2x_tmp_p = malloc(db_v2x_tmp_size); //DB_V2X_T
 	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
 
 	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
 	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-	db_v2x_tmp_p->unDeviceId = 0;
+	db_v2x_tmp_p->unDeviceId =htonl(2);
 	db_v2x_tmp_p->ulTimeStamp = 0ULL;
 	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
 	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
@@ -426,39 +428,17 @@ void *v2x_tx_cmd_process(void *arg)
 	db_v2x_tmp_p->usDbVer = 0;
 	db_v2x_tmp_p->usHwVer = 0;
 	db_v2x_tmp_p->usSwVer = 0;
-	db_v2x_tmp_p->ulPayloadLength = SAMPLE_V2X_MSG_LEN;
-	//db_v2x_tmp_p->ulPacketCrc32 = SAMPLE_V2X_MSG_LEN;
+	db_v2x_tmp_p->ulPayloadLength = htonl(sizeof(MessageFrame_t));
+
+	unsigned long latitude = 37.383797*pow(10,7);
+	unsigned long longitude = 126.656788*pow(10,7);
+	unsigned long heading = 0;
+	unsigned long velocity = 5; //mps
+	unsigned long cnt = 0;
 
 	MessageFrame_t msg;
 	msg.messageId = 20;
 	msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
-
-	BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
-
-	ptrBSM->coreData.id.buf = (uint8_t *)malloc(4);
-	ptrBSM->coreData.id.size = 4;
-
-	ptrBSM->coreData.lat = 32.353535;
-
-	db_v2x_tmp_p->data = msg;
-
-	memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
-	
-	printf("\nV2X TX PDU>>\n"
-		   "  magic_num        : 0x%04X\n"
-		   "  ver              : 0x%04X\n"
-		   "  e_payload_type   : %d\n"
-		   "  psid             : %u\n"
-		   "  tx_power         : %d\n"
-		   "  e_signer_id      : %d\n"
-		   "  e_priority       : %d\n",
-		   ntohs(v2x_tx_pdu_p->magic_num),
-		   ntohs(v2x_tx_pdu_p->ver),
-		   v2x_tx_pdu_p->e_payload_type,
-		   ntohl(v2x_tx_pdu_p->psid),
-		   v2x_tx_pdu_p->tx_power,
-		   v2x_tx_pdu_p->e_signer_id,
-		   v2x_tx_pdu_p->e_priority);
 
 	if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
 	{
@@ -484,10 +464,21 @@ void *v2x_tx_cmd_process(void *arg)
 	//for (i = 0; i < tx_cnt_g; i++)
 	while( 1 )
 	{
-		
 		// Send the request
+		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
+
+		ptrBSM->coreData.id.buf = (uint8_t *)malloc(2);
+		ptrBSM->coreData.id.size = 2;
+		ptrBSM->coreData.id.buf = 0x0002;
+		ptrBSM->coreData.msgCnt = cnt;
+		ptrBSM->coreData.lat = latitude;
+		ptrBSM->coreData.Long = longitude;
+		ptrBSM->coreData.heading = heading;
+		ptrBSM->coreData.speed = velocity;
+		db_v2x_tmp_p->data = msg;
+		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
-		printf("%ld", n);
+
 		if (n < 0)
 		{
 			perror("send() failed");
@@ -498,11 +489,63 @@ void *v2x_tx_cmd_process(void *arg)
 			fprintf(stderr, "send() sent a different number of bytes than expected\n");
 			break;
 		}
-		// else
-		// {
-		// 	//printf(" tx send success(%ld bytes) : [%u/%u]\n", n, i + 1, tx_cnt_g);
-		// 	//printf(" tx send success(%ld bytes)\n", n);
-		// }
+		else
+		{
+			//printf(" tx send success(%ld bytes) : [%u/%u]\n", n, i + 1, tx_cnt_g);
+			printf(" \n\ntx send success(%ld bytes)\n", n);
+
+
+			printf("\nV2X TX PDU>>\n"
+				"  magic_num        : 0x%04X\n"
+				"  ver              : 0x%04X\n"
+				"  e_payload_type   : 0x%04X\n"
+				"  psid             : %u\n"
+				"  v2x length       : %d\n",
+				ntohs(v2x_tx_pdu_p->magic_num),
+				ntohs(v2x_tx_pdu_p->ver),
+				v2x_tx_pdu_p->e_payload_type,
+				ntohl(v2x_tx_pdu_p->psid),
+				ntohs(v2x_tx_pdu_p->v2x_msg.length));	
+
+			DB_V2X_T *test = NULL;
+			test = malloc(v2x_tx_pdu_p->v2x_msg.length);
+			memcpy(test, v2x_tx_pdu_p->v2x_msg.data, v2x_tx_pdu_p->v2x_msg.length);
+
+			printf("\nV2X TX Data>>\n"
+				   "  deivce ID    :  %d\n"
+				   "  Db Ver       :  %d\n"
+				   "  Hw Ver       :  %d\n"
+				   "  Sw Ver       :  %d\n"
+				   "  Payload Type :  0x%04X\n"
+				   "  Payload Length :  %d\n"
+				   "  Region ID    :  0x%04x\n",
+				  
+				   ntohl(test->unDeviceId),
+				   test->usDbVer,
+				   test->usHwVer,
+				   test->usSwVer,
+				   test->ePayloadType,
+				   ntohl(test->ulPayloadLength),
+				   ntohs(test->eRegionId));
+			MessageFrame_t *test_msg = NULL;
+			test_msg = malloc(ntohl(test->ulPayloadLength));
+			memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
+
+			printf("\nV2X RX Test Msg>>\n"
+				   "  ID         :  %ld\n"
+				   "  CNT        :  %ld\n"
+				   "  latitude   :  %ld\n"
+				   "  longitude  :  %ld\n"
+				   "  heading    :  %ld\n"
+				   "  velocity   :  %ld\n",
+				   test_msg->value.choice.BasicSafetyMessage.coreData.id.buf,
+				   test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
+				   test_msg->value.choice.BasicSafetyMessage.coreData.lat,
+				   test_msg->value.choice.BasicSafetyMessage.coreData.Long,
+				   test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
+				   test_msg->value.choice.BasicSafetyMessage.coreData.speed);
+			cnt += 1;
+		}
 
 		usleep((1000 * tx_delay_g));
 	}
@@ -517,19 +560,15 @@ void *v2x_tx_cmd_process(void *arg)
 void *v2x_rx_cmd_process(void *arg)
 {
 	(void)arg;
-	printf("Here");
 	uint8_t buf[4096] = {0};
 	int n = -1;
 	time_t start_time = time(NULL);
 
-	
-	int db_v2x_tmp_size = sizeof(DB_V2X_T) + sizeof(MessageFrame_t);
-	int v2x_rx_pdu_size = sizeof(Ext_V2X_RxPDU_t) + db_v2x_tmp_size;
-
 	DB_V2X_T *db_v2x_tmp_p=NULL;
 	MessageFrame_t *msgFrame = NULL;
-	Ext_V2X_RxPDU_t v2x_rx_pdu_p;
-	memset(&v2x_rx_pdu_p, 0,v2x_rx_pdu_size);	
+	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
+
+
 
 	while (1)
 	{
@@ -540,8 +579,7 @@ void *v2x_rx_cmd_process(void *arg)
 			break;
 		}
 
-		n = recv(sock_g, &v2x_rx_pdu_p, v2x_rx_pdu_size, 0);
-		//n = recv(sock_g, buf, sizeof(buf), 0);
+		n = recv(sock_g, buf, sizeof(buf), 0);
 		if (n < 0)
 		{
 			if (errno != EAGAIN && errno != EWOULDBLOCK)
@@ -563,39 +601,62 @@ void *v2x_rx_cmd_process(void *arg)
 		}
 		else
 		{
-			printf("recv() success : len[%u]\n", n);
-
+			printf("\n\nrecv() success : len[%u]\n", n);
+			v2x_rx_pdu_p = malloc(n);
+			memcpy(v2x_rx_pdu_p, buf, n);
 			printf("\nV2X RX PDU>>\n"
-			"  magic num : 0x%04x\n"
-			"  ver       : 0x%04x\n"
-			"  v2x_msg length : %d\n",
-			ntohs(v2x_rx_pdu_p.magic_num),
-			ntohs(v2x_rx_pdu_p.ver), 
-			ntohs(v2x_rx_pdu_p.v2x_msg.length));
-			db_v2x_tmp_p = malloc(db_v2x_tmp_size);
-			memcpy(db_v2x_tmp_p, v2x_rx_pdu_p.v2x_msg.data, db_v2x_tmp_size);
+				   "  magic_num        : 0x%04X\n"
+				   "  ver              : 0x%04X\n"
+				   "  e_payload_type   : 0x%04X\n"
+				   "  psid             : %u\n"
+				   "  v2x length       : %d\n",
+				   ntohs(v2x_rx_pdu_p->magic_num),
+				   ntohs(v2x_rx_pdu_p->ver),
+				   v2x_rx_pdu_p->e_payload_type,
+				   ntohl(v2x_rx_pdu_p->psid),
+				   ntohs(v2x_rx_pdu_p->v2x_msg.length));
+
+			int v2x_msg_length = ntohs(v2x_rx_pdu_p->v2x_msg.length);
+			db_v2x_tmp_p = malloc(v2x_msg_length);
+			memcpy(db_v2x_tmp_p, v2x_rx_pdu_p->v2x_msg.data, v2x_msg_length);
 
 			printf("\nV2X RX Data>>\n"
-				   "  deivce ID    :  %d\n"
+				   "  deivce ID    :  %u\n"
 				   "  Db Ver       :  %d\n"
 				   "  Hw Ver       :  %d\n"
-				   "  Payload Length :  %ld\n"
-				   "  data Size    :  %d\n",
-				   db_v2x_tmp_p->unDeviceId,
+				   "  Sw Ver       :  %d\n"
+				   "  Payload Type :  0x%04X\n"
+				   "  Payload Length :  %u\n"
+				   "  Region ID    :  0x%04x\n"
+				   "  data Size    :  %ld\n",
+				   ntohl(db_v2x_tmp_p->unDeviceId),
 				   db_v2x_tmp_p->usDbVer,
 				   db_v2x_tmp_p->usHwVer,
-				   db_v2x_tmp_p->ulPayloadLength,
+				   db_v2x_tmp_p->usSwVer,
+				   db_v2x_tmp_p->ePayloadType,
+				   ntohl(db_v2x_tmp_p->ulPayloadLength),
+				   ntohs(db_v2x_tmp_p->eRegionId),
 				   sizeof(db_v2x_tmp_p->data));
 
-					
-			msgFrame = malloc(sizeof(MessageFrame_t));
-			memcpy(msgFrame, &db_v2x_tmp_p->data, sizeof(MessageFrame_t));
+			int payload_length = sizeof(db_v2x_tmp_p->data);//ntohl(db_v2x_tmp_p->ulPayloadLength);
+			msgFrame = malloc(payload_length);
+			memcpy(msgFrame, &db_v2x_tmp_p->data, payload_length);
 
-			printf("\nMessage Data\n"
-				   " size         :  %d\n"
-				   " latitude     :  %f\n",
-				   sizeof(msgFrame),
-				   msgFrame->value.choice.BasicSafetyMessage.coreData.lat);
+			BasicSafetyMessage_t *ptrBSM = msgFrame->value.choice.BasicSafetyMessage;
+
+			printf("\nV2X RX Test Msg>>\n"
+				   "  ID         :  %ld\n"
+				   "  CNT        :  %ld\n"
+				   "  latitude   :  %ld\n"
+				   "  longitude  :  %ld\n"
+				   "  heading    :  %ld\n"
+				   "  velocity   :  %ld\n",
+				   ptrBSM->coreData.id.buf,
+				   ptrBSM->coreData.msgCnt,
+				   ptrBSM->coreData.lat,
+				   ptrBSM->coreData.Long,
+				   ptrBSM->coreData.heading, 
+				   ptrBSM->coreData.speed);
 		}
 		usleep((1000 * tx_delay_g));
 	}
