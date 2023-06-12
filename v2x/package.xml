@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>v2x</name>
+  <version>0.0.1</version>
+  <description>The v2x package</description>
+  <maintainer email="cvlab.inhauniv@gmail.com">cvlab</maintainer>
+  <license>TODO</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <export>
+  </export>
+</package>

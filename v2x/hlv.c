@@ -1,18 +1,4 @@
-//=============================================================================
-// This confidential and proprietary software may be used only as authorized by
-// a licensing agreement from CHEMTRONICS Limited.
-//
-// COPYRIGHT (c) CHEMTRONICS. ALL RIGHTS RESERVED.
-//
-// The entire notice above must be reproduced on all authorized copies and
-// copies may only be made to the extent permitted by a licensing agreement
-// from CHEMTRONICS Limited.
-//
-// Module: sampel_external.c
-// Description: 5G NR V2X OBU GW Sample Code for Test
-// Update History
-// [16/05/2023 jongsik.kim] create
-//=============================================================================
+
 /* include */
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,6 +19,8 @@
 #include "db_v2x.h"
 #include "math.h"
 
+#include <ros/ros.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////
 /* MACRO - for modify */
 
@@ -42,23 +30,7 @@
 
 #define SAMPLE_V2X_MSG_LEN 2000
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/* MACRO - for sample */
 
-/* Usage */
-#define SAMPLE_USAGE_STR "Usage: %s [OPTIONS]\n"                                                                  \
-						 "  -o payload_type  : Raw, EncodedbyJ2735, eITSK00130, eKETI, eETRI (default : Raw)\n"   \
-						 "  -p psid          : <decimal number> (default : 32)\n"                                 \
-						 "  -y comm_type     : DSRC, LTEV2X, 5GNRV2X (default : 5GNRV2X)\n"                       \
-						 "  -t tx_port       : tx port dbm (default : 20)\n"                                      \
-						 "  -s signer_id     : UNSECURED, CERTIFICATE, DIGEST, ALTERNATE (default : UNSECURED)\n" \
-						 "  -r priority      : 0~7 (default : 0)\n"                                               \
-						 "  -c tx_count      : total tx count (default : 100)\n"                                  \
-						 "  -d tx_delay      : msec delay (default : 100)\n"                                      \
-						 "  -m total_time    : total exec second (default : 10)\n"                                \
-						 "  -h help\n"
-
-/////////////////////////////////////////////////////////////////////////////////////////
 /* Global Variable Value */
 V2xAction_t e_action_g = eV2xAction_ADD;
 V2xPayloadType_t e_payload_type_g = eRaw;
@@ -67,7 +39,7 @@ V2XCommType_t e_comm_type_g = eV2XCommType_5GNRV2X;
 V2xPowerDbm_t tx_power_g = 20;
 V2xSignerId_t e_signer_id_g = eV2xSignerId_UNSECURED;
 V2xMsgPriority_t e_priority_g = eV2xPriority_CV2X_PPPP_0;
-uint32_t tx_cnt_g = 100;
+uint32_t tx_cnt_g = 1000000;
 uint32_t tx_delay_g = 100;
 V2xFrequency_t freq_g = 5900;
 V2xDataRate_t e_data_rate_g = eV2xDataRate_6MBPS;
@@ -76,159 +48,10 @@ uint8_t peer_mac_addr_g[MAC_EUI48_LEN] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 uint32_t transmitter_profile_id_g = 100;
 uint32_t peer_l2id_g = 0;
 
-uint32_t delay_time_sec_g = 10;
+uint32_t delay_time_sec_g = 100000;
 
 int sock_g = -1;
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/* Functions */
-
-void print_usage(char *program_name_str)
-{
-	printf(SAMPLE_USAGE_STR, program_name_str);
-}
-
-/* function : Parsing Options */
-int parsing_option(int argc, char *argv[])
-{
-	int res = -1; // failure
-
-	char payload_type_str[256] = {0};
-	char comm_type_str[256] = {0};
-	char signer_id_str[256] = {0};
-
-	uint8_t payload_type_flg = 0;
-	uint8_t comm_type_flg = 0;
-	uint8_t signer_id_flg = 0;
-
-	int option;
-	while ((option = getopt(argc, argv, "i:o:p:y:t:s:r:c:d:m:h")) != -1)
-	{
-		switch (option)
-		{
-		case 'o':
-			payload_type_flg = 1;
-			strcpy(payload_type_str, optarg);
-			printf("Payload type: %s\n", optarg);
-			break;
-		case 'p':
-			psid_g = (V2xPsid_t)strtoul(optarg, NULL, 0);
-			printf("PSID: %d\n", psid_g);
-			break;
-		case 'y':
-			comm_type_flg = 1;
-			strcpy(comm_type_str, optarg);
-			printf("Communication type: %s\n", optarg);
-			break;
-		case 't':
-			tx_power_g = (V2xPowerDbm_t)strtoul(optarg, NULL, 0);
-			printf("TX Power: %d\n", tx_power_g);
-			break;
-		case 's':
-			signer_id_flg = 1;
-			strcpy(signer_id_str, optarg);
-			printf("Signer ID: %s\n", optarg);
-			break;
-		case 'r':
-			e_priority_g = (V2xMsgPriority_t)strtoul(optarg, NULL, 0);
-			printf("Msg Priority: %d\n", e_priority_g);
-			break;
-		case 'c':
-			tx_cnt_g = (uint32_t)strtoul(optarg, NULL, 0);
-			printf("TX count: %u\n", tx_cnt_g);
-			break;
-		case 'd':
-			tx_delay_g = (uint32_t)strtoul(optarg, NULL, 0);
-			printf("TX delay: %u\n", tx_delay_g);
-			break;
-		case 'm':
-			delay_time_sec_g = (uint32_t)strtoul(optarg, NULL, 0);
-			printf("Delay time(sec): %u\n", delay_time_sec_g);
-			break;
-		case 'h':
-			print_usage(argv[0]);
-			exit(EXIT_SUCCESS);
-		default:
-			print_usage(argv[0]);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	if (payload_type_flg)
-	{
-		if (strcmp(payload_type_str, "Raw") == 0)
-		{
-			e_payload_type_g = eRaw;
-		}
-		else if (strcmp(payload_type_str, "EncodedbyJ2735") == 0)
-		{
-			e_payload_type_g = eEncodedbyJ2735;
-		}
-		else if (strcmp(payload_type_str, "ITSK00130") == 0)
-		{
-			e_payload_type_g = eITSK00130;
-		}
-		else if (strcmp(payload_type_str, "KETI") == 0)
-		{
-			e_payload_type_g = eKETI;
-		}
-		else if (strcmp(payload_type_str, "ETRI") == 0)
-		{
-			e_payload_type_g = eETRI;
-		}
-		else
-		{
-			fprintf(stderr, "payload type default set : %d\n", e_payload_type_g);
-		}
-	}
-
-	if (comm_type_flg)
-	{
-		if (strcmp(comm_type_str, "DSRC") == 0)
-		{
-			e_comm_type_g = eV2XCommType_DSRC;
-		}
-		else if (strcmp(comm_type_str, "LTEV2X") == 0)
-		{
-			e_comm_type_g = eV2XCommType_LTEV2X;
-		}
-		else if (strcmp(comm_type_str, "5GNRV2X") == 0)
-		{
-			e_comm_type_g = eV2XCommType_5GNRV2X;
-		}
-		else
-		{
-			fprintf(stderr, "Communication type default set : %d\n", e_comm_type_g);
-		}
-	}
-
-	if (signer_id_flg)
-	{
-		if (strcmp(signer_id_str, "UNSECURED") == 0)
-		{
-			e_signer_id_g = eV2xSignerId_UNSECURED;
-		}
-		else if (strcmp(signer_id_str, "CERTIFICATE") == 0)
-		{
-			e_signer_id_g = eV2xSignerId_CERTIFICATE;
-		}
-		else if (strcmp(signer_id_str, "DIGEST") == 0)
-		{
-			e_signer_id_g = eV2xSignerId_DIGEST;
-		}
-		else if (strcmp(signer_id_str, "ALTERNATE") == 0)
-		{
-			e_signer_id_g = eV2xSignerId_ALTERNATE;
-		}
-		else
-		{
-			fprintf(stderr, "Communication type default set : %d\n", e_signer_id_g);
-		}
-	}
-
-	res = 0; // success
-	return res;
-}
 
 int connect_v2x_socket(void)
 {
@@ -245,11 +68,12 @@ int connect_v2x_socket(void)
 	}
 
 	// Connect to the server
-	struct sockaddr_in server_addr =
-		{
-			.sin_family = AF_INET,
-			.sin_addr.s_addr = inet_addr(SAMPLE_V2X_IP_ADDR),
-			.sin_port = htons(SAMPLE_V2X_PORT_ADDR)};
+	struct sockaddr_in server_addr;
+	memset(&server_addr, 0, sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = inet_addr(SAMPLE_V2X_IP_ADDR);
+	server_addr.sin_port = htons(SAMPLE_V2X_PORT_ADDR);
+	
 	if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
 	{
 		perror("connect() failed");
@@ -281,7 +105,6 @@ int connect_v2x_socket(void)
 
 void close_v2x_socket(void)
 {
-	// Close the socket
 	if (sock_g >= 0)
 	{
 		close(sock_g);
@@ -384,7 +207,7 @@ void *v2x_tx_cmd_process(void *arg)
 	Ext_V2X_TxPDU_t *v2x_tx_pdu_p = NULL;
 	DB_V2X_T *db_v2x_tmp_p = NULL;
 
-	v2x_tx_pdu_p = malloc(v2x_tx_pdu_size);
+	v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
 	memset(v2x_tx_pdu_p, 0, sizeof(Ext_V2X_TxPDU_t));
 
 	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
@@ -413,7 +236,7 @@ void *v2x_tx_cmd_process(void *arg)
 	// Payload = KETI Format
 	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
 	printf("%d\n", db_v2x_tmp_size);
-	db_v2x_tmp_p = malloc(db_v2x_tmp_size); //DB_V2X_T
+	db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
 	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
 
 	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
@@ -467,9 +290,9 @@ void *v2x_tx_cmd_process(void *arg)
 		// Send the request
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
 
-		ptrBSM->coreData.id.buf = (uint8_t *)malloc(2);
-		ptrBSM->coreData.id.size = 2;
-		ptrBSM->coreData.id.buf = 0x0002;
+		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
+		ptrBSM->coreData.id.size = 1;
+		ptrBSM->coreData.id.buf[0] = 0x02;
 		ptrBSM->coreData.msgCnt = cnt;
 		ptrBSM->coreData.lat = latitude;
 		ptrBSM->coreData.Long = longitude;
@@ -508,7 +331,7 @@ void *v2x_tx_cmd_process(void *arg)
 				ntohs(v2x_tx_pdu_p->v2x_msg.length));	
 
 			DB_V2X_T *test = NULL;
-			test = malloc(v2x_tx_pdu_p->v2x_msg.length);
+			test =(DB_V2X_T *)malloc(v2x_tx_pdu_p->v2x_msg.length);
 			memcpy(test, v2x_tx_pdu_p->v2x_msg.data, v2x_tx_pdu_p->v2x_msg.length);
 
 			printf("\nV2X TX Data>>\n"
@@ -529,7 +352,7 @@ void *v2x_tx_cmd_process(void *arg)
 				   ntohs(test->eRegionId));
 
 			MessageFrame_t *test_msg = NULL;
-			test_msg = malloc(ntohl(test->ulPayloadLength));
+			test_msg = (MessageFrame_t *)(ntohl(test->ulPayloadLength));
 			memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
 
 			printf("\nV2X RX Test Msg>>\n"
@@ -567,10 +390,9 @@ void *v2x_rx_cmd_process(void *arg)
 	int n = -1;
 	time_t start_time = time(NULL);
 
-	DB_V2X_T *db_v2x_tmp_p=NULL;
+	DB_V2X_T *db_v2x_tmp_p = NULL;
 	MessageFrame_t *msgFrame = NULL;
 	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
-
 
 	while (1)
 	{
@@ -604,7 +426,7 @@ void *v2x_rx_cmd_process(void *arg)
 		else
 		{
 			printf("\n\nrecv() success : len[%u]\n", n);
-			v2x_rx_pdu_p = malloc(n);
+			v2x_rx_pdu_p = (Ext_V2X_RxPDU_t *)malloc(n);
 			memcpy(v2x_rx_pdu_p, buf, n);
 			printf("\nV2X RX PDU>>\n"
 				   "  magic_num        : 0x%04X\n"
@@ -619,7 +441,7 @@ void *v2x_rx_cmd_process(void *arg)
 				   ntohs(v2x_rx_pdu_p->v2x_msg.length));
 
 			int v2x_msg_length = ntohs(v2x_rx_pdu_p->v2x_msg.length);
-			db_v2x_tmp_p = malloc(v2x_msg_length);
+			db_v2x_tmp_p = (DB_V2X_T *)malloc(v2x_msg_length);
 			memcpy(db_v2x_tmp_p, v2x_rx_pdu_p->v2x_msg.data, v2x_msg_length);
 
 			printf("\nV2X RX Data>>\n"
@@ -641,7 +463,7 @@ void *v2x_rx_cmd_process(void *arg)
 				   sizeof(db_v2x_tmp_p->data));
 
 			int payload_length = sizeof(db_v2x_tmp_p->data);//ntohl(db_v2x_tmp_p->ulPayloadLength);
-			msgFrame = malloc(payload_length);
+			msgFrame = (MessageFrame_t *)malloc(payload_length);
 			memcpy(msgFrame, &db_v2x_tmp_p->data, payload_length);
 
 			BasicSafetyMessage_t *ptrBSM = &msgFrame->value.choice.BasicSafetyMessage;
@@ -670,8 +492,6 @@ void *v2x_rx_cmd_process(void *arg)
 /* function : Process Commands */
 int process_commands(void)
 {
-	int res = -1; // failure
-	v2x_wsr_cmd_process();
 	v2x_rx_cmd_process(NULL);
 	// pthread_t tx_thread;
 	// pthread_t rx_thread;
@@ -682,39 +502,31 @@ int process_commands(void)
 	// pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
 	// pthread_join(tx_thread, &tx_thread_ret);
 	// pthread_join(rx_thread, &rx_thread_ret);
-
-	return res;
+	return -1;
 }
 
 /* function : Main(Entry point of this program) */
 int main(int argc, char *argv[])
 {
 	int res;
-
+	ros::init(argc,argv, "v2x");
+	ros::NodeHandle n;
+	ros::AsyncSpinner spinner(1);
+	printf("Hello\n");
 	do
 	{
-		// Connect V2X Socket
 		if ((res = connect_v2x_socket()) < 0)
 		{
 			break;
 		}
-
-		// Parsing Options
-		if ((res = parsing_option(argc, argv)) < 0)
-		{
-			break;
-		}
-
-		// Process Commands
+		v2x_wsr_cmd_process();
 		if ((res = process_commands()) < 0)
 		{
 			break;
 		}
-	} while (0);
+	} while (ros::ok());
 
-	// Close V2X Socket
 	close_v2x_socket();
-
 	return res;
 }
 
