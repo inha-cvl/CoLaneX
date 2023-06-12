@@ -21,9 +21,6 @@
 
 #include <ros/ros.h>
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/* MACRO - for modify */
-
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
 #define SAMPLE_V2X_PORT_ADDR 47347
@@ -55,7 +52,6 @@ int sock_g = -1;
 
 int connect_v2x_socket(void)
 {
-	printf("Cooectigomn");
 	int res = -1; // failure
 
 	// Create the socket
@@ -287,7 +283,6 @@ void *v2x_tx_cmd_process(void *arg)
 	//for (i = 0; i < tx_cnt_g; i++)
 	while(1)
 	{
-		// Send the request
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
 
 		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
@@ -300,6 +295,7 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.speed = velocity;
 		db_v2x_tmp_p->data = msg;
 		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
+		
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
 
 		if (n < 0)
@@ -314,9 +310,7 @@ void *v2x_tx_cmd_process(void *arg)
 		}
 		else
 		{
-			//printf(" tx send success(%ld bytes) : [%u/%u]\n", n, i + 1, tx_cnt_g);
 			printf(" \n\ntx send success(%ld bytes)\n", n);
-
 
 			printf("\nV2X TX PDU>>\n"
 				"  magic_num        : 0x%04X\n"
@@ -352,25 +346,25 @@ void *v2x_tx_cmd_process(void *arg)
 				   ntohs(test->eRegionId));
 
 			MessageFrame_t *test_msg = NULL;
-			test_msg = (MessageFrame_t *)(ntohl(test->ulPayloadLength));
+			test_msg = (MessageFrame_t *)malloc(ntohl(test->ulPayloadLength));
 			memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
 
-			printf("\nV2X RX Test Msg>>\n"
-				   "  ID         :  %ld\n"
+			printf("\nV2X X Test Msg>>\n"
+				   "  ID         :  0x%02x\n"
 				   "  CNT        :  %ld\n"
 				   "  latitude   :  %ld\n"
 				   "  longitude  :  %ld\n"
 				   "  heading    :  %ld\n"
 				   "  velocity   :  %ld\n",
-				   test_msg->value.choice.BasicSafetyMessage.coreData.id.buf,
+				   test_msg->value.choice.BasicSafetyMessage.coreData.id.buf[0],
 				   test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
 				   test_msg->value.choice.BasicSafetyMessage.coreData.lat,
 				   test_msg->value.choice.BasicSafetyMessage.coreData.Long,
 				   test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
 				   test_msg->value.choice.BasicSafetyMessage.coreData.speed);
 			cnt += 1;
-			free(test);
-			free(test_msg);
+			// free(test);
+			// free(test_msg);
 		}
 
 		usleep((1000 * tx_delay_g));
@@ -469,13 +463,13 @@ void *v2x_rx_cmd_process(void *arg)
 			BasicSafetyMessage_t *ptrBSM = &msgFrame->value.choice.BasicSafetyMessage;
 
 			printf("\nV2X RX Test Msg>>\n"
-				   "  ID         :  %ld\n"
+				   "  ID         :  0x%02x\n"
 				   "  CNT        :  %ld\n"
 				   "  latitude   :  %ld\n"
 				   "  longitude  :  %ld\n"
 				   "  heading    :  %ld\n"
 				   "  velocity   :  %ld\n",
-				   ptrBSM->coreData.id.buf,
+				   ptrBSM->coreData.id.buf[0],
 				   ptrBSM->coreData.msgCnt,
 				   ptrBSM->coreData.lat,
 				   ptrBSM->coreData.Long,
@@ -512,7 +506,6 @@ int main(int argc, char *argv[])
 	ros::init(argc,argv, "v2x");
 	ros::NodeHandle n;
 	ros::AsyncSpinner spinner(1);
-	printf("Hello\n");
 	
 	do
 	{

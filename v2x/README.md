@@ -1,5 +1,5 @@
 ### Build
-  gcc -o sample sample.c -lpthread -I ./j2735/ -L ./j2735/ -lasncodec
+  gcc -o sample sample.c -lpthread -I ./include/ ./include/j2735/ -L ./include/j2735/ -lasncodec
 
 ### Run
   ./sample -c 1000000 -m 100000 
