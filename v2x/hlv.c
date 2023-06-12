@@ -285,7 +285,7 @@ void *v2x_tx_cmd_process(void *arg)
 	uint32_t i;
 	ssize_t n;
 	//for (i = 0; i < tx_cnt_g; i++)
-	while( 1 )
+	while(1)
 	{
 		// Send the request
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
@@ -492,7 +492,7 @@ void *v2x_rx_cmd_process(void *arg)
 /* function : Process Commands */
 int process_commands(void)
 {
-	v2x_rx_cmd_process(NULL);
+	v2x_tx_cmd_process(NULL);
 	// pthread_t tx_thread;
 	// pthread_t rx_thread;
 	// void *tx_thread_ret;
@@ -513,6 +513,7 @@ int main(int argc, char *argv[])
 	ros::NodeHandle n;
 	ros::AsyncSpinner spinner(1);
 	printf("Hello\n");
+	
 	do
 	{
 		if ((res = connect_v2x_socket()) < 0)
