@@ -21,7 +21,7 @@ export const NavSpan = styled.nav`
 `;
 
 export const NavLink1 = styled(Link)`
-    margin-top: 0;
+    margin-top: 0.5rem;
     color: #fff;
     display: flex;
     align-items: center;
@@ -39,7 +39,7 @@ export const NavLink1 = styled(Link)`
     }
 `;
 export const NavLink2 = styled(Link)`
-    margin-top: 0;
+    margin-top: 0.5rem;
     color: #fff;
     display: flex;
     align-items: center;
