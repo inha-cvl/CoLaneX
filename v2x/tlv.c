@@ -124,18 +124,6 @@ int v2x_wsr_cmd_process(void)
 	ws_req.e_payload_type = e_payload_type_g;
 	ws_req.psid = htonl(psid_g);
 
-	printf("\nWSM Service REQ>>\n"
-		   "  magic_num        : 0x%04X\n"
-		   "  ver              : 0x%04X\n"
-		   "  e_action         : %d\n"
-		   "  e_payload_type   : %d\n"
-		   "  psid             : %u\n",
-		   ntohs(ws_req.magic_num),
-		   ntohs(ws_req.ver),
-		   ws_req.e_action,
-		   ws_req.e_payload_type,
-		   ntohl(ws_req.psid));
-
 	// Send the request
 	ssize_t n = send(sock_g, &ws_req, sizeof(ws_req), 0);
 	if (n < 0)
@@ -176,21 +164,8 @@ int v2x_wsr_cmd_process(void)
 		usleep(1000);
 	}
 
-	// Print the response
-	printf("\nWSM Service RESP>>\n"
-		   "  magic_num      : 0x%04X\n"
-		   "  ver            : 0x%04X\n"
-		   "  e_action       : %d\n"
-		   "  is_confirmed   : %d\n"
-		   "  psid           : %u\n",
-		   ntohs(ws_resp.magic_num),
-		   ntohs(ws_resp.ver),
-		   ws_resp.e_action,
-		   ws_resp.is_confirmed,
-		   ntohl(ws_resp.psid));
-
 	res = 0;
-	
+	tlv_system.data[1] = 1;
 	return res;
 }
 
@@ -262,25 +237,6 @@ void *v2x_tx_cmd_process(void *arg)
 	msg.messageId = 20;
 	msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
 
-	if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
-	{
-		printf("  u.config_cv2x.transmitter_profile_id : %u\n"
-			   "  u.config_cv2x.peer_l2id              : %u\n",
-			   ntohl(v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id),
-			   ntohl(v2x_tx_pdu_p->u.config_cv2x.peer_l2id));
-	}
-	else if (e_comm_type_g == eV2XCommType_DSRC)
-	{
-		printf("  u.config_wave.freq                  : %d\n"
-			   "  u.config_wave.e_data_rate           : %d\n"
-			   "  u.config_wave.e_time_slot           : %d\n"
-			   "  u.config_wave.peer_mac_addr         : %s\n",
-			   ntohs(v2x_tx_pdu_p->u.config_wave.freq),
-			   ntohs(v2x_tx_pdu_p->u.config_wave.e_data_rate),
-			   v2x_tx_pdu_p->u.config_wave.e_time_slot,
-			   v2x_tx_pdu_p->u.config_wave.peer_mac_addr);
-	}
-
 	ssize_t n;
 	time_t start_time = time(NULL);
 
@@ -301,7 +257,6 @@ void *v2x_tx_cmd_process(void *arg)
 		db_v2x_tmp_p->data = msg;
 		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
 		
-
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
 
 		if (n < 0)
@@ -320,65 +275,11 @@ void *v2x_tx_cmd_process(void *arg)
 			time_t current_time = time(NULL);
 			double send_time_s = (difftime(current_time, start_time));
 			double mbps = ( n / send_time_s )/1000000.0;
-			tlv_system.data[4] = mbps;
+			tlv_system.data[3] = mbps;
 			start_time = current_time;
-
-			printf("\nV2X TX PDU>>\n"
-				   "  magic_num        : 0x%04X\n"
-				   "  ver              : 0x%04X\n"
-				   "  e_payload_type   : 0x%04X\n"
-				   "  psid             : %u\n"
-				   "  v2x length       : %d\n",
-				   ntohs(v2x_tx_pdu_p->magic_num),
-				   ntohs(v2x_tx_pdu_p->ver),
-				   v2x_tx_pdu_p->e_payload_type,
-				   ntohl(v2x_tx_pdu_p->psid),
-				   ntohs(v2x_tx_pdu_p->v2x_msg.length));
-
-			DB_V2X_T *test = NULL;
-			test =(DB_V2X_T *)malloc(v2x_tx_pdu_p->v2x_msg.length);
-			memcpy(test, v2x_tx_pdu_p->v2x_msg.data, v2x_tx_pdu_p->v2x_msg.length);
-
-			printf("\nV2X TX Data>>\n"
-				   "  deivce ID    :  %d\n"
-				   "  Db Ver       :  %d\n"
-				   "  Hw Ver       :  %d\n"
-				   "  Sw Ver       :  %d\n"
-				   "  Payload Type :  0x%04X\n"
-				   "  Payload Length :  %d\n"
-				   "  Region ID    :  0x%04x\n",
-				  
-				   ntohl(test->unDeviceId),
-				   test->usDbVer,
-				   test->usHwVer,
-				   test->usSwVer,
-				   test->ePayloadType,
-				   ntohl(test->ulPayloadLength),
-				   ntohs(test->eRegionId));
-
-			MessageFrame_t *test_msg = NULL;
-			test_msg = (MessageFrame_t *)malloc(ntohl(test->ulPayloadLength));
-			memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
-
-			printf("\nV2X X Test Msg>>\n"
-				   "  ID         :  0x%02x\n"
-				   "  CNT        :  %ld\n"
-				   "  latitude   :  %ld\n"
-				   "  longitude  :  %ld\n"
-				   "  heading    :  %ld\n"
-				   "  velocity   :  %ld\n",
-				   test_msg->value.choice.BasicSafetyMessage.coreData.id.buf[0],
-				   test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
-				   test_msg->value.choice.BasicSafetyMessage.coreData.lat,
-				   test_msg->value.choice.BasicSafetyMessage.coreData.Long,
-				   test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
-				   test_msg->value.choice.BasicSafetyMessage.coreData.speed);
 			cnt += 1;
-			free(test);
-			free(test_msg);
 		}
 		usleep((1000 * tx_delay_g));
-
 	}
 
 	free(v2x_tx_pdu_p);
@@ -405,11 +306,7 @@ void *v2x_rx_cmd_process(void *arg)
 		
 		time_t current_time = time(NULL);
 		double delay_time_ms = (difftime(current_time, start_time))*1000;
-		tlv_system.data[3] = delay_time_ms;
-		if (current_time - start_time >= delay_time_sec_g)
-		{
-			break;
-		}
+		tlv_system.data[2] = delay_time_ms;
 
 		start_time = current_time;
 
@@ -527,8 +424,8 @@ int main(int argc, char *argv[])
 
 	// Tx Publish 
 	pub_tlv_system =  n.advertise<std_msgs::Float32MultiArray>("/tlv_system", 100);
-	tlv_system.data.resize(5);
-	tlv_system.data = {{0.0, 0.0, 0.0, 0.0, 0.0}};
+	tlv_system.data.resize(4);
+	tlv_system.data = {{0.0, 0.0, 0.0, 0.0}};
 
 	do
 	{
