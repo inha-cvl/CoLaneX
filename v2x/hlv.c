@@ -19,8 +19,8 @@
 #include "db_v2x.h"
 #include "math.h"
 
-// #include <ros/ros.h>
-//#include "std_msgs/Float32MultiArray.h"
+#include <ros/ros.h>
+#include "std_msgs/Float32MultiArray.h"
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
@@ -50,8 +50,8 @@ uint32_t delay_time_sec_g = 100000;
 
 int sock_g = -1;
 
-// std_msgs::Float32MultiArray hlv_system;
-// ros::Publisher pub_hlv_system;
+std_msgs::Float32MultiArray hlv_system;
+ros::Publisher pub_hlv_system;
 
 int connect_v2x_socket(void)
 {
@@ -167,7 +167,7 @@ int v2x_wsr_cmd_process(void)
 	}
 	printf("WSR RECV Sucess");
 	res = 0;
-	//hlv_system.data[1] = 1;
+	hlv_system.data[1] = 1;
 	return res;
 }
 
@@ -217,7 +217,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
 	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-	db_v2x_tmp_p->unDeviceId =htonl(2);
+	db_v2x_tmp_p->unDeviceId =htonl(71);
 	db_v2x_tmp_p->ulTimeStamp = 0ULL;
 	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
 	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
@@ -241,10 +241,10 @@ void *v2x_tx_cmd_process(void *arg)
 
 	ssize_t n;
 	time_t start_time = time(NULL);
-
+	int period = 1000000 / 10;
 	while (1)
 	{
-		//pub_hlv_system.publish(hlv_system);
+		pub_hlv_system.publish(hlv_system);
 
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
 
@@ -277,12 +277,11 @@ void *v2x_tx_cmd_process(void *arg)
 			time_t current_time = time(NULL);
 			double send_time_s = (difftime(current_time, start_time));
 			double mbps = ( n / send_time_s )/1000000.0;
-			//hlv_system.data[3] = mbps;
-			printf("%f\n", mbps);
+			hlv_system.data[3] = mbps;
 			start_time = current_time;
 			cnt += 1;
 		}
-		usleep((1000 * tx_delay_g));
+		usleep(period);
 	}
 
 	free(v2x_tx_pdu_p);
@@ -302,15 +301,15 @@ void *v2x_rx_cmd_process(void *arg)
 	DB_V2X_T *db_v2x_tmp_p = NULL;
 	MessageFrame_t *msgFrame = NULL;
 	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
-
+	int period = 1000000 / 10;
 	while (1)
 	{
 		n = recv(sock_g, buf, sizeof(buf), 0);
 		
 		time_t current_time = time(NULL);
 		double delay_time_ms = (difftime(current_time, start_time))*1000;
-		//hlv_system.data[2] = delay_time_ms;
-		printf("%f\n", delay_time_ms);
+		hlv_system.data[2] = delay_time_ms;
+
 		start_time = current_time;
 
 		if (n < 0)
@@ -371,7 +370,7 @@ void *v2x_rx_cmd_process(void *arg)
 				   ntohs(db_v2x_tmp_p->eRegionId),
 				   sizeof(db_v2x_tmp_p->data));
 
-			int payload_length = sizeof(db_v2x_tmp_p->data);//ntohl(db_v2x_tmp_p->ulPayloadLength);
+			int payload_length = sizeof(db_v2x_tmp_p->data);
 			msgFrame = (MessageFrame_t *)malloc(payload_length);
 			memcpy(msgFrame, &db_v2x_tmp_p->data, payload_length);
 
@@ -391,8 +390,7 @@ void *v2x_rx_cmd_process(void *arg)
 				   ptrBSM->coreData.heading, 
 				   ptrBSM->coreData.speed);
 		}
-		usleep((1000 * tx_delay_g));
-		
+		usleep(period);	
 	}
 	free(v2x_rx_pdu_p);
 	free(db_v2x_tmp_p);
@@ -421,14 +419,14 @@ int process_commands(void)
 int main(int argc, char *argv[])
 {
 	int res;
-	// ros::init(argc,argv, "v2x");
-	// ros::NodeHandle n;
-	// ros::AsyncSpinner spinner(1);
+	ros::init(argc,argv, "v2x");
+	ros::NodeHandle n;
+	ros::AsyncSpinner spinner(1);
 
-	// // Tx Publish 
-	// pub_hlv_system =  n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
-	// hlv_system.data.resize(4);
-	// hlv_system.data = {{0.0, 0.0, 0.0, 0.0}};
+	// Tx Publish 
+	pub_hlv_system =  n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
+	hlv_system.data.resize(4);
+	hlv_system.data = {{0.0, 0.0, 0.0, 0.0}};
 
 	do
 	{
@@ -441,7 +439,7 @@ int main(int argc, char *argv[])
 		{
 			break;
 		}
-	} while (1);
+	} while (ros::ok());
 
 	close_v2x_socket();
 	return res;
