@@ -12,27 +12,50 @@ const hlvSystemTopic = new ROSLIB.Topic({
   name: "/hlv_system",
   messageType: "std_msgs/Float32MultiArray",
 });
+const hlvSignalTopic = new ROSLIB.Topic({
+  ros: ros,
+  name: "/hlv_signal",
+  messageType: "std_msgs/Int8"
+});
 
 const HLV = () => {
   const classes = HLVStyles();
   const [signalClasses, setSignalClasses] = useState([classes.basic50, classes.basic50]);
   const [system, setSystem] = useState([0, 0, 0, 0]);
   const [messages, setMessages] = useState([
-    "State",
+    "Wait",
     "TLV Accepted",
     "TLV Rejected",
+    "Over",
   ]);
   const [messageIdx, setMessageIdx] = useState(1);
 
   hlvSystemTopic.subscribe(function (message) {
-    setSystem([message.data[0], message.data[1],message.data[2], message.data[3]]);
+    setMessageIdx(message.data[0]);
+    setSystem([message.data[1], message.data[2], message.data[3], message.data[4]]);
+    if (message.data[0] === 3) {
+      hlvSignalTopic.publish({ data: 0 });
+      setSignalClasses([classes.basic50, classes.basic50]);
+    }
   });
 
+  const handleClick = (signalData) => {
+    setSignalClasses(signalData === 1 ? [classes.purple50, classes.basic50] : [classes.basic50, classes.purple50]);
+  
+    const interval = setInterval(() => {
+      hlvSignalTopic.publish({ data: signalData });
+    }, 200);
+  
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 10000);
+  };
+
   const leftClick = () => {
-    setSignalClasses([classes.purple50, classes.basic50]);
+    handleClick(1);
   };
   const rightClick = () => {
-    setSignalClasses([classes.basic50, classes.purple50]);
+    handleClick(2);
   };
 
   return (

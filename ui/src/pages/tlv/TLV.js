@@ -11,26 +11,49 @@ const tlvSystemTopic = new ROSLIB.Topic({
   name: "/tlv_system",
   messageType: "std_msgs/Float32MultiArray",
 });
+const tlvSignalTopic = new ROSLIB.Topic({
+  ros: ros,
+  name: "/tlv_signal",
+  messageType: "std_msgs/Int8"
+});
 
 const TLV = () => {
   const classes = TLVStyles();
   const [signalClasses, setSignalClasses] = useState([classes.basic50, classes.basic50]);
   const [system, setSystem] = useState([0, 0, 0, 0]);
   const [messages, setMessages] = useState([
-    "State",
+    "Wait",
     "Safe",
     "Dangerous",
+    "Over",
   ]);
   const [messageIdx, setMessageIdx] = useState(1);
   tlvSystemTopic.subscribe(function (message) {
-    setSystem([message.data[0], message.data[1],message.data[2], message.data[3]]);
+    setMessageIdx(message.data[0]);
+    setSystem([message.data[1], message.data[2], message.data[3], message.data[4]]);
+    if (message.data[0] === 3) {
+      tlvSignalTopic.publish({ data: 0 });
+      setSignalClasses([classes.basic50, classes.basic50]);
+    }
   });
 
+  const handleClick = (signalData) => {
+    setSignalClasses(signalData === 1 ? [classes.purple50, classes.basic50] : [classes.basic50, classes.purple50]);
+  
+    const interval = setInterval(() => {
+      tlvSignalTopic.publish({ data: signalData });
+    }, 200);
+  
+    setTimeout(() => {
+      clearInterval(interval);
+    }, 10000);
+  };
+
   const okClick = () => {
-    setSignalClasses([classes.purple50, classes.basic50]);
+    handleClick(1);
   };
   const noClick = () => {
-    setSignalClasses([classes.basic50, classes.purple50]);
+    handleClick(2);
   };
   return (
     <div>
