@@ -19,8 +19,8 @@
 #include "db_v2x.h"
 #include "math.h"
 
-#include <ros/ros.h>
-#include "std_msgs/Float32MultiArray.h"
+// #include <ros/ros.h>
+//#include "std_msgs/Float32MultiArray.h"
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
@@ -50,8 +50,8 @@ uint32_t delay_time_sec_g = 100000;
 
 int sock_g = -1;
 
-std_msgs::Float32MultiArray hlv_system;
-ros::Publisher pub_hlv_system;
+// std_msgs::Float32MultiArray hlv_system;
+// ros::Publisher pub_hlv_system;
 
 int connect_v2x_socket(void)
 {
@@ -135,6 +135,8 @@ int v2x_wsr_cmd_process(void)
 	{
 		fprintf(stderr, "send() sent a different number of bytes than expected\n");
 		return res;
+	}else{
+		printf("WSR Send Sucess");
 	}
 
 	// Wait for the response
@@ -163,9 +165,9 @@ int v2x_wsr_cmd_process(void)
 
 		usleep(1000);
 	}
-
+	printf("WSR RECV Sucess");
 	res = 0;
-	hlv_system.data[1] = 1;
+	//hlv_system.data[1] = 1;
 	return res;
 }
 
@@ -242,7 +244,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 	while (1)
 	{
-		pub_hlv_system.publish(hlv_system);
+		//pub_hlv_system.publish(hlv_system);
 
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
 
@@ -275,7 +277,8 @@ void *v2x_tx_cmd_process(void *arg)
 			time_t current_time = time(NULL);
 			double send_time_s = (difftime(current_time, start_time));
 			double mbps = ( n / send_time_s )/1000000.0;
-			hlv_system.data[3] = mbps;
+			//hlv_system.data[3] = mbps;
+			printf("%f\n", mbps);
 			start_time = current_time;
 			cnt += 1;
 		}
@@ -306,8 +309,8 @@ void *v2x_rx_cmd_process(void *arg)
 		
 		time_t current_time = time(NULL);
 		double delay_time_ms = (difftime(current_time, start_time))*1000;
-		hlv_system.data[2] = delay_time_ms;
-
+		//hlv_system.data[2] = delay_time_ms;
+		printf("%f\n", delay_time_ms);
 		start_time = current_time;
 
 		if (n < 0)
@@ -418,14 +421,14 @@ int process_commands(void)
 int main(int argc, char *argv[])
 {
 	int res;
-	ros::init(argc,argv, "v2x");
-	ros::NodeHandle n;
-	ros::AsyncSpinner spinner(1);
+	// ros::init(argc,argv, "v2x");
+	// ros::NodeHandle n;
+	// ros::AsyncSpinner spinner(1);
 
-	// Tx Publish 
-	pub_hlv_system =  n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
-	hlv_system.data.resize(4);
-	hlv_system.data = {{0.0, 0.0, 0.0, 0.0}};
+	// // Tx Publish 
+	// pub_hlv_system =  n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
+	// hlv_system.data.resize(4);
+	// hlv_system.data = {{0.0, 0.0, 0.0, 0.0}};
 
 	do
 	{
@@ -438,7 +441,7 @@ int main(int argc, char *argv[])
 		{
 			break;
 		}
-	} while (ros::ok());
+	} while (1);
 
 	close_v2x_socket();
 	return res;
