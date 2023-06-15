@@ -21,6 +21,9 @@
 
 #include <ros/ros.h>
 #include "std_msgs/Float32MultiArray.h"
+#include "novatel_oem7_msgs/INSPVA.h"
+#include "std_msgs/Float32.h"
+#include "std_msgs/Int8.h"
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
@@ -52,6 +55,14 @@ int sock_g = -1;
 
 std_msgs::Float32MultiArray hlv_system;
 ros::Publisher pub_hlv_system;
+
+unsigned long state;
+unsigned long _signal;
+unsigned long latitude;
+unsigned long longitude;
+unsigned long heading;
+unsigned long velocity; //mps
+
 
 int connect_v2x_socket(void)
 {
@@ -167,7 +178,7 @@ int v2x_wsr_cmd_process(void)
 	}
 	printf("WSR RECV Sucess");
 	res = 0;
-	hlv_system.data[1] = 1;
+	hlv_system.data[2] = 1;
 	return res;
 }
 
@@ -188,7 +199,6 @@ void *v2x_tx_cmd_process(void *arg)
 
 	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
 	v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
-	printf("0x%04x <-> 0x%04x \n",v2x_tx_pdu_p->e_payload_type, e_payload_type_g);
 	v2x_tx_pdu_p->psid = htonl(psid_g);
 	v2x_tx_pdu_p->tx_power = tx_power_g;
 	v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
@@ -211,7 +221,6 @@ void *v2x_tx_cmd_process(void *arg)
 
 	// Payload = KETI Format
 	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
-	printf("%d\n", db_v2x_tmp_size);
 	db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
 	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
 
@@ -229,10 +238,8 @@ void *v2x_tx_cmd_process(void *arg)
 	db_v2x_tmp_p->usSwVer = 0;
 	db_v2x_tmp_p->ulPayloadLength = htonl(sizeof(MessageFrame_t));
 
-	unsigned long latitude = 37.383797*pow(10,7);
-	unsigned long longitude = 126.656788*pow(10,7);
-	unsigned long heading = 0;
-	unsigned long velocity = 5; //mps
+	//Subscribe
+	
 	unsigned long cnt = 0;
 
 	MessageFrame_t msg;
@@ -244,13 +251,14 @@ void *v2x_tx_cmd_process(void *arg)
 	int period = 1000000 / 10;
 	while (1)
 	{
+		hlv_system.data[0] = state;
 		pub_hlv_system.publish(hlv_system);
 
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
 
 		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
 		ptrBSM->coreData.id.size = 1;
-		ptrBSM->coreData.id.buf[0] = 0x02;
+		ptrBSM->coreData.id.buf[0] = 0x71;
 		ptrBSM->coreData.msgCnt = cnt;
 		ptrBSM->coreData.lat = latitude;
 		ptrBSM->coreData.Long = longitude;
@@ -277,7 +285,10 @@ void *v2x_tx_cmd_process(void *arg)
 			time_t current_time = time(NULL);
 			double send_time_s = (difftime(current_time, start_time));
 			double mbps = ( n / send_time_s )/1000000.0;
-			hlv_system.data[3] = mbps;
+			if(isinf(mbps)){
+				mbps = 0.0;
+			}
+			hlv_system.data[4] = mbps;
 			start_time = current_time;
 			cnt += 1;
 		}
@@ -306,12 +317,6 @@ void *v2x_rx_cmd_process(void *arg)
 	{
 		n = recv(sock_g, buf, sizeof(buf), 0);
 		
-		time_t current_time = time(NULL);
-		double delay_time_ms = (difftime(current_time, start_time))*1000;
-		hlv_system.data[2] = delay_time_ms;
-
-		start_time = current_time;
-
 		if (n < 0)
 		{
 			if (errno != EAGAIN && errno != EWOULDBLOCK)
@@ -323,7 +328,6 @@ void *v2x_rx_cmd_process(void *arg)
 			{
 				printf("wait. . . \n");
 				usleep(10000);
-				continue;
 			}
 		}
 		else if (n == 0)
@@ -334,6 +338,11 @@ void *v2x_rx_cmd_process(void *arg)
 		else
 		{
 			printf("\n\nrecv() success : len[%u]\n", n);
+			time_t current_time = time(NULL);
+			double delay_time_ms = round((difftime(current_time, start_time))*1000);
+			hlv_system.data[3] = delay_time_ms;
+			start_time = current_time;
+			
 			v2x_rx_pdu_p = (Ext_V2X_RxPDU_t *)malloc(n);
 			memcpy(v2x_rx_pdu_p, buf, n);
 			printf("\nV2X RX PDU>>\n"
@@ -354,17 +363,11 @@ void *v2x_rx_cmd_process(void *arg)
 
 			printf("\nV2X RX Data>>\n"
 				   "  deivce ID    :  %u\n"
-				   "  Db Ver       :  %d\n"
-				   "  Hw Ver       :  %d\n"
-				   "  Sw Ver       :  %d\n"
 				   "  Payload Type :  0x%04X\n"
 				   "  Payload Length :  %u\n"
 				   "  Region ID    :  0x%04x\n"
 				   "  data Size    :  %ld\n",
 				   ntohl(db_v2x_tmp_p->unDeviceId),
-				   db_v2x_tmp_p->usDbVer,
-				   db_v2x_tmp_p->usHwVer,
-				   db_v2x_tmp_p->usSwVer,
 				   db_v2x_tmp_p->ePayloadType,
 				   ntohl(db_v2x_tmp_p->ulPayloadLength),
 				   ntohs(db_v2x_tmp_p->eRegionId),
@@ -377,13 +380,11 @@ void *v2x_rx_cmd_process(void *arg)
 			BasicSafetyMessage_t *ptrBSM = &msgFrame->value.choice.BasicSafetyMessage;
 
 			printf("\nV2X RX Test Msg>>\n"
-				   "  ID         :  0x%02x\n"
 				   "  CNT        :  %ld\n"
 				   "  latitude   :  %ld\n"
 				   "  longitude  :  %ld\n"
 				   "  heading    :  %ld\n"
 				   "  velocity   :  %ld\n",
-				   ptrBSM->coreData.id.buf[0],
 				   ptrBSM->coreData.msgCnt,
 				   ptrBSM->coreData.lat,
 				   ptrBSM->coreData.Long,
@@ -415,6 +416,24 @@ int process_commands(void)
 	return -1;
 }
 
+void insCallback(const novatel_oem7_msgs::INSPVA::ConstPtr &msg){
+	latitude = msg->latitude * pow(10, 7);
+	longitude = msg->latitude * pow(10, 7);
+	heading = 89.5-msg->azimuth;
+}
+
+void velocityCallback(const std_msgs::Float32::ConstPtr &msg){
+	velocity = msg->data;
+}
+
+void stateCallback(const std_msgs::Int8::ConstPtr &msg){
+	state = msg->data;
+}
+
+void signalCallback(const std_msgs::Int8::ConstPtr &msg){
+	_signal = msg->data;
+}
+
 /* function : Main(Entry point of this program) */
 int main(int argc, char *argv[])
 {
@@ -423,10 +442,14 @@ int main(int argc, char *argv[])
 	ros::NodeHandle n;
 	ros::AsyncSpinner spinner(1);
 
-	// Tx Publish 
+	ros::Subscriber sub_ins = n.subscribe("/novatel/oem7/inspva", 100, insCallback);
+	ros::Subscriber sub_velocity = n.subscribe("/mobinha/car/velocity", 100, velocityCallback);
+	ros::Subscriber sub_state = n.subscribe("/hlv_state", 100, stateCallback);
+	ros::Subscriber sub_signal = n.subscribe("/hlv_signal", 100, signalCallback);
+	// Tx Publish
 	pub_hlv_system =  n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
-	hlv_system.data.resize(4);
-	hlv_system.data = {{0.0, 0.0, 0.0, 0.0}};
+	hlv_system.data.resize(5);
+	hlv_system.data = {{0.0, 0.0, 0.0, 0.0, 0.0}};
 
 	do
 	{
@@ -439,7 +462,7 @@ int main(int argc, char *argv[])
 		{
 			break;
 		}
-	} while (ros::ok());
+	} while (0);
 
 	close_v2x_socket();
 	return res;
