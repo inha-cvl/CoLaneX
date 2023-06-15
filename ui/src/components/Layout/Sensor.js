@@ -13,8 +13,8 @@ export default function Sensor(props) {
         temp[0] = props.system[0] === 1 ? classes.basic30 : classes.red30;
         temp[1] = props.system[1] === 1 ? classes.basic30 : classes.red30
         setSensorClasses(temp);
-        setLatency(props.system[2]);
-        setSpeed(props.system[3]);
+        setLatency(Math.ceil(props.system[2]));
+        setSpeed(props.system[3].toFixed(3));
     }, [props.system])
 
     return (
