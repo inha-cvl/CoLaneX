@@ -19,7 +19,7 @@ class OdometryReader:
         self.RR_vel = 0
         self.velocity = 0
 
-    def read_odom(self):
+    def read_odom(self) -> None:
         self.CAN_data = self.bus.recv(0)
 
         if  (self.CAN_data != None) and (self.CAN_data.arbitration_id == self.arbitration_id):

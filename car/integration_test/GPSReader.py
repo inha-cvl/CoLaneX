@@ -16,7 +16,7 @@ class GPSReader:
         self.longitude = 0
         self.yaw = 0
 
-    def novatel_callback(self, msg):
+    def novatel_callback(self, msg) -> None:
         self.latitude = msg.latitude
         self.longitude = msg.longitude
         self.yaw = 89 - msg.azimuth

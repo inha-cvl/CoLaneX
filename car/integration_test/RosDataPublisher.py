@@ -35,7 +35,7 @@ class RosDataPublisher():
         self.dummy2 = dummy2
         self.dummy3 = dummy3
 
-    def data_read(self):
+    def data_read(self) -> None:
 
         self.odometry_reader.read_odom()
         
@@ -44,7 +44,7 @@ class RosDataPublisher():
         self.yaw = self.gps_reader.get_gps()[2]
         self.velocity = self.odometry_reader.get_vel()
 
-    def data_compose(self):
+    def data_compose(self) -> None:
 
         self.data_read()
 
@@ -56,6 +56,6 @@ class RosDataPublisher():
         self.pose.orientation.z = self.dummy2
         self.pose.orientation.w = self.dummy3
     
-    def gps_vel_publisher(self):
+    def gps_vel_publisher(self) -> None:
         self.data_compose()
         self.publisher.publish(self.pose)
