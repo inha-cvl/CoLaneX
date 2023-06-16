@@ -29,13 +29,13 @@ if __name__ == '__main__':
            'dummy3' : 0
            }
     
+    # if Hz adjustment is required, code must be added.
+    # CAUTION: DO NOT USING rospy sleep.
     ros_data_publisher = RosDataPublisher(**ioniq)
-    # rate = rospy.Rate(10) # 10Hz
 
     try:
         while not rospy.is_shutdown():
             ros_data_publisher.gps_vel_publisher()
-            # rate.sleep()
     except rospy.ROSInterruptException:
         pass
 
