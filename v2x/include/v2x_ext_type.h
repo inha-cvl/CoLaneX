@@ -114,7 +114,7 @@ typedef struct _Ext_V2X_RxPDU_t
 	{
 		uint8_t peer_mac_addr[MAC_EUI48_LEN]; // for DSRC
 		uint32_t peer_l2id;					  // for CV2X
-	} u;
+	} __attribute__((__packed__)) u;
 
 	uint8_t reserved2[2];
 	uint8_t reserved3[8];

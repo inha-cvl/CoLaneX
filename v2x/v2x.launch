@@ -1,0 +1,3 @@
+<launch>
+	<node pkg="v2x" type="v2x" name="hlv" output="screen"/>
+</launch>

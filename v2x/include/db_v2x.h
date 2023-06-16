@@ -246,6 +246,7 @@ typedef enum {
 * @param usSwVer            SW version
 * @param ulPayloadLength    payload length
 * @param ulPacketCrc32      header + payload crc32
+* @param data
 */
 typedef struct DB_V2X {
     DB_V2X_DEVICE_TYPE_E                        eDeviceType;
