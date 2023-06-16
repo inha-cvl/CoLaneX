@@ -2,8 +2,16 @@ import rospy
 from novatel_oem7_msgs.msg import INSPVA
 
 class GPSReader:
-    def __init__(self):
-        rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.novatel_callback)
+    def __init__(self,
+                 id = 1,
+                 ros_subscribe_path = '/novatel/oem7/inspva',
+                 ):
+        
+        if (id == 1):
+            rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.novatel_callback)
+        else:
+            rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.novatel_callback)
+    
         self.latitude = 0
         self.longitude = 0
         self.yaw = 0

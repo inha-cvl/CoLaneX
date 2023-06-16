@@ -5,19 +5,35 @@ import OdometryReader
 
 
 class RosDataPublisher():
-    def __init__(self):
-        rospy.init_node('ioniq', anonymous=True)
-        self.publisher = rospy.Publisher('/car/ioniq_pose', Pose, queue_size=1)
+    def __init__(self,
+                 id = 1,
+                 dbc_file_path = 'can.dbc',
+                 arbitration_id = 640,
+                 wheel_vel_rr = 'Gway_Wheel_Velocity_RR',
+                 wheel_vel_rl = 'Gway_Wheel_Velocity_RL',
+                 ros_subscribe_path= '/novatel/oem7/inspva',
+                 publish_init_node = 'ioniq',
+                 publish_node = '/car/ioniq_pose',
+                 dummy1 = 0,
+                 dummy2 = 0,
+                 dummy3 = 0):
+        
+        rospy.init_node(publish_init_node, anonymous=True)
+        self.publisher = rospy.Publisher(publish_node, Pose, queue_size=1)
         self.pose = Pose()
-        self.gps_reader = GPSReader()
-        self.odometry_reader = OdometryReader()
+        self.gps_reader = GPSReader(id = id,
+                                    ros_subscribe_path = ros_subscribe_path)
+        self.odometry_reader = OdometryReader(dbc_file_path = dbc_file_path,
+                                              arbitration_id = arbitration_id,
+                                              wheel_vel_rr = wheel_vel_rr,
+                                              wheel_vel_rl = wheel_vel_rl)
         self.latitude = 0
         self.longitude = 0
         self.yaw = 0
         self.velocity = 0
-        self.dummy1 = 0
-        self.dummy2 = 0
-        self.dummy3 = 0
+        self.dummy1 = dummy1
+        self.dummy2 = dummy2
+        self.dummy3 = dummy3
 
     def data_read(self):
 
