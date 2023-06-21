@@ -7,7 +7,8 @@ if __name__ == '__main__':
     
     # if Hz adjustment is required, code must be added.
     # CAUTION: DO NOT USING rospy sleep.
-    ros_data_publisher = RosDataPublisher(ioniq)
+    # default: ioniq
+    ros_data_publisher = RosDataPublisher()
 
     try:
         while not rospy.is_shutdown():

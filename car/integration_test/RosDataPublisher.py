@@ -3,7 +3,6 @@ from geometry_msgs.msg import Pose
 import GPSReader
 import OdometryReader
 
-
 class RosDataPublisher():
     def __init__(self,
                  id = 1,

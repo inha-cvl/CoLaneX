@@ -13,7 +13,7 @@ ioniq = {'id' : 1,
         
 i30 = {'id' : 2,
        'dbc_file_path' : 'huyndai_2015_ccan.dbc',
-       'arbitration_id' : 90,
+       'arbitration_id' : 902,
        'wheel_vel_rr' : 'WHL_SPD_RR',
        'wheel_vel_rl' : 'WHL_SPD_RL',
        'ros_subscribe_path' : '/novatel/oem7/inspva',
