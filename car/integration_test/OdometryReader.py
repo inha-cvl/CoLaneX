@@ -28,10 +28,12 @@ class OdometryReader:
             self.RR_vel = self.data[self.wheel_vel_rr]
             self.velocity = (self.RL_vel + self.RR_vel)/2
 
+        # if the default value is 0,
+        # stop and None cannot be distinduished
         if self.CAN_data == None:
-            self.RL_vel = 0
-            self.RR_vel = 0
-            self.velocity = 0
+            self.RL_vel = 999
+            self.RR_vel = 999
+            self.velocity = 999
     
     def get_vel(self) -> float:
         return self.velocity
