@@ -118,6 +118,18 @@ int v2x_wsr_cmd_process(void)
 	ws_req.e_action = eV2xAction_ADD;
 	ws_req.e_payload_type = e_payload_type_g;
 	ws_req.psid = htonl(psid_g);
+	
+	printf("\nWSM Service REQ>>\n"
+		   "  magic_num        : 0x%04X\n"
+		   "  ver              : 0x%04X\n"
+		   "  e_action         : %d\n"
+		   "  e_payload_type   : %d\n"
+		   "  psid             : %u\n",
+		   ntohs(ws_req.magic_num),
+		   ntohs(ws_req.ver),
+		   ws_req.e_action,
+		   ws_req.e_payload_type,
+		   ntohl(ws_req.psid));
 
 	// Send the request
 	ssize_t n = send(sock_g, &ws_req, sizeof(ws_req), 0);
@@ -158,6 +170,19 @@ int v2x_wsr_cmd_process(void)
 
 		usleep(1000);
 	}
+
+	printf("\nWSM Service RESP>>\n"
+		   "  magic_num      : 0x%04X\n"
+		   "  ver            : 0x%04X\n"
+		   "  e_action       : %d\n"
+		   "  is_confirmed   : %d\n"
+		   "  psid           : %u\n",
+		   ntohs(ws_resp.magic_num),
+		   ntohs(ws_resp.ver),
+		   ws_resp.e_action,
+		   ws_resp.is_confirmed,
+		   ntohl(ws_resp.psid));
+
 	res = 0;
 	return res;
 }
@@ -206,7 +231,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
 	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-	db_v2x_tmp_p->unDeviceId =htonl(72);
+	db_v2x_tmp_p->unDeviceId =htonl(71);
 	db_v2x_tmp_p->ulTimeStamp = 0ULL;
 	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
 	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
@@ -267,28 +292,28 @@ void *v2x_tx_cmd_process(void *arg)
 			double mbps = ( n / send_time_s )/1000000.0;
 			printf("%f\n", mbps);
 			start_time = current_time;
-            printf("\nV2X TX PDU>>\n"
-				"  magic_num        : 0x%04X\n"
-				"  psid             : %u\n"
-				"  v2x length       : %d\n",
-				ntohs(v2x_tx_pdu_p->magic_num),
-				ntohl(v2x_tx_pdu_p->psid),
-				ntohs(v2x_tx_pdu_p->v2x_msg.length));	
+            // printf("\nV2X TX PDU>>\n"
+			// 	"  magic_num        : 0x%04X\n"
+			// 	"  psid             : %u\n"
+			// 	"  v2x length       : %d\n",
+			// 	ntohs(v2x_tx_pdu_p->magic_num),
+			// 	ntohl(v2x_tx_pdu_p->psid),
+			// 	ntohs(v2x_tx_pdu_p->v2x_msg.length));	
 
 			DB_V2X_T *test = NULL;
 			test = malloc(v2x_tx_pdu_p->v2x_msg.length);
 			memcpy(test, v2x_tx_pdu_p->v2x_msg.data, v2x_tx_pdu_p->v2x_msg.length);
 
-			printf("\nV2X Tx Data>>\n"
-				   "  deivce ID    :  %d\n"
-				   "  Payload Type :  0x%04X\n"
-				   "  Payload Length :  %d\n"
-				   "  Region ID    :  0x%04x\n",
+			// printf("\nV2X Tx Data>>\n"
+			// 	   "  deivce ID    :  %d\n"
+			// 	   "  Payload Type :  0x%04X\n"
+			// 	   "  Payload Length :  %d\n"
+			// 	   "  Region ID    :  0x%04x\n",
 				  
-				   ntohl(test->unDeviceId),
-				   test->ePayloadType,
-				   ntohl(test->ulPayloadLength),
-				   ntohs(test->eRegionId));
+			// 	   ntohl(test->unDeviceId),
+			// 	   test->ePayloadType,
+			// 	   ntohl(test->ulPayloadLength),
+			// 	   ntohs(test->eRegionId));
 
 			MessageFrame_t *test_msg = NULL;
 			test_msg = malloc(ntohl(test->ulPayloadLength));
@@ -420,17 +445,18 @@ void *v2x_rx_cmd_process(void *arg)
 /* function : Process Commands */
 int process_commands(void)
 {
-    pthread_t tx_thread;
-	pthread_t rx_thread;
-	void *tx_thread_ret;
-	void *rx_thread_ret;
+    // pthread_t tx_thread;
+	// pthread_t rx_thread;
+	// void *tx_thread_ret;
+	// void *rx_thread_ret;
 
-	pthread_create(&tx_thread, NULL, v2x_tx_cmd_process, NULL);
-	pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
-	pthread_join(tx_thread, &tx_thread_ret);
-	pthread_join(rx_thread, &rx_thread_ret);
+	// pthread_create(&tx_thread, NULL, v2x_tx_cmd_process, NULL);
+	// pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
+	// pthread_join(tx_thread, &tx_thread_ret);
+	// pthread_join(rx_thread, &rx_thread_ret);
+	v2x_tx_cmd_process(NULL);
 
-    return -1;
+	return -1;
 }
 
 /* function : Main(Entry point of this program) */
