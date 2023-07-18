@@ -6,6 +6,7 @@ import DeckMap from "../../components/DeckMap/DeckMap";
 import Sensor from "../../components/Layout/Sensor";
 
 const ros = new ROSLIB.Ros({ url: "ws://localhost:9090" });
+
 const tlvSystemTopic = new ROSLIB.Topic({
   ros: ros,
   name: "/tlv_system",
@@ -16,6 +17,7 @@ const tlvSignalTopic = new ROSLIB.Topic({
   name: "/tlv_signal",
   messageType: "std_msgs/Int8"
 });
+
 
 const TLV = () => {
   const classes = TLVStyles();
@@ -37,6 +39,7 @@ const TLV = () => {
     }
   });
 
+ 
   const handleClick = (signalData) => {
     setSignalClasses(signalData === 1 ? [classes.purple50, classes.basic50] : [classes.basic50, classes.purple50]);
   
@@ -59,7 +62,7 @@ const TLV = () => {
     <div>
       <Grid container  className={classes.map}>
       <Grid item xs={6}  >
-        <DeckMap />
+          <DeckMap main='tlv' />
       </Grid>
       <Grid item xs={6}>
         <Grid container >
