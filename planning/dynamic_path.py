@@ -2,8 +2,10 @@ import rospy
 import sys
 import time
 import signal
+import pymap3d
+import json
 from scipy.spatial import KDTree
-from std_msgs.msg import Int8, Float32
+from std_msgs.msg import Int8, Float32, String
 from geometry_msgs.msg import PoseStamped, PoseArray, Pose, Point
 from visualization_msgs.msg import Marker
 from novatel_oem7_msgs.msg import INSPVA
@@ -45,6 +47,7 @@ class DynamicPath:
         rospy.Subscriber('/car/hlv_velocity', Float32, self.hlv_velocity_cb)
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
         self.pub_hlv_path = rospy.Publisher('/planning/hlv_path', Marker, queue_size=1)
+        self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
@@ -127,15 +130,35 @@ class DynamicPath:
             r3 = n3_waypoints[x2_idx:x3_idx+1]
 
         self.hlv_path = ref_interpolate(r1 + r3, self.precision)[0]
+        compress_path = [r1[0], r1[-1], r3[0], r3[-1]]
         hlv_path_viz = HLVPathViz(self.hlv_path)
         self.pub_hlv_path.publish(hlv_path_viz)
         
         mt = format((time.time()-st)*1000, ".3f")
         print(f"Ego Node Matching : {mt}ms , Nodes [{ego_node}]-[{n1}]-[{n2}]-[{n3}]")
-        # if self.path_make_cnt > 20:
-        #     self.state = 'Path'
-        # else:
-        #     self.path_make_cnt += 1
+
+        if self.path_make_cnt > 20:
+            self.state = 'Path'
+
+            latlng_waypoints = []
+            for wp in compress_path:
+                lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
+                latlng_waypoints.append((lng, lat))
+
+            feature = {
+                "type":"Feature",
+                "geometry":{
+                    "type":"MultiLineString",
+                    "coordinates":[latlng_waypoints]
+                },
+                "properties":{}
+            }
+            self.hlv_geojson = json.dumps(feature)
+            with open('./path/hlv.json', 'w') as file:
+                json.dump(feature, file)
+
+        else:
+            self.path_make_cnt += 1
 
     def run(self):
         self.state = 'RUN'
@@ -144,6 +167,8 @@ class DynamicPath:
         while not rospy.is_shutdown():
             if self.state != 'Path':
                 self.get_node_path()
+            if self.state == 'Path':
+                self.pub_hlv_geojson.publish(self.hlv_geojson)
             rate.sleep()
 
 def main():

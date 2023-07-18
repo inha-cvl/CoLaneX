@@ -2,8 +2,10 @@ import rospy
 import sys
 import time
 import signal
+import json
+import pymap3d as pm
 from scipy.spatial import KDTree
-from std_msgs.msg import Int8, Float32
+from std_msgs.msg import Int8, Float32, String
 from geometry_msgs.msg import PoseStamped, PoseArray, Pose, Point
 from visualization_msgs.msg import Marker
 from novatel_oem7_msgs.msg import INSPVA
@@ -34,6 +36,7 @@ class SafeDistance:
         self.IDX_TO_M = self.precision
         self.ego_pos = None
         self.tlv_path = None
+        self.tlv_geojson = None
         self.hlv_path = None
         self.hlv_velocity = None
 
@@ -56,6 +59,7 @@ class SafeDistance:
         self.pub_tlv_path = rospy.Publisher('/planning/tlv_path', Marker, queue_size=1)
         self.pub_intersection = rospy.Publisher('/planning/intersection', Marker, queue_size=1)
         self.pub_move = rospy.Publisher('/planning/move', Marker, queue_size=1)
+        self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
@@ -97,7 +101,8 @@ class SafeDistance:
             r1 = ego_waypoints[ego_lanelets[1]:]+n1_waypoints[:x1_idx+1]
         else:
             r1 = n1_waypoints[ego_lanelets[1]:x1_idx+1]
-
+        
+        compress_path = [r1[0], r1[-1]]
         self.tlv_path = ref_interpolate(r1, self.precision)[0]
         tlv_path_viz = TLVPathViz(self.tlv_path)
         self.pub_tlv_path.publish(tlv_path_viz)
@@ -106,6 +111,24 @@ class SafeDistance:
         print(f"Ego Node Matching : {mt}ms , Nodes [{ego_node}]-[{n1}]]")
         if self.path_make_cnt > 20:
             self.state = 'Path'
+            
+            latlng_waypoints = []
+            for wp in compress_path:
+                lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
+                latlng_waypoints.append((lng, lat))
+
+            feature = {
+                "type":"Feature",
+                "geometry":{
+                    "type":"MultiLineString",
+                    "coordinates":[latlng_waypoints]
+                },
+                "properties":{}
+            }
+            self.tlv_geojson = json.dumps(feature)
+            with open('./path/tlv.json', 'w') as file:
+                json.dump(feature, file)
+            
         else:
             self.path_make_cnt += 1
     
@@ -161,8 +184,10 @@ class SafeDistance:
         while not rospy.is_shutdown():
             if self.state != 'Path' and self.state != 'Decision':
                 self.get_node_path()
+
             if self.state == 'Path' and self.state != 'Decision':
-                self.calc_safe_distance()
+                self.pub_tlv_geojson.publish(self.tlv_geojson)
+                #self.calc_safe_distance()
             
             rate.sleep()
 

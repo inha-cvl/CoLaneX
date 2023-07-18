@@ -62,7 +62,7 @@ const HLV = () => {
     <div>
       <Grid container  className={classes.map}>
         <Grid item xs={6}  >
-          <DeckMap />
+          <DeckMap main='hlv'/>
         </Grid>
         <Grid item xs={6}>
           <Grid container>
