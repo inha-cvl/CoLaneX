@@ -30,6 +30,8 @@ class GPSReader:
         self.latitude = msg.latitude
         self.longitude = msg.longitude
     
+    ###### need to check!
+    # sensor_msgs.IMU return quaternion
     def vectornav_imu_callback(self, msg) -> None:
         self.yaw = msg.yaw
 
