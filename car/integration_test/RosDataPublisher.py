@@ -5,7 +5,6 @@ import OdometryReader
 
 class RosDataPublisher():
     def __init__(self,
-                 id = 1,
                  dbc_file_path = 'can.dbc',
                  arbitration_id = 640,
                  wheel_vel_rr = 'Gway_Wheel_Velocity_RR',
@@ -20,8 +19,7 @@ class RosDataPublisher():
         rospy.init_node(publish_init_node, anonymous=True)
         self.publisher = rospy.Publisher(publish_node, Pose, queue_size=1)
         self.pose = Pose()
-        self.gps_reader = GPSReader(id = id,
-                                    ros_subscribe_path = ros_subscribe_path)
+        self.gps_reader = GPSReader(ros_subscribe_path = ros_subscribe_path)
         self.odometry_reader = OdometryReader(dbc_file_path = dbc_file_path,
                                               arbitration_id = arbitration_id,
                                               wheel_vel_rr = wheel_vel_rr,
