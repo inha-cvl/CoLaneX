@@ -10,7 +10,7 @@ ioniq = {'dbc_file_path' : 'can.dbc',
          'dummy3' : 0
          }
         
-i30 = {'dbc_file_path' : 'huyndai_2015_ccan.dbc',
+i30 = {'dbc_file_path' : 'hyundai_2015_ccan.dbc',
        'arbitration_id' : 902,
        'wheel_vel_rr' : 'WHL_SPD_RR',
        'wheel_vel_rl' : 'WHL_SPD_RL',
