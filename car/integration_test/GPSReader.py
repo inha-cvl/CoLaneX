@@ -1,6 +1,6 @@
 import rospy
 from novatel_oem7_msgs.msg import INSPVA
-from sensor_msgs.msg import NavSatFix, IMU
+from sensor_msgs.msg import NavSatFix, Imu
 from math import atan2
 
 class GPSReader:
@@ -12,7 +12,7 @@ class GPSReader:
             rospy.Subscriber(ros_subscribe_path, INSPVA, self.novatel_callback)
         elif (ros_subscribe_path == '/vectornav/gps'):
             rospy.Subscriber(ros_subscribe_path, NavSatFix, self.vectornav_gps_callback)
-            rospy.Subscriber('/vectornav/IMU', IMU, self.vectornav_imu_callback)
+            rospy.Subscriber('/vectornav/IMU', Imu, self.vectornav_imu_callback)
         else:
             print("===== ROS subscribe path is wrong =====")
             print("===== Set Params to IONIQ =====")

@@ -1,6 +1,8 @@
 import can
 import cantools
 
+
+
 class OdometryReader:
     def __init__(self,
                  dbc_file_path = 'can.dbc',
