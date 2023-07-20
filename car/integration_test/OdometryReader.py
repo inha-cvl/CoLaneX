@@ -1,8 +1,6 @@
 import can
 import cantools
 
-
-
 class OdometryReader:
     def __init__(self,
                  dbc_file_path = 'can.dbc',
@@ -32,6 +30,7 @@ class OdometryReader:
 
         # if the default value is 0,
         # stop and None cannot be distinduished
+        # if CAN return 999, use EMERGENCY BUTTON(reset CAN gateway)
         if self.CAN_data == None:
             self.RL_vel = 999
             self.RR_vel = 999

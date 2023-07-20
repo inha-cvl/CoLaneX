@@ -1,3 +1,7 @@
+# before execute this program
+# $ sudo ip link set can0 type can bitrate 500000
+# $ sudo ip link set up can0
+
 import rospy
 from RosDataPublisher import RosDataPublisher
 from Params import ioniq, i30

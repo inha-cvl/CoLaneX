@@ -1,7 +1,7 @@
 import rospy
 from novatel_oem7_msgs.msg import INSPVA
 from sensor_msgs.msg import NavSatFix, Imu
-from math import atan2
+from math import atan2, pi
 
 class GPSReader:
     def __init__(self,
@@ -15,8 +15,6 @@ class GPSReader:
             rospy.Subscriber('/vectornav/IMU', Imu, self.vectornav_imu_callback)
         else:
             print("===== ROS subscribe path is wrong =====")
-            print("===== Set Params to IONIQ =====")
-            rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.novatel_callback)
     
         self.latitude = 0
         self.longitude = 0
@@ -25,20 +23,20 @@ class GPSReader:
     def novatel_callback(self, msg) -> None:
         self.latitude = msg.latitude
         self.longitude = msg.longitude
+        # 90        : for ENU(East North) coordinate
+        # 89        : for IONIQ antenna bias
+        # -azimuth  : for ccw
         self.yaw = 89 - msg.azimuth
     
     def vectornav_gps_callback(self, msg) -> None:
         self.latitude = msg.latitude
         self.longitude = msg.longitude
-    
-    ###### need to check!
-    # sensor_msgs.IMU return quaternion
-    # def vectornav_imu_callback(self, msg) -> None:
-    #     self.yaw = msg.yaw
 
-    # if you need to change qauternion to euler
     def vectornav_imu_callback(self, msg) -> None:
-        self.yaw = self.quaternion_to_euler_yaw(msg.x, msg.y, msg.z, msg.w)
+        self.yaw = self.quaternion_to_euler_yaw_to_deg(msg.orientation.x,
+                                                       msg.orientation.y,
+                                                       msg.orientation.z,
+                                                       msg.orientation.w)
 
     # return: [latitude, longitude, yaw]
     def get_gps(self) -> list:
@@ -46,8 +44,10 @@ class GPSReader:
 
         return carGPS
     
-    def quaternion_to_euler_yaw(self, x, y, z, w) -> float:
+    def quaternion_to_euler_yaw_to_deg(self, x, y, z, w) -> float:
         a = 2.0 * (w * z + x * y)
         b = 1.0 - 2.0 * (y * y + z * z)
         
-        return atan2(a, b)
+        # for ENU coordinate
+        # convert rad to deg
+        return 90 - (atan2(a, b) / pi * 180)
