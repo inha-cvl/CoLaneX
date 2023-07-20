@@ -33,12 +33,12 @@ class GPSReader:
     
     ###### need to check!
     # sensor_msgs.IMU return quaternion
-    def vectornav_imu_callback(self, msg) -> None:
-        self.yaw = msg.yaw
+    # def vectornav_imu_callback(self, msg) -> None:
+    #     self.yaw = msg.yaw
 
     # if you need to change qauternion to euler
-    # def vectornav_imu_callback(self, msg) -> None:
-    #     self.yaw = self.quaternion_to_euler_yaw(msg.x, msg.y, msg.z, msg.w)
+    def vectornav_imu_callback(self, msg) -> None:
+        self.yaw = self.quaternion_to_euler_yaw(msg.x, msg.y, msg.z, msg.w)
 
     # return: [latitude, longitude, yaw]
     def get_gps(self) -> list:
