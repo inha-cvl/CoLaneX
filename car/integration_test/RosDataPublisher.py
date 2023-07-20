@@ -1,36 +1,26 @@
 import rospy
 from geometry_msgs.msg import Pose
-import GPSReader
-import OdometryReader
+from GPSReader import GPSReader
+from OdometryReader import OdometryReader
 
 class RosDataPublisher():
-    def __init__(self,
-                 dbc_file_path = 'can.dbc',
-                 arbitration_id = 640,
-                 wheel_vel_rr = 'Gway_Wheel_Velocity_RR',
-                 wheel_vel_rl = 'Gway_Wheel_Velocity_RL',
-                 ros_subscribe_path= '/novatel/oem7/inspva',
-                 publish_init_node = 'ioniq',
-                 publish_node = '/car/ioniq_pose',
-                 dummy1 = 0,
-                 dummy2 = 0,
-                 dummy3 = 0):
+    def __init__(self, **kwargs):
         
-        rospy.init_node(publish_init_node, anonymous=True)
-        self.publisher = rospy.Publisher(publish_node, Pose, queue_size=1)
+        rospy.init_node(kwargs['publish_init_node'], anonymous=True)
+        self.publisher = rospy.Publisher(kwargs['publish_node'], Pose, queue_size=1)
         self.pose = Pose()
-        self.gps_reader = GPSReader(ros_subscribe_path = ros_subscribe_path)
-        self.odometry_reader = OdometryReader(dbc_file_path = dbc_file_path,
-                                              arbitration_id = arbitration_id,
-                                              wheel_vel_rr = wheel_vel_rr,
-                                              wheel_vel_rl = wheel_vel_rl)
+        self.gps_reader = GPSReader(ros_subscribe_path = kwargs['ros_subscribe_path'])
+        self.odometry_reader = OdometryReader(dbc_file_path = kwargs['dbc_file_path'],
+                                              arbitration_id = kwargs['arbitration_id'],
+                                              wheel_vel_rr = kwargs['wheel_vel_rr'],
+                                              wheel_vel_rl = kwargs['wheel_vel_rl'])
         self.latitude = 0
         self.longitude = 0
         self.yaw = 0
         self.velocity = 0
-        self.dummy1 = dummy1
-        self.dummy2 = dummy2
-        self.dummy3 = dummy3
+        self.dummy1 = kwargs['dummy1']
+        self.dummy2 = kwargs['dummy2']
+        self.dummy3 = kwargs['dummy3']
 
     def data_read(self) -> None:
 
