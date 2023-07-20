@@ -10,7 +10,7 @@ class GPSReader:
         
         if (ros_subscribe_path == '/novatel/oem7/inspva'):
             rospy.Subscriber(ros_subscribe_path, INSPVA, self.novatel_callback)
-        elif (ros_subscribe_path == '/vectornav/gps'):
+        elif (ros_subscribe_path == '/vectornav/GPS'):
             rospy.Subscriber(ros_subscribe_path, NavSatFix, self.vectornav_gps_callback)
             rospy.Subscriber('/vectornav/IMU', Imu, self.vectornav_imu_callback)
         else:

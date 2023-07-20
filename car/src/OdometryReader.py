@@ -9,7 +9,7 @@ class OdometryReader:
                  wheel_vel_rl = 'Gway_Wheel_Velocity_RL',
                  ):
         self.bus = can.ThreadSafeBus(interface='socketcan', channel='can0', bitreate=500000)
-        self.db = cantools.database.load_file('dbc_file/' + dbc_file_path)
+        self.db = cantools.database.load_file('dbc_files/' + dbc_file_path)
         self.CAN_data = 0
         self.data = 0
         self.arbitration_id = arbitration_id
@@ -20,7 +20,7 @@ class OdometryReader:
         self.velocity = 0
 
     def read_odom(self) -> None:
-        self.CAN_data = self.bus.recv()
+        self.CAN_data = self.bus.recv(0)
 
         if  (self.CAN_data != None) and (self.CAN_data.arbitration_id == self.arbitration_id):
             self.data = self.db.decode_message(self.CAN_data.arbitration_id, self.CAN_data.data)
