@@ -1,6 +1,7 @@
 import rospy
 from novatel_oem7_msgs.msg import INSPVA
 from sensor_msgs.msg import NavSatFix, IMU
+from math import atan2
 
 class GPSReader:
     def __init__(self,
@@ -35,8 +36,18 @@ class GPSReader:
     def vectornav_imu_callback(self, msg) -> None:
         self.yaw = msg.yaw
 
+    # if you need to change qauternion to euler
+    # def vectornav_imu_callback(self, msg) -> None:
+    #     self.yaw = self.quaternion_to_euler_yaw(msg.x, msg.y, msg.z, msg.w)
+
     # return: [latitude, longitude, yaw]
     def get_gps(self) -> list:
         carGPS = [self.latitude, self.longitude, self.yaw]
 
         return carGPS
+    
+    def quaternion_to_euler_yaw(self, x, y, z, w) -> float:
+        a = 2.0 * (w * z + x * y)
+        b = 1.0 - 2.0 * (y * y + z * z)
+        
+        return atan2(a, b)
