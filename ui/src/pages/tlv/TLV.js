@@ -17,6 +17,27 @@ const tlvSignalTopic = new ROSLIB.Topic({
   name: "/tlv_signal",
   messageType: "std_msgs/Int8"
 });
+const hlvPoseTopic = new ROSLIB.Topic({
+  ros: ros,
+  name: '/car/hlv_pose',
+  messageType: 'geometry_msgs/Pose'
+});
+const hlvPathTopic = new ROSLIB.Topic({
+  ros: ros,
+  name: '/planning/hlv_geojson',
+  messageType: 'std_msgs/String',
+});
+
+const tlvPoseTopic = new ROSLIB.Topic({
+  ros: ros,
+  name: '/car/tlv_pose',
+  messageType: 'geometry_msgs/Pose'
+});
+const tlvPathTopic = new ROSLIB.Topic({
+  ros: ros,
+  name: '/planning/tlv_geojson',
+  messageType: 'std_msgs/String',
+});
 
 
 const TLV = () => {
@@ -30,6 +51,21 @@ const TLV = () => {
     "Over",
   ]);
   const [messageIdx, setMessageIdx] = useState(1);
+  const [HLVPose, setHLVPose] = useState({
+    latitude: 37.384553,
+    longitude: 126.657895,
+    heading: 0,
+    speed: 0,
+  });
+  const [TLVPose, setTLVPose] = useState({
+    latitude: 37.384563,
+    longitude: 126.657900,
+    heading: 0,
+    speed: 0,
+  });
+  const [TLVPath, setTLVPath] = useState('')
+  const [HLVPath, setHLVPath] = useState('')
+
   tlvSystemTopic.subscribe(function (message) {
     setMessageIdx(message.data[0]);
     setSystem([message.data[1], message.data[2], message.data[3], message.data[4]]);
@@ -38,6 +74,25 @@ const TLV = () => {
       setSignalClasses([classes.basic50, classes.basic50]);
     }
   });
+
+  hlvPoseTopic.subscribe(function (message) {
+    setHLVPose({ latitude: message.position.x, longitude: message.position.y, heading: message.position.z, speed:message.orientation.x });
+  });
+
+  hlvPathTopic.subscribe(function (message) {
+    const geoJsonObject = JSON.parse(message.data);
+    setHLVPath(geoJsonObject)
+  });
+
+  tlvPoseTopic.subscribe(function (message) {
+    setTLVPose({ latitude: message.position.x, longitude: message.position.y, heading: message.position.z, speed:message.orientation.x });
+  });
+
+  tlvPathTopic.subscribe(function (message) {
+    const geoJsonObject = JSON.parse(message.data);
+    setTLVPath(geoJsonObject)
+  });
+
 
  
   const handleClick = (signalData) => {
@@ -62,7 +117,7 @@ const TLV = () => {
     <div>
       <Grid container  className={classes.map}>
       <Grid item xs={6}  >
-          <DeckMap main='tlv' />
+          <DeckMap main='tlv' HLVPose={HLVPose} HLVPath={HLVPath} TLVPose={TLVPose} TLVPath={TLVPath}/>
       </Grid>
       <Grid item xs={6}>
         <Grid container >

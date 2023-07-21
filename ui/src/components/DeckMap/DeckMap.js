@@ -1,7 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 import Map, { GeolocateControl, Marker, NavigationControl, ScaleControl,Source, Layer } from "react-map-gl";
 import type { LineLayer } from 'react-map-gl';
-import ROSLIB from "roslib";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import { makeStyles } from "@material-ui/core";
@@ -12,29 +11,6 @@ const MAPBOX_ACCESS_TOKEN =
 const MY_MAP_STYLE = "mapbox://styles/kka-na/ckrbxk1fd0z5z18ljxdswgu1s";
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN
 
-const ros = new ROSLIB.Ros({ url: "ws://localhost:9090" });
-const hlvPositionTopic = new ROSLIB.Topic({
-  ros: ros,
-  name: '/novatel/oem7/hlv_inspva',
-  messageType: 'novatel_oem7_msgs/INSPVA'
-});
-const hlvPathTopic = new ROSLIB.Topic({
-  ros: ros,
-  name: '/planning/hlv_geojson',
-  messageType: 'std_msgs/String',
-});
-
-
-const tlvPositionTopic = new ROSLIB.Topic({
-  ros: ros,
-  name: '/novatel/oem7/tlv_inspva',
-  messageType: 'novatel_oem7_msgs/INSPVA'
-});
-const tlvPathTopic = new ROSLIB.Topic({
-  ros: ros,
-  name: '/planning/tlv_geojson',
-  messageType: 'std_msgs/String',
-});
 
 const Styles = makeStyles((theme) => ({
   marker1: {
@@ -81,8 +57,8 @@ const DeckMap = (props) => {
     latitude: 37.384563,
     longitude: 126.657900,
   });
-  const [TLVPath, setTLVPath] = useState('')
-  const [HLVPath, setHLVPath] = useState('')
+  const [TLVPath, setTLVPath] = useState(null)
+  const [HLVPath, setHLVPath] = useState(null)
   const [viewport, setViewport] = useState({
     latitude: 37.384553,
     longitude: 126.657895,
@@ -91,30 +67,30 @@ const DeckMap = (props) => {
     zoom: 20,
   });
 
-  hlvPositionTopic.subscribe(function (message) {
-    setHLVPosition({ latitude: message.latitude, longitude: message.longitude });
-    if (props.main === 'hlv') {
-      setViewport({ latitude: message.latitude, longitude: message.longitude, bearing: message.azimuth })
+  useEffect(() => {
+    if (props.HLVPose) {
+      setHLVPosition({ latitude: props.HLVPose.latitude, longitude: props.HLVPose.longitude });
+
+      setTLVPosition({ latitude: props.TLVPose.latitude, longitude: props.TLVPose.longitude });
+      if (props.main == 'hlv') {
+        setViewport({ latitude: props.HLVPose.latitude, longitude: props.HLVPose.longitude, bearing: props.HLVPose.heading });
+      }
+      else if (props.main == 'tlv') {
+        setViewport({ latitude: props.TLVPose.latitude, longitude: props.TLVPose.longitude, bearing: props.TLVPose.heading });
+      }
     }
-  });
+   
+  }, [props.HLVPose, props.TLVPose])
 
-  hlvPathTopic.subscribe(function (message) {
-    const geoJsonObject = JSON.parse(message.data);
-    setHLVPath(geoJsonObject)
-  });
-
-
-  tlvPositionTopic.subscribe(function (message) {
-    setTLVPosition({ latitude: message.latitude, longitude: message.longitude });
-    if (props.main === 'tlv') {
-      setViewport({ latitude: message.latitude, longitude: message.longitude, bearing: message.azimuth })
+  useEffect(() => {
+    if (props.HLVPath) {
+      setHLVPath(props.HLVPath);
     }
-  });
+    else if (props.TLVPath) {
+      setTLVPath(props.TLVPath);
+    }
 
-  tlvPathTopic.subscribe(function (message) {
-    const geoJsonObject = JSON.parse(message.data);
-    setTLVPath(geoJsonObject)
-  });
+  }, [props.HLVPath, props.TLVPath]);
 
   return (
     <Map
