@@ -11,7 +11,10 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
+#include <signal.h>
 #include <pthread.h>
+#include <iostream>
+#include <vector>
 
 /* include for v2x */
 #include "v2x_defs.h"
@@ -22,8 +25,11 @@
 #include <ros/ros.h>
 #include "std_msgs/Float32MultiArray.h"
 #include "novatel_oem7_msgs/INSPVA.h"
+#include "geometry_msgs/Pose.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Int8.h"
+#include "visualization_msgs/Marker.h"
+
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
@@ -31,6 +37,7 @@
 
 #define SAMPLE_V2X_MSG_LEN 2000
 
+volatile bool is_running = true;
 
 /* Global Variable Value */
 V2xAction_t e_action_g = eV2xAction_ADD;
@@ -62,7 +69,9 @@ unsigned long latitude;
 unsigned long longitude;
 unsigned long heading;
 unsigned long velocity; //mps
-
+std::vector<std::pair<double, double>> path;
+int path_len;
+bool show_result = True;
 
 int connect_v2x_socket(void)
 {
@@ -242,20 +251,20 @@ void *v2x_tx_cmd_process(void *arg)
 	
 	unsigned long cnt = 0;
 
-	MessageFrame_t msg;
-	msg.messageId = 20;
-	msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
-
 	ssize_t n;
 	time_t start_time = time(NULL);
 	int period = 1000000 / 10;
-	while (1)
+	while (is_running)
 	{
 		hlv_system.data[0] = state;
 		pub_hlv_system.publish(hlv_system);
 
-		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
+		MessageFrame_t msg = {0};
+		msg.messageId = 20;
+		msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
 
+		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
+		
 		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
 		ptrBSM->coreData.id.size = 1;
 		ptrBSM->coreData.id.buf[0] = 0x71;
@@ -264,9 +273,20 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.Long = longitude;
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
+		for (int i = 0; i < path_len; ++i)
+		{
+			Path *bsmPath = (Path *)calloc(1, sizeof(Path));
+			bsmPath->x = path[i].first;
+			bsmPath->y = path[i].second;
+			ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
+		}
+
+		if(path_len>0){
+			printf("sequence len %d\n", ptrBSM->path.count);
+		}
+
 		db_v2x_tmp_p->data = msg;
 		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
-		
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
 
 		if (n < 0)
@@ -291,6 +311,34 @@ void *v2x_tx_cmd_process(void *arg)
 			hlv_system.data[4] = mbps;
 			start_time = current_time;
 			cnt += 1;
+
+			//For Test
+			if (show_result){
+				DB_V2X_T *test = NULL;
+				test = (DB_V2X_T *)malloc(v2x_tx_pdu_p->v2x_msg.length);
+				memcpy(test, v2x_tx_pdu_p->v2x_msg.data, v2x_tx_pdu_p->v2x_msg.length);
+				MessageFrame_t *test_msg = NULL;
+				test_msg = (MessageFrame_t *)malloc(ntohl(test->ulPayloadLength));
+				memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
+
+				printf("\nV2X Tx Test Msg>>\n"
+					"  ID         :  0x%02x\n"
+					"  CNT        :  %ld\n"
+					"  latitude   :  %ld\n"
+					"  longitude  :  %ld\n"
+					"  heading    :  %ld\n"
+					"  velocity   :  %ld\n",
+					test_msg->value.choice.BasicSafetyMessage.coreData.id.buf[0],
+					test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
+					test_msg->value.choice.BasicSafetyMessage.coreData.lat,
+					test_msg->value.choice.BasicSafetyMessage.coreData.Long,
+					test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
+					test_msg->value.choice.BasicSafetyMessage.coreData.speed);
+
+				for (int i = 0; i <test_msg->value.choice.BasicSafetyMessage.path.count; ++i) {
+					printf("Element %d: x = %.2f, y = %.2f\n", i, test_msg->value.choice.BasicSafetyMessage.path.array[i]->x, test_msg->value.choice.BasicSafetyMessage.path.array[i]->y);
+				}
+			}
 		}
 		usleep(period);
 	}
@@ -313,7 +361,7 @@ void *v2x_rx_cmd_process(void *arg)
 	MessageFrame_t *msgFrame = NULL;
 	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
 	int period = 1000000 / 10;
-	while (1)
+	while (is_running)
 	{
 		n = recv(sock_g, buf, sizeof(buf), 0);
 		
@@ -326,7 +374,7 @@ void *v2x_rx_cmd_process(void *arg)
 			}
 			else
 			{
-				printf("wait. . . \n");
+				//printf("wait. . . \n");
 				usleep(10000);
 			}
 		}
@@ -405,25 +453,29 @@ int process_commands(void)
 {
 	pthread_t tx_thread;
 	pthread_t rx_thread;
-	void *tx_thread_ret;
-	void *rx_thread_ret;
 
 	pthread_create(&tx_thread, NULL, v2x_tx_cmd_process, NULL);
 	pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
-	pthread_join(tx_thread, &tx_thread_ret);
-	pthread_join(rx_thread, &rx_thread_ret);
+	pthread_join(tx_thread, NULL);
+	pthread_join(rx_thread, NULL);
 
 	return -1;
 }
 
-void insCallback(const novatel_oem7_msgs::INSPVA::ConstPtr &msg){
-	latitude = msg->latitude * pow(10, 7);
-	longitude = msg->latitude * pow(10, 7);
-	heading = 89.5-msg->azimuth;
+
+void poseCallback(const geometry_msgs::Pose::ConstPtr &msg){
+	latitude = msg->position.x * pow(10, 7);
+ 	longitude = msg->position.y * pow(10, 7);
+ 	heading = 89.5-msg->position.z;
+	velocity = msg->orientation.x;
 }
 
-void velocityCallback(const std_msgs::Float32::ConstPtr &msg){
-	velocity = msg->data;
+void pathCallback(const visualization_msgs::Marker::ConstPtr &msg){
+	path.clear();
+	path_len = atoi(msg->text.c_str());
+	for (size_t i = 0; i < path_len; i++){
+		path.push_back(std::make_pair(msg->points[i].x, msg->points[i].y));
+	}
 }
 
 void stateCallback(const std_msgs::Int8::ConstPtr &msg){
@@ -434,35 +486,41 @@ void signalCallback(const std_msgs::Int8::ConstPtr &msg){
 	_signal = msg->data;
 }
 
+void sigint_handler(int sig) {
+    is_running = false; // 스레드 종료 플래그 설정
+}
+
+
 /* function : Main(Entry point of this program) */
 int main(int argc, char *argv[])
 {
+	signal(SIGINT, sigint_handler); 
 	int res;
 	ros::init(argc,argv, "v2x");
 	ros::NodeHandle n;
 	ros::AsyncSpinner spinner(1);
 
-	ros::Subscriber sub_ins = n.subscribe("/novatel/oem7/inspva", 100, insCallback);
-	ros::Subscriber sub_velocity = n.subscribe("/mobinha/car/velocity", 100, velocityCallback);
+
+	ros::Subscriber sub_pose = n.subscribe("/car/hlv_pose", 100, poseCallback);
+	ros::Subscriber sub_path = n.subscribe("/planning/hlv_path", 100, pathCallback);
 	ros::Subscriber sub_state = n.subscribe("/hlv_state", 100, stateCallback);
 	ros::Subscriber sub_signal = n.subscribe("/hlv_signal", 100, signalCallback);
-	// Tx Publish
-	pub_hlv_system =  n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
+
+	spinner.start();
+	pub_hlv_system = n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
 	hlv_system.data.resize(5);
 	hlv_system.data = {{0.0, 0.0, 0.0, 0.0, 0.0}};
 
-	do
+	res = connect_v2x_socket();
+	v2x_wsr_cmd_process();
+	res = process_commands();
+
+	ros::Rate r(10);
+	while (ros::ok())
 	{
-		if ((res = connect_v2x_socket()) < 0)
-		{
-			break;
-		}
-		v2x_wsr_cmd_process();
-		if ((res = process_commands()) < 0)
-		{
-			break;
-		}
-	} while (0);
+		ros::spinOnce();
+		r.sleep();
+	}
 
 	close_v2x_socket();
 	return res;

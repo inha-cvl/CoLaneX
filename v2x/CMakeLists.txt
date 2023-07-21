@@ -30,5 +30,5 @@ add_executable(
 set_source_files_properties( ${SOURCES} PROPERTIES LANGUAGE CXX )
 
 target_link_libraries(
-    v2x ${catkin_LIBRARIES}
+    v2x ${catkin_LIBRARIES} asncodec
 )
