@@ -43,8 +43,8 @@ class DynamicPath:
         self.x2_i = 10
         self.x3_c = 7
 
-        rospy.Subscriber('/novatel/oem7/hlv_inspva', INSPVA, self.inspva_cb)
-        rospy.Subscriber('/car/hlv_velocity', Float32, self.hlv_velocity_cb)
+
+        rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
         self.pub_hlv_path = rospy.Publisher('/planning/hlv_path', Marker, queue_size=1)
         self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
@@ -52,11 +52,10 @@ class DynamicPath:
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
 
-    def inspva_cb(self, msg):
-        self.ego_pos = convert2enu(self.base_lla, msg.latitude, msg.longitude)
-    
-    def hlv_velocity_cb(self, msg):
-        self.ego_v = msg.data
+
+    def hlv_pose_cb(self, msg):
+        self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
+        self.ego_v = msg.orientation.x
 
     def get_node_path(self):
         if self.ego_pos == None:
@@ -137,28 +136,28 @@ class DynamicPath:
         mt = format((time.time()-st)*1000, ".3f")
         print(f"Ego Node Matching : {mt}ms , Nodes [{ego_node}]-[{n1}]-[{n2}]-[{n3}]")
 
-        if self.path_make_cnt > 20:
-            self.state = 'Path'
+        # if self.path_make_cnt > 20:
+        #     self.state = 'Path'
 
-            latlng_waypoints = []
-            for wp in compress_path:
-                lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-                latlng_waypoints.append((lng, lat))
+        #     latlng_waypoints = []
+        #     for wp in compress_path:
+        #         lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
+        #         latlng_waypoints.append((lng, lat))
 
-            feature = {
-                "type":"Feature",
-                "geometry":{
-                    "type":"MultiLineString",
-                    "coordinates":[latlng_waypoints]
-                },
-                "properties":{}
-            }
-            self.hlv_geojson = json.dumps(feature)
-            with open('./path/hlv.json', 'w') as file:
-                json.dump(feature, file)
+        #     feature = {
+        #         "type":"Feature",
+        #         "geometry":{
+        #             "type":"MultiLineString",
+        #             "coordinates":[latlng_waypoints]
+        #         },
+        #         "properties":{}
+        #     }
+        #     self.hlv_geojson = json.dumps(feature)
+        #     with open('./path/hlv.json', 'w') as file:
+        #         json.dump(feature, file)
 
-        else:
-            self.path_make_cnt += 1
+        # else:
+        #     self.path_make_cnt += 1
 
     def run(self):
         self.state = 'RUN'

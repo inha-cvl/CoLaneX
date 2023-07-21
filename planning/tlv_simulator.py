@@ -6,7 +6,7 @@ import sys
 import signal
 import rospy
 from std_msgs.msg import Float32
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
 from visualization_msgs.msg import Marker
 from novatel_oem7_msgs.msg import INSPVA
 from libs.rviz_utils import *
@@ -52,8 +52,9 @@ class TLVSimulator:
         self.br = tf.TransformBroadcaster()
 
         self.pub_target_car = rospy.Publisher('/car/target_car', Marker, queue_size=1)
-        self.pub_novatel = rospy.Publisher('/novatel/oem7/tlv_inspva', INSPVA, queue_size=1)
-        self.pub_velocity = rospy.Publisher('/car/tlv_velocity', Float32, queue_size=1)
+        # self.pub_novatel = rospy.Publisher('/novatel/oem7/tlv_inspva', INSPVA, queue_size=1)
+        # self.pub_velocity = rospy.Publisher('/car/tlv_velocity', Float32, queue_size=1)
+        self.pub_pose = rospy.Publisher('/car/tlv_pose', Pose, queue_size=1)
         rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.init_pose_cb)
 
     def init_pose_cb(self, msg):
@@ -72,20 +73,28 @@ class TLVSimulator:
         while not rospy.is_shutdown():
             dt = 0.1
             x, y, yaw, v = self.ego.x, self.ego.y, self.ego.yaw, self.ego.v
-
-            inspva = INSPVA()
             lat, lon, alt = pymap3d.enu2geodetic(x, y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-            inspva.latitude = lat
-            inspva.longitude = lon
-            inspva.height = alt
-            inspva.roll = self.roll
-            inspva.pitch = self.pitch
-            self.yaw = -(math.degrees(yaw)+270)
-            inspva.azimuth = self.yaw
-            
-            self.pub_novatel.publish(inspva)
             v=10.0
-            self.pub_velocity.publish(Float32(v))
+            
+            # inspva = INSPVA()
+            # inspva.latitude = lat
+            # inspva.longitude = lon
+            # inspva.height = alt
+            # inspva.roll = self.roll
+            # inspva.pitch = self.pitch
+            # self.yaw = -(math.degrees(yaw)+270)
+            # inspva.azimuth = self.yaw
+            
+            # self.pub_novatel.publish(inspva)
+            # self.pub_velocity.publish(Float32(v))
+
+            pose = Pose()
+            pose.position.x = lat
+            pose.position.y = lon
+            self.yaw = -(math.degrees(yaw)+270)
+            pose.position.z = self.yaw
+            pose.orientation.x = v
+            self.pub_pose.publish(pose)
 
             self.pub_target_car.publish(self.target_car)
 

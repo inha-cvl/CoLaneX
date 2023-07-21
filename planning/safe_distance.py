@@ -38,7 +38,7 @@ class SafeDistance:
         self.tlv_path = None
         self.tlv_geojson = None
         self.hlv_path = None
-        self.hlv_velocity = None
+        self.hlv_v = None
 
         self.path_make_cnt = 0
         self.calc_safe_cnt = 0
@@ -49,12 +49,11 @@ class SafeDistance:
         self.d_c = 15 # If at noraml road || on high way == 0
 
         #TODO: below INS, PATH, Velocity have to get from V2X  
-        rospy.Subscriber('/novatel/oem7/tlv_inspva', INSPVA, self.inspva_cb)
+        rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
+        rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
-        rospy.Subscriber('/car/hlv_velocity', Float32, self.hlv_velocity_cb)
         ####################
 
-        rospy.Subscriber('/car/tlv_velocity', Float32, self.tlv_velocity_cb)
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
         self.pub_tlv_path = rospy.Publisher('/planning/tlv_path', Marker, queue_size=1)
         self.pub_intersection = rospy.Publisher('/planning/intersection', Marker, queue_size=1)
@@ -64,17 +63,25 @@ class SafeDistance:
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
 
-    def inspva_cb(self, msg):
-        self.ego_pos = convert2enu(self.base_lla, msg.latitude, msg.longitude)
+    # def inspva_cb(self, msg):
+    #     self.ego_pos = convert2enu(self.base_lla, msg.latitude, msg.longitude)
     
+    # def tlv_velocity_cb(self, msg):
+    #     self.ego_v = msg.data
+
+    # def hlv_velocity_cb(self, msg):
+    #     self.hlv_v = msg.data
+
+
+    def tlv_pose_cb(self, msg):
+        self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
+        self.ego_v = msg.orientation.x
+    
+    def hlv_pose_cb(self, msg):
+        self.hlv_v = msg.orientation.x
+
     def hlv_path_cb(self, msg):
         self.hlv_path = [(pt.x, pt.y) for pt in msg.points]
-
-    def hlv_velocity_cb(self, msg):
-        self.hlv_velocity = msg.data
-
-    def tlv_velocity_cb(self, msg):
-        self.ego_v = msg.data
 
     def get_node_path(self):
         if self.ego_pos == None:
@@ -140,7 +147,7 @@ class SafeDistance:
             return False
 
     def calc_safe_distance(self):
-        if self.hlv_path == None and self.hlv_velocity == None and self.tlv_path == None:
+        if self.hlv_path == None and self.hlv_v == None and self.tlv_path == None:
             return
         
         st = time.time()
@@ -161,7 +168,7 @@ class SafeDistance:
         self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
         
         d1 = inter_idx*self.IDX_TO_M
-        d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_velocity)
+        d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v)
         d2_idx = int(d2*self.M_TO_IDX)
         dg = d1-d2
         ds = self.ego_v*3.6-self.d_c #m

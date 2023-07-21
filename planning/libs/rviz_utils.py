@@ -19,7 +19,7 @@ def TLVPathViz(waypoints):
     return FinalPath(waypoints, 999, 0.2, 0.4, (94/255, 204/255, 243/255, 1.0))
 
 def FinalPath(waypoints, id_, z, scale, color):
-    marker = Line('final_path', int(id_), scale, color)
+    marker = Line('final_path', int(id_), scale, color, len(waypoints))
     for pt in waypoints:
         marker.points.append(Point(x=pt[0], y=pt[1], z=z))
     return marker
@@ -125,7 +125,7 @@ def Edge(n, points, color):
             pts.append(itp.calc_position(ds))
         points = pts
 
-    marker1 = Line('edge_line', n, 0.5, color)
+    marker1 = Line('edge_line', n, 0.5, color, 0)
     for pt in points:
         marker1.points.append(Point(x=pt[0], y=pt[1], z=0.0))
 
@@ -161,7 +161,7 @@ def Waypoints(id_, points, color):
 
 def Bound(ns, id_, n, points, type_, color):
     if type_ == 'solid':
-        marker = Line('%s_%s' % (ns, id_), n, 0.15, color)
+        marker = Line('%s_%s' % (ns, id_), n, 0.15, color, 0)
         for pt in points:
             marker.points.append(Point(x=pt[0], y=pt[1], z=0.0))
 
@@ -257,13 +257,14 @@ def Points(ns, id_, scale, color):
     return marker
 
 
-def Line(ns, id_, scale, color):
+def Line(ns, id_, scale, color, len):
     marker = Marker()
     marker.type = Marker.LINE_STRIP
     marker.action = Marker.ADD
     marker.header.frame_id = 'world'
     marker.ns = ns
     marker.id = id_
+    marker.text = str(len)
     marker.lifetime = rospy.Duration(0)
     marker.scale.x = scale
     marker.color.r = color[0]
