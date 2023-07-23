@@ -45,9 +45,11 @@ class DynamicPath:
 
 
         rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
+        rospy.Subscriber('/v2x/tlv_path', Marker, self.tlv_path_cb)
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
         self.pub_hlv_path = rospy.Publisher('/planning/hlv_path', Marker, queue_size=1)
         self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
+        self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
@@ -56,6 +58,23 @@ class DynamicPath:
     def hlv_pose_cb(self, msg):
         self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
         self.ego_v = msg.orientation.x
+    
+    def tlv_path_cb(self,msg):
+        latlng_waypoints = []
+        for wp in msg.points:
+            lat, lng, _ = pm.enu2geodetic(wp.x, wp.y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
+            latlng_waypoints.append((lng, lat))
+
+        feature = {
+            "type":"Feature",
+            "geometry":{
+                "type":"MultiLineString",
+                "coordinates":[latlng_waypoints]
+            },
+            "properties":{}
+        }
+        tlv_geojson = json.dumps(feature)
+        self.pub_tlv_geojson(tlv_geojson)
 
     def get_node_path(self):
         if self.ego_pos == None:

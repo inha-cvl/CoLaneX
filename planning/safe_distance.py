@@ -50,8 +50,8 @@ class SafeDistance:
 
         #TODO: below INS, PATH, Velocity have to get from V2X  
         rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
-        rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
-        rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
+        rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
+        rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
         ####################
 
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
@@ -59,19 +59,10 @@ class SafeDistance:
         self.pub_intersection = rospy.Publisher('/planning/intersection', Marker, queue_size=1)
         self.pub_move = rospy.Publisher('/planning/move', Marker, queue_size=1)
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
+        self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
-
-    # def inspva_cb(self, msg):
-    #     self.ego_pos = convert2enu(self.base_lla, msg.latitude, msg.longitude)
-    
-    # def tlv_velocity_cb(self, msg):
-    #     self.ego_v = msg.data
-
-    # def hlv_velocity_cb(self, msg):
-    #     self.hlv_v = msg.data
-
 
     def tlv_pose_cb(self, msg):
         self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
@@ -82,6 +73,22 @@ class SafeDistance:
 
     def hlv_path_cb(self, msg):
         self.hlv_path = [(pt.x, pt.y) for pt in msg.points]
+        latlng_waypoints = []
+        for wp in msg.points:
+            lat, lng, _ = pm.enu2geodetic(wp.x, wp.y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
+            latlng_waypoints.append((lng, lat))
+
+        feature = {
+            "type":"Feature",
+            "geometry":{
+                "type":"MultiLineString",
+                "coordinates":[latlng_waypoints]
+            },
+            "properties":{}
+        }
+        hlv_geojson = json.dumps(feature)
+        self.pub_hlv_geojson(hlv_geojson)
+        
 
     def get_node_path(self):
         if self.ego_pos == None:
