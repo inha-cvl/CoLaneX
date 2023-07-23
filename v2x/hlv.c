@@ -26,6 +26,7 @@
 #include "std_msgs/Float32MultiArray.h"
 #include "novatel_oem7_msgs/INSPVA.h"
 #include "geometry_msgs/Pose.h"
+#include "geometry_msgs/Point.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/Int8.h"
 #include "visualization_msgs/Marker.h"
@@ -62,6 +63,10 @@ int sock_g = -1;
 
 std_msgs::Float32MultiArray hlv_system;
 ros::Publisher pub_hlv_system;
+geometry_msgs::Pose tlv_pose;
+ros::Publisher pub_tlv_pose;
+visualization_msgs::Marker tlv_path;
+ros::Publisher pub_tlv_path;
 
 unsigned long state;
 unsigned long _signal;
@@ -69,9 +74,10 @@ unsigned long latitude;
 unsigned long longitude;
 unsigned long heading;
 unsigned long velocity; //mps
+
 std::vector<std::pair<double, double>> path;
 int path_len;
-bool show_result = True;
+bool show_result = true;
 
 int connect_v2x_socket(void)
 {
@@ -327,17 +333,15 @@ void *v2x_tx_cmd_process(void *arg)
 					"  latitude   :  %ld\n"
 					"  longitude  :  %ld\n"
 					"  heading    :  %ld\n"
-					"  velocity   :  %ld\n",
+					"  velocity   :  %ld\n"
+					"  path len   :  %d\n",
 					test_msg->value.choice.BasicSafetyMessage.coreData.id.buf[0],
 					test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
 					test_msg->value.choice.BasicSafetyMessage.coreData.lat,
 					test_msg->value.choice.BasicSafetyMessage.coreData.Long,
 					test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
-					test_msg->value.choice.BasicSafetyMessage.coreData.speed);
-
-				for (int i = 0; i <test_msg->value.choice.BasicSafetyMessage.path.count; ++i) {
-					printf("Element %d: x = %.2f, y = %.2f\n", i, test_msg->value.choice.BasicSafetyMessage.path.array[i]->x, test_msg->value.choice.BasicSafetyMessage.path.array[i]->y);
-				}
+					test_msg->value.choice.BasicSafetyMessage.coreData.speed,
+					test_msg->value.choice.BasicSafetyMessage.path.count);
 			}
 		}
 		usleep(period);
@@ -347,6 +351,46 @@ void *v2x_tx_cmd_process(void *arg)
 	free(db_v2x_tmp_p);
 	
 	return NULL;
+}
+
+void pubTLVPose(long lat, long lng, long yaw, long vel){
+	
+	tlv_pose.position.x = lat / pow(10, 7);
+	tlv_pose.position.y = lng / pow(10, 7);
+	tlv_pose.position.x = yaw * 0.0125;
+	tlv_pose.orientation.x = vel * 0.02;
+	pub_tlv_pose.publish(tlv_pose);
+}
+
+void pubTLVPath(std::vector<std::pair<double, double>> _path){
+	std::vector<geometry_msgs::Point> points_msg;
+    for (const auto& point_pair : _path) {
+        geometry_msgs::Point point_msg;
+        point_msg.x = point_pair.first;
+        point_msg.y = point_pair.second;
+        point_msg.z = 0.0; // z 축은 0으로 설정 (2D 공간에서는 필요하지 않음)
+        points_msg.push_back(point_msg);
+    }
+
+	tlv_path.type = visualization_msgs::Marker::LINE_STRIP;
+	tlv_path.action = visualization_msgs::Marker::ADD;
+	tlv_path.header.frame_id = "world";
+	tlv_path.ns = "tlv_path";
+	tlv_path.id = 999;
+	tlv_path.text = std::to_string(_path.size());
+	tlv_path.lifetime = ros::Duration(0);
+	tlv_path.points = points_msg;
+	tlv_path.scale.x = 0.4;
+	tlv_path.color.r = 94 / 255;
+	tlv_path.color.g = 204 / 255;
+	tlv_path.color.b = 243 / 255;
+	tlv_path.color.a = 1;
+	tlv_path.pose.orientation.x = 0;
+	tlv_path.pose.orientation.y = 0;
+	tlv_path.pose.orientation.z= 0;
+	tlv_path.pose.orientation.w = 1;
+
+	pub_tlv_path.publish(tlv_path);
 }
 
 /* function : V2X RX processing */
@@ -374,7 +418,7 @@ void *v2x_rx_cmd_process(void *arg)
 			}
 			else
 			{
-				//printf("wait. . . \n");
+				printf("wait. . . \n");
 				usleep(10000);
 			}
 		}
@@ -438,6 +482,16 @@ void *v2x_rx_cmd_process(void *arg)
 				   ptrBSM->coreData.Long,
 				   ptrBSM->coreData.heading, 
 				   ptrBSM->coreData.speed);
+
+			pubTLVPose(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed);
+			if(ptrBSM->path.count > 0){
+				std::vector<std::pair<double, double>> _t_path;
+				for (int i = 0; i < ptrBSM->path.count; ++i)
+				{
+					_t_path.push_back(std::make_pair(ptrBSM->path.array[i]->x, ptrBSM->path.array[i]->y));
+				}
+				pubTLVPath(_t_path);
+			}
 		}
 		usleep(period);	
 	}
@@ -466,8 +520,13 @@ int process_commands(void)
 void poseCallback(const geometry_msgs::Pose::ConstPtr &msg){
 	latitude = msg->position.x * pow(10, 7);
  	longitude = msg->position.y * pow(10, 7);
- 	heading = 89.5-msg->position.z;
-	velocity = msg->orientation.x;
+	//Input ) degree
+	//BSM->heading : LSB of 0.0125 degrees (A range of 0 to 359.9875 degrees)
+	int _heading = (msg->position.z <= 0 && msg->position.z >= -180) ? msg->position.z + 360 : msg->position.z;
+ 	heading = int(_heading / 0.0125);
+	//Input ) m/s
+	//BSM->velocity : integer, Units of 0.02 m/s
+	velocity = msg->orientation.x / 0.02;
 }
 
 void pathCallback(const visualization_msgs::Marker::ConstPtr &msg){
@@ -475,6 +534,28 @@ void pathCallback(const visualization_msgs::Marker::ConstPtr &msg){
 	path_len = atoi(msg->text.c_str());
 	for (size_t i = 0; i < path_len; i++){
 		path.push_back(std::make_pair(msg->points[i].x, msg->points[i].y));
+	}
+}
+
+void tlvPoseCallback(const geometry_msgs::Pose::ConstPtr &msg){
+	long _lat = msg->position.x * pow(10, 7);
+ 	long _lng = msg->position.y * pow(10, 7);
+	int _heading = (msg->position.z <= 0 && msg->position.z >= -180) ? msg->position.z + 360 : msg->position.z;
+ 	long _yaw = int(_heading / 0.0125);
+	long _vel = msg->orientation.x / 0.02;
+	pubTLVPose(_lat, _lng, _yaw, _vel);
+}
+
+void tlvPathCallback(const visualization_msgs::Marker::ConstPtr &msg){
+	int _path_len = atoi(msg->text.c_str());
+	if (_path_len > 0)
+	{
+		std::vector<std::pair<double, double>> _t_path;
+		for (int i = 0; i < _path_len; ++i)
+		{
+			_t_path.push_back(std::make_pair(msg->points[i].x, msg->points[i].y));
+		}
+		pubTLVPath(_t_path);
 	}
 }
 
@@ -486,10 +567,12 @@ void signalCallback(const std_msgs::Int8::ConstPtr &msg){
 	_signal = msg->data;
 }
 
+
+
+
 void sigint_handler(int sig) {
     is_running = false; // 스레드 종료 플래그 설정
 }
-
 
 /* function : Main(Entry point of this program) */
 int main(int argc, char *argv[])
@@ -506,10 +589,18 @@ int main(int argc, char *argv[])
 	ros::Subscriber sub_state = n.subscribe("/hlv_state", 100, stateCallback);
 	ros::Subscriber sub_signal = n.subscribe("/hlv_signal", 100, signalCallback);
 
+	//For Test
+	ros::Subscriber sub_tlv_pose = n.subscribe("/car/tlv_pose", 100, tlvPoseCallback);
+	ros::Subscriber sub_tlv_path = n.subscribe("/planning/tlv_path", 100, tlvPathCallback);
+
 	spinner.start();
 	pub_hlv_system = n.advertise<std_msgs::Float32MultiArray>("/hlv_system", 100);
 	hlv_system.data.resize(5);
 	hlv_system.data = {{0.0, 0.0, 0.0, 0.0, 0.0}};
+	pub_tlv_pose = n.advertise<geometry_msgs::Pose>("/v2x/tlv_pose", 100);
+	tlv_pose = geometry_msgs::Pose();
+	pub_tlv_path = n.advertise<visualization_msgs::Marker>("/v2x/tlv_path", 100);
+	tlv_path = visualization_msgs::Marker();
 
 	res = connect_v2x_socket();
 	v2x_wsr_cmd_process();
