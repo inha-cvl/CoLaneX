@@ -19,7 +19,7 @@ const tlvSignalTopic = new ROSLIB.Topic({
 });
 const hlvPoseTopic = new ROSLIB.Topic({
   ros: ros,
-  name: '/car/hlv_pose',
+  name: '/v2x/hlv_pose',
   messageType: 'geometry_msgs/Pose'
 });
 const hlvPathTopic = new ROSLIB.Topic({
