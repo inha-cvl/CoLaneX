@@ -151,9 +151,26 @@ class DynamicPath:
         compress_path = [r1[0], r1[-1], r3[0], r3[-1]]
         hlv_path_viz = HLVPathViz(self.hlv_path)
         self.pub_hlv_path.publish(hlv_path_viz)
-        
+            
         mt = format((time.time()-st)*1000, ".3f")
         print(f"Ego Node Matching : {mt}ms , Nodes [{ego_node}]-[{n1}]-[{n2}]-[{n3}]")
+
+        latlng_waypoints = []
+        for wp in compress_path:
+            lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
+            latlng_waypoints.append((lng, lat))
+
+        feature = {
+            "type":"Feature",
+            "geometry":{
+                "type":"MultiLineString",
+                "coordinates":[latlng_waypoints]
+            },
+            "properties":{}
+        }
+        self.hlv_geojson = json.dumps(feature)
+        with open('./path/hlv.json', 'w') as file:
+            json.dump(feature, file) 
 
         # if self.path_make_cnt > 20:
         #     self.state = 'Path'

@@ -79,6 +79,8 @@ std::vector<std::pair<double, double>> path;
 int path_len;
 bool show_result = true;
 
+int whileHz = 500*1000; //Hz
+
 int connect_v2x_socket(void)
 {
 	int res = -1; // failure
@@ -242,7 +244,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
 	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-	db_v2x_tmp_p->unDeviceId =htonl(71);
+	db_v2x_tmp_p->unDeviceId =htonl(73);
 	db_v2x_tmp_p->ulTimeStamp = 0ULL;
 	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
 	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
@@ -260,7 +262,6 @@ void *v2x_tx_cmd_process(void *arg)
 
 	ssize_t n;
 	time_t start_time = time(NULL);
-	int period = 1000000 / 10;
 	while (is_running)
 	{
 		tlv_system.data[0] = state;
@@ -274,7 +275,7 @@ void *v2x_tx_cmd_process(void *arg)
 		
 		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
 		ptrBSM->coreData.id.size = 1;
-		ptrBSM->coreData.id.buf[0] = 0x71;
+		ptrBSM->coreData.id.buf[0] = 0x73;
 		ptrBSM->coreData.msgCnt = cnt;
 		ptrBSM->coreData.lat = latitude;
 		ptrBSM->coreData.Long = longitude;
@@ -345,7 +346,7 @@ void *v2x_tx_cmd_process(void *arg)
 					test_msg->value.choice.BasicSafetyMessage.path.count);
 			}
 		}
-		usleep(period);
+		usleep(whileHz); // microseconds
 	}
 
 	free(v2x_tx_pdu_p);
@@ -358,7 +359,7 @@ void *v2x_tx_cmd_process(void *arg)
 void pubHLV(long lat, long lng, long yaw, long vel, std::vector<std::pair<double, double>> _path){
 	hlv_pose.position.x = lat / pow(10, 7);
 	hlv_pose.position.y = lng / pow(10, 7);
-	hlv_pose.position.x = yaw * 0.0125;
+	hlv_pose.position.z = yaw * 0.0125;
 	hlv_pose.orientation.x = vel * 0.02;
 	pub_hlv_pose.publish(hlv_pose);
 
@@ -402,13 +403,15 @@ void *v2x_rx_cmd_process(void *arg)
 	int n = -1;
 	time_t start_time = time(NULL);
 
-	DB_V2X_T *db_v2x_tmp_p = NULL;
-	MessageFrame_t *msgFrame = NULL;
-	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
-	int period = 1000000 / 10;
+
 	while (is_running)
 	{
 		n = recv(sock_g, buf, sizeof(buf), 0);
+
+				
+		DB_V2X_T *db_v2x_tmp_p = NULL;
+		MessageFrame_t *msgFrame = NULL;
+		Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
 		
 		if (n < 0)
 		{
@@ -435,7 +438,8 @@ void *v2x_rx_cmd_process(void *arg)
 			double delay_time_ms = round((difftime(current_time, start_time))*1000);
 			tlv_system.data[3] = delay_time_ms;
 			start_time = current_time;
-			
+	
+
 			v2x_rx_pdu_p = (Ext_V2X_RxPDU_t *)malloc(n);
 			memcpy(v2x_rx_pdu_p, buf, n);
 			printf("\nV2X RX PDU>>\n"
@@ -466,7 +470,7 @@ void *v2x_rx_cmd_process(void *arg)
 				   ntohs(db_v2x_tmp_p->eRegionId),
 				   sizeof(db_v2x_tmp_p->data));
 
-			int payload_length = sizeof(db_v2x_tmp_p->data);
+			int payload_length = ntohl(db_v2x_tmp_p->ulPayloadLength);
 			msgFrame = (MessageFrame_t *)malloc(payload_length);
 			memcpy(msgFrame, &db_v2x_tmp_p->data, payload_length);
 
@@ -477,24 +481,51 @@ void *v2x_rx_cmd_process(void *arg)
 				   "  latitude   :  %ld\n"
 				   "  longitude  :  %ld\n"
 				   "  heading    :  %ld\n"
-				   "  velocity   :  %ld\n",
+				   "  velocity   :  %ld\n"
+				   "  path len   :  %d\n",
 				   ptrBSM->coreData.msgCnt,
 				   ptrBSM->coreData.lat,
 				   ptrBSM->coreData.Long,
 				   ptrBSM->coreData.heading, 
-				   ptrBSM->coreData.speed);
+				   ptrBSM->coreData.speed,
+				   ptrBSM->path.count);
+
+
 			std::vector<std::pair<double, double>> _h_path;
-			for (int i = 0; i < ptrBSM->path.count; ++i)
-			{
-				_h_path.push_back(std::make_pair(ptrBSM->path.array[i]->x, ptrBSM->path.array[i]->y));
+
+			for(int i=0; i<ptrBSM->path.count; i++){
+				struct Path *currentPath = ptrBSM->path.array[i];
+				if (currentPath != NULL)
+				{
+					// currentPath의 x와 y 데이터에 접근합니다.
+					double x_data = currentPath->x;
+					double y_data = currentPath->y;
+
+					// x_data와 y_data를 사용하면 됩니다.
+					// 예를 들어:
+					printf("Point %d: x = %f, y = %f\n", i, x_data, y_data);
+				}
+				else
+				{
+					// currentPath가 NULL인 경우, 유효하지 않은 포인터입니다.
+					printf("Point %d: Invalid pointer\n", i);
+				}
+
+				//_h_path.push_back(std::make_pair(ptrBSM->path.array[i]->x, ptrBSM->path.array[i]->y));
+	
 			}
+
 			pubHLV(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed, _h_path);
+
 		}
-		usleep(period);	
+
+		free(v2x_rx_pdu_p);
+		free(db_v2x_tmp_p);
+		free(msgFrame);
+
+		usleep(whileHz); // microseconds
+
 	}
-	free(v2x_rx_pdu_p);
-	free(db_v2x_tmp_p);
-	free(msgFrame);
 
 	return NULL;
 }
@@ -517,9 +548,12 @@ int process_commands(void)
 void poseCallback(const geometry_msgs::Pose::ConstPtr &msg){
 	latitude = msg->position.x * pow(10, 7);
  	longitude = msg->position.y * pow(10, 7);
+	if(latitude != 0 && longitude !=0 ){
+		tlv_system.data[1] = 1;
+	}
 	//Input ) degree
 	//BSM->heading : LSB of 0.0125 degrees (A range of 0 to 359.9875 degrees)
-	int _heading = (msg->position.z <= 0 && msg->position.z >= -180) ? msg->position.z + 360 : msg->position.z;
+	int _heading = (msg->position.z <= 0 && msg->position.z >= -360) ? msg->position.z + 360 : msg->position.z;
  	heading = int(_heading / 0.0125);
 	//Input ) m/s
 	//BSM->velocity : integer, Units of 0.02 m/s

@@ -1,0 +1,25 @@
+
+#3
+**Install NPM**
+```
+cd ~
+curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
+nano /tmp/nodesource_setup.sh # for Checking
+sudo bash /tmp/nodesource_setup.sh
+sudo apt install nodejs
+node -v #for Checking
+sudo apt install npm
+```
+**Install Libraries**
+cd ui
+npm install --purge
+**Starint**
+npm start
+**Install ROS Bridge**
+sudo apt-get install ros-<rosdistro>-rosbridge-server
+
+
+#5
+**Install Libraries**
+pip3 install pymap3d
+sudo apt-get install ros-<rosdistro>-novatel-oem7-driver

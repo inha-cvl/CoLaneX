@@ -79,6 +79,8 @@ std::vector<std::pair<double, double>> path;
 int path_len;
 bool show_result = true;
 
+int whileHz = 500*1000; //Hz
+
 int connect_v2x_socket(void)
 {
 	int res = -1; // failure
@@ -162,7 +164,7 @@ int v2x_wsr_cmd_process(void)
 		fprintf(stderr, "send() sent a different number of bytes than expected\n");
 		return res;
 	}else{
-		printf("WSR Send Sucess");
+		printf("WSR Send Sucess\n");
 	}
 
 	// Wait for the response
@@ -191,7 +193,7 @@ int v2x_wsr_cmd_process(void)
 
 		usleep(1000);
 	}
-	printf("WSR RECV Sucess");
+	printf("WSR RECV Sucess\n");
 	res = 0;
 	hlv_system.data[2] = 1;
 	return res;
@@ -201,65 +203,10 @@ int v2x_wsr_cmd_process(void)
 void *v2x_tx_cmd_process(void *arg)
 {
 	(void)arg;
-
-	// Prepare the Ext_WSReq_t structure
-	int db_v2x_tmp_size = sizeof(DB_V2X_T) + sizeof(MessageFrame_t);//SAMPLE_V2X_MSG_LEN;
-	int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
-
-	Ext_V2X_TxPDU_t *v2x_tx_pdu_p = NULL;
-	DB_V2X_T *db_v2x_tmp_p = NULL;
-
-	v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
-	memset(v2x_tx_pdu_p, 0, sizeof(Ext_V2X_TxPDU_t));
-
-	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
-	v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
-	v2x_tx_pdu_p->psid = htonl(psid_g);
-	v2x_tx_pdu_p->tx_power = tx_power_g;
-	v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
-	v2x_tx_pdu_p->e_priority = e_priority_g;
-
-	if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
-	{
-		v2x_tx_pdu_p->magic_num = htons(MAGIC_CV2X_TX_PDU);
-		v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id = htonl(transmitter_profile_id_g);
-		v2x_tx_pdu_p->u.config_cv2x.peer_l2id = htonl(peer_l2id_g);
-	}
-	else if (e_comm_type_g == eV2XCommType_DSRC)
-	{
-		v2x_tx_pdu_p->magic_num = htons(MAGIC_DSRC_TX_PDU);
-		v2x_tx_pdu_p->u.config_wave.freq = htons(freq_g);
-		v2x_tx_pdu_p->u.config_wave.e_data_rate = htons(e_data_rate_g);
-		v2x_tx_pdu_p->u.config_wave.e_time_slot = e_time_slot_g;
-		memcpy(v2x_tx_pdu_p->u.config_wave.peer_mac_addr, peer_mac_addr_g, MAC_EUI48_LEN);
-	}
-
-	// Payload = KETI Format
-	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
-	db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
-	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
-
-	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
-	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-	db_v2x_tmp_p->unDeviceId =htonl(71);
-	db_v2x_tmp_p->ulTimeStamp = 0ULL;
-	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
-	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
-	db_v2x_tmp_p->eRegionId = DB_V2X_REGION_ID_SEOUL;
-	db_v2x_tmp_p->ePayloadType = DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM;
-	db_v2x_tmp_p->eCommId = DB_V2X_COMM_ID_V2V;
-	db_v2x_tmp_p->usDbVer = 0;
-	db_v2x_tmp_p->usHwVer = 0;
-	db_v2x_tmp_p->usSwVer = 0;
-	db_v2x_tmp_p->ulPayloadLength = htonl(sizeof(MessageFrame_t));
-
-	//Subscribe
-	
 	unsigned long cnt = 0;
-
 	ssize_t n;
 	time_t start_time = time(NULL);
-	int period = 1000000 / 10;
+
 	while (is_running)
 	{
 		hlv_system.data[0] = state;
@@ -268,9 +215,7 @@ void *v2x_tx_cmd_process(void *arg)
 		MessageFrame_t msg = {0};
 		msg.messageId = 20;
 		msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
-
-		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;
-		
+		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;	
 		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
 		ptrBSM->coreData.id.size = 1;
 		ptrBSM->coreData.id.buf[0] = 0x71;
@@ -287,11 +232,59 @@ void *v2x_tx_cmd_process(void *arg)
 			ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
 		}
 
-		if(path_len>0){
-			printf("sequence len %d\n", ptrBSM->path.count);
+		int byteLen = sizeof(MessageFrame_t) + sizeof(BasicSafetyMessage_t)+sizeof(ptrBSM->path);
+		// Prepare the Ext_WSReq_t structure
+		int db_v2x_tmp_size = sizeof(DB_V2X_T)+byteLen;//SAMPLE_V2X_MSG_LEN;
+		int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
+
+		Ext_V2X_TxPDU_t *v2x_tx_pdu_p = NULL;
+		DB_V2X_T *db_v2x_tmp_p = NULL;
+
+		v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
+		memset(v2x_tx_pdu_p, 0, v2x_tx_pdu_size);
+
+		v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
+		v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
+		v2x_tx_pdu_p->psid = htonl(psid_g);
+		v2x_tx_pdu_p->tx_power = tx_power_g;
+		v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
+		v2x_tx_pdu_p->e_priority = e_priority_g;
+
+		if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
+		{
+			v2x_tx_pdu_p->magic_num = htons(MAGIC_CV2X_TX_PDU);
+			v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id = htonl(transmitter_profile_id_g);
+			v2x_tx_pdu_p->u.config_cv2x.peer_l2id = htonl(peer_l2id_g);
+		}
+		else if (e_comm_type_g == eV2XCommType_DSRC)
+		{
+			v2x_tx_pdu_p->magic_num = htons(MAGIC_DSRC_TX_PDU);
+			v2x_tx_pdu_p->u.config_wave.freq = htons(freq_g);
+			v2x_tx_pdu_p->u.config_wave.e_data_rate = htons(e_data_rate_g);
+			v2x_tx_pdu_p->u.config_wave.e_time_slot = e_time_slot_g;
+			memcpy(v2x_tx_pdu_p->u.config_wave.peer_mac_addr, peer_mac_addr_g, MAC_EUI48_LEN);
 		}
 
+		// Payload = KETI Format
+		v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
+		db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
+		memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
+
+		db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
+		db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
+		db_v2x_tmp_p->unDeviceId =htonl(71);
+		db_v2x_tmp_p->ulTimeStamp = 0ULL;
+		db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
+		db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
+		db_v2x_tmp_p->eRegionId = DB_V2X_REGION_ID_SEOUL;
+		db_v2x_tmp_p->ePayloadType = DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM;
+		db_v2x_tmp_p->eCommId = DB_V2X_COMM_ID_V2V;
+		db_v2x_tmp_p->usDbVer = 0;
+		db_v2x_tmp_p->usHwVer = 0;
+		db_v2x_tmp_p->usSwVer = 0;
 		db_v2x_tmp_p->data = msg;
+		db_v2x_tmp_p->ulPayloadLength = htonl(db_v2x_tmp_size);
+
 		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
 
@@ -342,22 +335,26 @@ void *v2x_tx_cmd_process(void *arg)
 					test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
 					test_msg->value.choice.BasicSafetyMessage.coreData.speed,
 					test_msg->value.choice.BasicSafetyMessage.path.count);
+
+				// if(test_msg->value.choice.BasicSafetyMessage.path.count> 0){
+				// 	for (int i = 0; i < test_msg->value.choice.BasicSafetyMessage.path.count; ++i){
+				// 		printf("[%d] %f, %f \n", i, test_msg->value.choice.BasicSafetyMessage.path.array[i]->x, test_msg->value.choice.BasicSafetyMessage.path.array[i]->y);
+				// 	}
+				// }
 			}
 		}
-		usleep(period);
+		free(v2x_tx_pdu_p);
+		free(db_v2x_tmp_p);
+		usleep(whileHz);
 	}
 
-	free(v2x_tx_pdu_p);
-	free(db_v2x_tmp_p);
-	
 	return NULL;
 }
 
 void pubTLVPose(long lat, long lng, long yaw, long vel){
-	
 	tlv_pose.position.x = lat / pow(10, 7);
 	tlv_pose.position.y = lng / pow(10, 7);
-	tlv_pose.position.x = yaw * 0.0125;
+	tlv_pose.position.z = yaw * 0.0125;
 	tlv_pose.orientation.x = vel * 0.02;
 	pub_tlv_pose.publish(tlv_pose);
 }
@@ -396,6 +393,7 @@ void pubTLVPath(std::vector<std::pair<double, double>> _path){
 /* function : V2X RX processing */
 void *v2x_rx_cmd_process(void *arg)
 {
+	
 	(void)arg;
 	uint8_t buf[4096] = {0};
 	int n = -1;
@@ -404,7 +402,7 @@ void *v2x_rx_cmd_process(void *arg)
 	DB_V2X_T *db_v2x_tmp_p = NULL;
 	MessageFrame_t *msgFrame = NULL;
 	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
-	int period = 1000000 / 10;
+
 	while (is_running)
 	{
 		n = recv(sock_g, buf, sizeof(buf), 0);
@@ -493,7 +491,7 @@ void *v2x_rx_cmd_process(void *arg)
 				pubTLVPath(_t_path);
 			}
 		}
-		usleep(period);	
+		usleep(whileHz);
 	}
 	free(v2x_rx_pdu_p);
 	free(db_v2x_tmp_p);
@@ -510,6 +508,7 @@ int process_commands(void)
 
 	pthread_create(&tx_thread, NULL, v2x_tx_cmd_process, NULL);
 	pthread_create(&rx_thread, NULL, v2x_rx_cmd_process, NULL);
+	
 	pthread_join(tx_thread, NULL);
 	pthread_join(rx_thread, NULL);
 
@@ -520,6 +519,9 @@ int process_commands(void)
 void poseCallback(const geometry_msgs::Pose::ConstPtr &msg){
 	latitude = msg->position.x * pow(10, 7);
  	longitude = msg->position.y * pow(10, 7);
+	if(latitude != 0 && longitude !=0 ){
+		hlv_system.data[1] = 1;
+	}
 	//Input ) degree
 	//BSM->heading : LSB of 0.0125 degrees (A range of 0 to 359.9875 degrees)
 	int _heading = (msg->position.z <= 0 && msg->position.z >= -180) ? msg->position.z + 360 : msg->position.z;
@@ -540,6 +542,9 @@ void pathCallback(const visualization_msgs::Marker::ConstPtr &msg){
 void tlvPoseCallback(const geometry_msgs::Pose::ConstPtr &msg){
 	long _lat = msg->position.x * pow(10, 7);
  	long _lng = msg->position.y * pow(10, 7);
+	if(_lat!= 0 && _lng !=0 ){
+		hlv_system.data[1] = 1;
+	}
 	int _heading = (msg->position.z <= 0 && msg->position.z >= -180) ? msg->position.z + 360 : msg->position.z;
  	long _yaw = int(_heading / 0.0125);
 	long _vel = msg->orientation.x / 0.02;
@@ -577,7 +582,7 @@ void sigint_handler(int sig) {
 /* function : Main(Entry point of this program) */
 int main(int argc, char *argv[])
 {
-	signal(SIGINT, sigint_handler); 
+	signal(SIGINT, sigint_handler);
 	int res;
 	ros::init(argc,argv, "v2x");
 	ros::NodeHandle n;
