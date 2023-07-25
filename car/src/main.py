@@ -18,5 +18,8 @@ if __name__ == '__main__':
             ros_data_publisher.gps_vel_publisher()
     except rospy.ROSInterruptException:
         pass
+    except KeyboardInterrupt:
+        print("Keyboard Interrupt is occured.")
 
     rospy.spin()
+    
