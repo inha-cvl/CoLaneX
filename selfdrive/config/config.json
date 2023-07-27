@@ -1,0 +1,39 @@
+{
+    "common": {
+        "sampling_rate": 10,
+        "vehicle_length": 4,
+        "wheelbase": 2.8
+    },
+    "map": {
+        "name": "KIAPI",
+        "base_lla": {
+            "latitude" : 35.64588122580907,
+            "longitude" : 128.40214778762413,
+            "altitude" : 46.746
+        }
+    },
+    "planning": {
+        "velocity_profile": {
+            "max_velocity": 80.0,
+            "road_friction": 0.15,
+            "window_size": 25
+        },
+        "adaptive_cruise_control": {
+            "velocity_gain": 0.8,
+            "distance_gain": 1.5,
+            "time_gap": 0.65
+        }
+    },
+    "control": {
+        "pid": {
+            "p_gain": 0.075,
+            "i_gain": 0.0001,
+            "d_gain": 0.025
+        },
+        "pure_pursuit": {
+            "lfd_gain": 1.5,
+            "min_lfd": 4,
+            "max_lfd": 60
+        }
+    }
+}
