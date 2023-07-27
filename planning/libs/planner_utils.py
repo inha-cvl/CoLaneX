@@ -45,6 +45,77 @@ def filter_same_points(points):
 
     return filtered_points
 
+def get_neighbor(lanelet, node):
+    l_id = lanelet[node]['adjacentLeft']
+    r_id = lanelet[node]['adjacentRight']
+    return l_id, r_id
+
+def get_whole_neighbor(lanelet, node):
+    num = 1
+    find_node = node
+    left_most = True
+    right_most = True
+    left_lanes = []
+    right_lanes = []
+
+    while left_most:
+        if lanelet[find_node]['adjacentLeft'] != None:
+            find_node = lanelet[find_node]['adjacentLeft']
+            left_lanes.append(find_node)
+            num += 1
+            
+        else:
+            left_most = False
+            find_node = node
+    
+    while right_most:
+        if lanelet[find_node]['adjacentRight'] != None:
+            find_node = lanelet[find_node]['adjacentRight']
+            right_lanes.append(find_node)
+            num += 1
+            
+        else:
+            right_most = False
+            find_node = node
+
+    me_idx = len(left_lanes)
+
+    return left_lanes, right_lanes, me_idx
+
+
+    
+def find_most_successor(lanelet, check_l):
+    most_successor = None
+    for c in check_l:
+        if len(lanelet[c]['successor']) <= 0:
+            continue
+        else:
+            most_successor = lanelet[c]['successor'][0]
+            break
+    return most_successor
+
+def get_possible_successor(lanelet, node, prior='Left'):
+    successor = None
+    left_lanes, right_lanes, me = get_whole_neighbor(lanelet, node)
+    if len(lanelet[node]['successor']) <= 0:
+        if prior == 'Left':
+            check_a = left_lanes
+            check_b = right_lanes
+        else:   
+            check_a = right_lanes
+            check_b = left_lanes
+        
+        most_successor = find_most_successor(lanelet, check_a)
+        if most_successor == None:
+            most_successor = find_most_successor(lanelet, check_b)
+
+        successor = most_successor
+    else:
+        successor = lanelet[node]['successor'][0]
+
+    return successor
+
+
 def ref_interpolate(points, precision):
     points = filter_same_points(points)
     wx, wy = zip(*points)

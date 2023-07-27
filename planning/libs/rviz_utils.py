@@ -14,9 +14,9 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 def HLVPathViz(waypoints):
-    return FinalPath(waypoints, 999, 0.2, 0.4, (241/255,76/255,152/255, 1.0))
+    return FinalPath(waypoints, 999, 0.2, 1.5, (241/255,76/255,152/255, 0.5))
 def TLVPathViz(waypoints):
-    return FinalPath(waypoints, 999, 0.2, 0.4, (94/255, 204/255, 243/255, 1.0))
+    return FinalPath(waypoints, 999, 0.2, 1.5, (94/255, 204/255, 243/255, 0.5))
 
 def FinalPath(waypoints, id_, z, scale, color):
     marker = Line('final_path', int(id_), scale, color, len(waypoints))
@@ -318,59 +318,4 @@ def Arrow(ns, id_, scale, color):
     marker.pose.orientation.y = 0.0
     marker.pose.orientation.z = 0.0
     marker.pose.orientation.w = 1.0
-    return marker
-
-
-def EgoCarViz():
-    marker = Marker()
-    marker.header.frame_id = 'ego_car'
-    marker.ns = 'ego_car'
-    marker.id = 0
-    marker.type = Marker.MESH_RESOURCE
-    marker.mesh_resource = 'file://{}/car.dae'.format(dir_path)
-    marker.action = Marker.ADD
-    marker.lifetime = rospy.Duration(0)
-    marker.scale.x = 2.0
-    marker.scale.y = 2.0
-    marker.scale.z = 2.0
-    marker.color.r = 241/255
-    marker.color.g = 76/255
-    marker.color.b = 152/255
-    marker.color.a = 1.0
-    marker.pose.position.x = 0
-    marker.pose.position.y = 0
-    marker.pose.position.z = 0.0
-    quaternion = tf.transformations.quaternion_from_euler(
-        0, 0, math.radians(90))
-    marker.pose.orientation.x = quaternion[0]
-    marker.pose.orientation.y = quaternion[1]
-    marker.pose.orientation.z = quaternion[2]
-    marker.pose.orientation.w = quaternion[3]
-    return marker
-
-def TargetCarViz(x,y):
-    marker = Marker()
-    marker.header.frame_id = 'world'
-    marker.ns = 'target_car'
-    marker.id = 0
-    marker.type = Marker.MESH_RESOURCE
-    marker.mesh_resource = 'file://{}/car.dae'.format(dir_path)
-    marker.action = Marker.ADD
-    marker.lifetime = rospy.Duration(0)
-    marker.scale.x = 2.0
-    marker.scale.y = 2.0
-    marker.scale.z = 2.0
-    marker.color.r = 94/255
-    marker.color.g = 204/255
-    marker.color.b = 243/255
-    marker.color.a = 1.0
-    marker.pose.position.x = x
-    marker.pose.position.y = y
-    marker.pose.position.z = 0.0
-    quaternion = tf.transformations.quaternion_from_euler(
-        0, 0, math.radians(-140))
-    marker.pose.orientation.x = quaternion[0]
-    marker.pose.orientation.y = quaternion[1]
-    marker.pose.orientation.z = quaternion[2]
-    marker.pose.orientation.w = quaternion[3]
     return marker
