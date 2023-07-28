@@ -23,7 +23,7 @@ class HLVSimulator:
         self.pitch = 0.0
 
         self.ego_car = CarViz('ego_car', 'ego_car_info', [0, 0, 0], [241, 76, 152, 1])
-        self.ego_car_info = CarInfoViz('ego_car', 'ego_car', '')
+        self.ego_car_info = CarInfoViz('ego_car', 'ego_car', '',[0,0,0])
         self.br = tf.TransformBroadcaster()
 
         self.mode = 0
@@ -35,7 +35,7 @@ class HLVSimulator:
         self.pub_ego_car = rospy.Publisher('/car/ego_car', Marker, queue_size=1)
         self.pub_ego_car_info = rospy.Publisher('/car/ego_car_info', Marker, queue_size=1)
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
-        rospy.Subscriber('/selfdrive/actuator', Vector3, self.actuator_cb)
+        rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/mode', Int8, self.mode_cb)
         rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.init_pose_cb)
 

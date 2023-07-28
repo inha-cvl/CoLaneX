@@ -7,7 +7,7 @@ from visualization_msgs.msg import Marker
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-def CarInfoViz(frame_id, name_space, info):
+def CarInfoViz(frame_id, name_space, info, position):
     marker = Marker()
     marker.header.frame_id = frame_id
     marker.ns = name_space
@@ -18,8 +18,8 @@ def CarInfoViz(frame_id, name_space, info):
     marker.color.g = 1
     marker.color.b = 1
     marker.color.a = 1.0
-    marker.pose.position.x = 0
-    marker.pose.position.y = 0
+    marker.pose.position.x = position[0]
+    marker.pose.position.y = position[1]
     marker.pose.position.z = 3.0
     marker.text = info
     return marker

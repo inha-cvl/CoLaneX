@@ -19,11 +19,12 @@ class TLVSimulator:
     def __init__(self):
         self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
         
-        self.ego = Vehicle(-130.220, 416.326, math.radians(142), 0.0, 2.367)
+        self.ego = Vehicle(-124.023, 420.685, 2.317, 0.0, 2.367)
         self.roll = 0.0
         self.pitch = 0.0
 
-        self.target_car = CarViz('world', 'target_car', [-130.220,416.326,0], [94,204, 243, 1])
+        self.target_car = CarViz('world', 'target_car', [-124.023,420.685,0], [94,204, 243, 1])
+        self.target_car_info = CarInfoViz('world', 'target_car', '', [-124.023,420.685,0] )
         self.br = tf.TransformBroadcaster()
 
 
@@ -34,8 +35,9 @@ class TLVSimulator:
 
 
         self.pub_target_car = rospy.Publisher('/car/target_car', Marker, queue_size=1)
+        self.pub_target_car_info = rospy.Publisher('/car/target_car_info', Marker, queue_size=1)
         self.pub_pose = rospy.Publisher('/car/tlv_pose', Pose, queue_size=1)
-        rospy.Subscriber('/selfdrive/actuator', Vector3, self.actuator_cb)
+        rospy.Subscriber('/selfdrive/tlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/mode', Int8, self.mode_cb)
         rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.init_pose_cb)
 
@@ -68,17 +70,20 @@ class TLVSimulator:
             else:
                 x, y, yaw, v = self.ego.x, self.ego.y, self.ego.yaw, self.ego.v
             lat, lon, alt = pymap3d.enu2geodetic(x, y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-            v=10.0
             
             pose = Pose()
             pose.position.x = lat
             pose.position.y = lon
-            self.yaw = -(math.degrees(yaw)+270)
+            self.yaw = math.degrees(yaw)
             pose.position.z = self.yaw
             pose.orientation.x = v
             self.pub_pose.publish(pose)
 
+            info = f"{(v*3.6):.2f}km/h {self.yaw:.2f}deg"
+            self.target_car_info.text = info
+
             self.pub_target_car.publish(self.target_car)
+            self.pub_target_car_info.publish(self.target_car_info)
 
             rate.sleep()
 
