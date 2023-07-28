@@ -10,12 +10,19 @@ from vehicle_state import VehicleState
 from localization.point import Point
 
 class RosManager:
-    def __init__(self, self_drive):
+    def __init__(self, self_drive, vehicle_type):
         config = Config()
-        rospy.init_node("self_drive", anonymous=True)
+        self.vehicle_type = vehicle_type
+        rospy.init_node(f"{self.vehicle_type}_self_drive", anonymous=True)
+
         self.sampling_rate = config["common"]["sampling_rate"]
         self.ros_rate = rospy.Rate(self.sampling_rate)
         self.base_lla = config['map']['base_lla']
+        if self.vehicle_type == 'hlv':
+            self.color = [1, 171, 210]
+        else:
+            self.color = [168, 232, 255]
+
 
         self.self_drive = self_drive
         self.vehicle_state = VehicleState()
@@ -32,11 +39,11 @@ class RosManager:
             self.ros_rate.sleep()
 
     def set_protocol(self):
-        rospy.Subscriber('/car/hlv_pose', Pose, self.pose_cb)
-        rospy.Subscriber('/planning/hlv_path',Marker, self.path_cb)
+        rospy.Subscriber(f'/car/{self.vehicle_type}_pose', Pose, self.pose_cb)
+        rospy.Subscriber(f'/planning/{self.vehicle_type}_path',Marker, self.path_cb)
 
-        self.actuator_pub = rospy.Publisher('/selfdrive/actuator', Vector3, queue_size=1)
-        self.local_path_pub = rospy.Publisher('/selfdrive/local_path', Marker, queue_size=1)
+        self.actuator_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_actuator', Vector3, queue_size=1)
+        self.local_path_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_local_path', Marker, queue_size=1)
 
 
     def conver_to_enu(self, lat, lng):
@@ -61,13 +68,13 @@ class RosManager:
         marker.type = Marker.LINE_STRIP
         marker.action = Marker.ADD
         marker.header.frame_id = 'world'
-        marker.ns = 'hlv_local_path'
+        marker.ns = f'{self.vehicle_type}_local_path'
         marker.id = 0
         marker.lifetime = rospy.Duration(0)
         marker.scale.x = 0.7
-        marker.color.r = 1
-        marker.color.g = 171/255
-        marker.color.b = 210/255
+        marker.color.r = self.color[0]/255
+        marker.color.g = self.color[1]/255
+        marker.color.b = self.color[2]/255
         marker.color.a = 1
         marker.pose.orientation.x = 0.0
         marker.pose.orientation.y = 0.0
