@@ -11,6 +11,7 @@ Panels:
         - /Marker6
         - /Marker6/Status1
         - /Marker7
+        - /Marker8
       Splitter Ratio: 0.501118540763855
     Tree Height: 719
   - Class: rviz/Selection
@@ -572,7 +573,7 @@ Visualization Manager:
       Marker Topic: /planning/tlv_path
       Name: Marker
       Namespaces:
-        {}
+        final_path: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -580,7 +581,7 @@ Visualization Manager:
       Marker Topic: /car/target_car
       Name: Marker
       Namespaces:
-        {}
+        target_car: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -601,7 +602,15 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /selfdrive/local_path
+      Marker Topic: /car/ego_car_info
+      Name: Marker
+      Namespaces:
+        ego_car: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /selfdrive/hlv_local_path
       Name: Marker
       Namespaces:
         hlv_local_path: true
@@ -609,10 +618,18 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /car/ego_car_info
+      Marker Topic: /selfdrive/tlv_local_path
       Name: Marker
       Namespaces:
-        ego_car: true
+        tlv_local_path: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /car/target_car_info
+      Name: Marker
+      Namespaces:
+        target_car: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -643,7 +660,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 75.91869354248047
+      Distance: 96.10174560546875
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -659,9 +676,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.35479721426963806
+      Pitch: 0.4297972321510315
       Target Frame: ego_car
-      Yaw: 3.1603941917419434
+      Yaw: 3.0153932571411133
     Saved: ~
 Window Geometry:
   Displays:

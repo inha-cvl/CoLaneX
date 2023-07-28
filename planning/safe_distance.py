@@ -41,6 +41,8 @@ class SafeDistance:
         self.hlv_v = None
 
         self.path_make_cnt = 0
+        self.final_path = None
+
         self.calc_safe_cnt = 0
         self.ego_v = 12 #m/s -> callback velocity
         self.x_p = 1.5
@@ -50,8 +52,10 @@ class SafeDistance:
 
         #TODO: below INS, PATH, Velocity have to get from V2X  
         rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
-        rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
-        rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
+        # rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
+        # rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
+        rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
+        rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
         ####################
 
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
@@ -61,8 +65,8 @@ class SafeDistance:
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
         self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
         
-        lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
-        self.pub_lanelet_map.publish(lanelet_map_viz)
+        # lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
+        # self.pub_lanelet_map.publish(lanelet_map_viz)
 
     def tlv_pose_cb(self, msg):
         self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
@@ -72,80 +76,53 @@ class SafeDistance:
         self.hlv_v = msg.orientation.x
 
     def hlv_path_cb(self, msg):
-        self.hlv_path = [(pt.x, pt.y) for pt in msg.points]
-        latlng_waypoints = []
-        for wp in msg.points:
-            lat, lng, _ = pm.enu2geodetic(wp.x, wp.y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-            latlng_waypoints.append((lng, lat))
-
-        feature = {
-            "type":"Feature",
-            "geometry":{
-                "type":"MultiLineString",
-                "coordinates":[latlng_waypoints]
-            },
-            "properties":{}
-        }
-        hlv_geojson = json.dumps(feature)
-        self.pub_hlv_geojson(hlv_geojson)
-        
+        self.hlv_path = [(
+            pt.x, pt.y) for pt in msg.points]
+        compress_path = do_compressing(self.hlv_path, 10)
+        hlv_geojson = to_geojson(compress_path, self.base_lla)
+        #self.pub_hlv_geojson(hlv_geojson)
+    
+    def need_update(self):
+        if self.final_path == None:
+            return 0
+        threshold = (self.ego_v * MPS_TO_KPH)*self.M_TO_IDX
+        idx = find_nearest_idx(self.final_path, self.ego_pos)
+        if len(self.final_path) - idx <= threshold:
+            return 1
+        else:
+            return -1
 
     def get_node_path(self):
         if self.ego_pos == None:
             return
-        st = time.time()
-        ego_lanelets = lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
+        
+        final_path = []
+        compress_path = []
+        need_update = self.need_update()
+        if need_update != -1:
+            r0 = []
+            if need_update == 0:
+                start_pose = self.ego_pos
+            elif need_update == 1:
+                start_pose = self.final_path[-1]
+                idx = find_nearest_idx(self.final_path, self.ego_pos)
+                r0 = self.final_path[idx:]
 
-        ego_node = node_matching(self.lmap.lanelets, ego_lanelets[0], ego_lanelets[1])
-        ego_waypoints = self.lmap.lanelets[ego_lanelets[0]]['waypoints']
-        ego_lanelets_len = len(ego_waypoints)
-        x1 = self.ego_v * MPS_TO_KPH + self.ego_v * self.x_p + self.x_c #m
-        x1_idx = ego_lanelets[1]+int(x1 * self.M_TO_IDX)
-        
-        x1_ego_not_same = False
-        if x1_idx >= ego_lanelets_len:
-            x1_ego_not_same = True
-            x1_s_node = self.lmap.lanelets[ego_lanelets[0]]['successor'][0]
-            x1_idx = (x1_idx-ego_lanelets_len)+1
-        else:
-            x1_s_node = ego_lanelets[0]
-        n1 = node_matching(self.lmap.lanelets, x1_s_node, x1_idx)
-        n1_waypoints = self.lmap.lanelets[x1_s_node]['waypoints']
-        if x1_ego_not_same:
-            r1 = ego_waypoints[ego_lanelets[1]:]+n1_waypoints[:x1_idx+1]
-        else:
-            r1 = n1_waypoints[ego_lanelets[1]:x1_idx+1]
-        
-        compress_path = [r1[0], r1[-1]]
-        self.tlv_path = ref_interpolate(r1, self.precision)[0]
-        tlv_path_viz = TLVPathViz(self.tlv_path)
-        self.pub_tlv_path.publish(tlv_path_viz)
-        
-        mt = format((time.time()-st)*1000, ".3f")
-        print(f"Ego Node Matching : {mt}ms , Nodes [{ego_node}]-[{n1}]]")
-        if self.path_make_cnt > 20:
-            self.state = 'Path'
-            
-            latlng_waypoints = []
-            for wp in compress_path:
-                lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-                latlng_waypoints.append((lng, lat))
+            ego_lanelets = lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
+            x1 = self.ego_v * MPS_TO_KPH + self.ego_v * self.x_p + self.x_c #m
+            r1, _, _ = get_straight_path(self.lmap.lanelets, ego_lanelets[0], ego_lanelets[1], x1)
 
-            feature = {
-                "type":"Feature",
-                "geometry":{
-                    "type":"MultiLineString",
-                    "coordinates":[latlng_waypoints]
-                },
-                "properties":{}
-            }
-            self.tlv_geojson = json.dumps(feature)
-            with open('./path/tlv.json', 'w') as file:
-                json.dump(feature, file)
-            
-        else:
-            self.path_make_cnt += 1
-    
+            final_path = r0+r1
+            compress_path = do_compressing(final_path, 10)
+            self.final_path = final_path
+            self.tlv_path = ref_interpolate(final_path, self.precision)[0]
+            self.tlv_geojson = to_geojson(compress_path, self.base_lla)
+                
+                
+            tlv_path_viz = TLVPathViz(self.tlv_path)
+            self.pub_tlv_path.publish(tlv_path_viz)
+            self.pub_tlv_geojson.publish(self.tlv_geojson)
+        
     def is_insied_circle(self, pt1, pt2, radius):
         distance = math.sqrt((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)
         if distance <=  radius:
@@ -154,10 +131,9 @@ class SafeDistance:
             return False
 
     def calc_safe_distance(self):
-        if self.hlv_path == None and self.hlv_v == None and self.tlv_path == None:
+        if self.hlv_path == None or self.hlv_v == None or self.tlv_path == None:
             return
         
-        st = time.time()
         find = False
         inter_pt = None
         inter_idx = 0
@@ -172,38 +148,25 @@ class SafeDistance:
                     hlv_idx = hi
                     find = True
                     break
-        self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
+        if find:       
+            self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
         
-        d1 = inter_idx*self.IDX_TO_M
-        d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v)
-        d2_idx = int(d2*self.M_TO_IDX)
-        dg = d1-d2
-        ds = self.ego_v*3.6-self.d_c #m
-        safety = 'Safe' if dg > ds else 'Dangerous'
+            d1 = inter_idx*self.IDX_TO_M
+            d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v)
+            d2_idx = int(d2*self.M_TO_IDX)
+            dg = d1-d2
+            ds = self.ego_v*3.6-self.d_c #m
+            safety = 'Safe' if dg > ds else 'Dangerous'
 
-        self.pub_move.publish(Sphere('move', 0, self.tlv_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
-
-        mt = format((time.time()-st)*1000, ".3f")
-        print(f"Calc Safety : {mt}ms, {safety}")
-
-        if self.calc_safe_cnt > 20:
-            self.state = 'Decision'
-        else:
-            self.calc_safe_cnt += 1
-
+            self.pub_move.publish(Sphere('move', 0, self.tlv_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
+        
     def run(self):
         self.state = 'RUN'
         rate = rospy.Rate(10)
         
         while not rospy.is_shutdown():
-            if self.state != 'Path' and self.state != 'Decision':
                 self.get_node_path()
-
-            if self.state == 'Path' and self.state != 'Decision':
-                self.pub_tlv_geojson.publish(self.tlv_geojson)
-                #self.calc_safe_distance()
-            
-            rate.sleep()
+                self.calc_safe_distance()
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)

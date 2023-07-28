@@ -63,21 +63,10 @@ class DynamicPath:
         self.ego_v = msg.orientation.x
 
     def tlv_path_cb(self,msg):
-        latlng_waypoints = []
-        for wp in msg.points:
-            lat, lng, _ = pm.enu2geodetic(wp.x, wp.y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-            latlng_waypoints.append((lng, lat))
-
-        feature = {
-            "type":"Feature",
-            "geometry":{
-                "type":"MultiLineString",
-                "coordinates":[latlng_waypoints]
-            },
-            "properties":{}
-        }
-        tlv_geojson = json.dumps(feature)
-        self.pub_tlv_geojson(tlv_geojson)
+        tlv_path = [(pt.x, pt.y) for pt in msg.points]
+        compress_path = do_compressing(tlv_path, 10)
+        tlv_geojson = to_geojson(compress_path, self.base_lla)
+        self.pub_tlv_geojson.publish(tlv_geojson)
 
     def hlv_signal_cb(self, msg):
         self.signal = msg.data
@@ -94,31 +83,10 @@ class DynamicPath:
         else:
             return -1
 
-    def get_straight_path(self, s_n, s_i, path_len):
-        wps = self.lmap.lanelets[s_n]['waypoints']
-        lls_len = len(wps)
 
-        u_n = s_n
-        u_i = s_i+int(path_len*self.M_TO_IDX)
-        e_i = u_i
-
-        while u_i >= lls_len:
-            _u_n = get_possible_successor(self.lmap.lanelets, u_n, prior='Left')
-            if _u_n == None:
-                e_i = len(wps-1)
-                break
-            u_n = _u_n
-            u_i -= lls_len
-            e_i += u_i
-            u_wp = self.lmap.lanelets[u_n]['waypoints']
-            lls_len = len(u_wp)
-            wps += u_wp
-        r = wps[s_i:e_i]
-
-        return r, u_n, u_i
     
     def get_change_path(self, s_n, s_i,  path_len, to=1):
-        wps, u_n, u_i = self.get_straight_path(s_n, s_i, path_len)
+        wps, u_n, u_i = get_straight_path(self.lmap.lanelets, s_n, s_i, path_len)
         c_pt = wps[-1]
         l_id, r_id = get_neighbor(self.lmap.lanelets, u_n)
         n_id = l_id if to==1 else r_id
@@ -145,21 +113,20 @@ class DynamicPath:
         ego_lanelets = lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
         x1 = self.ego_v * MPS_TO_KPH + self.ego_v * self.x_p if self.ego_v != 0 else 100
         #x1 += self.ego_v * MPS_TO_KPH if self.signal == 0 else 0
-        r1, n1, i1 = self.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
+        r1, n1, i1 = get_straight_path(self.lmap.lanelets, ego_lanelets[0], ego_lanelets[1], x1)
 
         if self.signal == 0 or self.signal == 3:
             final_path = r0+r1
-            compress_path = [final_path[0], final_path[-1]]
 
         else:
             x2 = self.x2_i + self.ego_v * self.x_p
             _, n2, i2 = self.get_change_path(n1, i1, x2, self.signal)
             x3 = self.x3_c + self.ego_v * self.x_p
-            r3, _, _ = self.get_straight_path(n2, i2, x3)
+            r3, _, _ = get_straight_path(self.lmap.lanelets, n2, i2, x3)
             r1 += r0
             final_path = r1+r3
-            compress_path = [r1[0], r1[-1], r3[0], r3[-1]]
 
+        compress_path = do_compressing(final_path, 10)
         return final_path, compress_path
 
     def get_node_path(self):
@@ -173,25 +140,14 @@ class DynamicPath:
             final_path, compress_path = self.make_path(need_update)
             self.final_path = final_path
             self.hlv_path = ref_interpolate(final_path, self.precision)[0]
-            latlng_waypoints = []
-            for wp in compress_path:
-                lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
-                latlng_waypoints.append((lng, lat))
+            self.hlv_geojson = to_geojson(compress_path,self.base_lla)
+            
 
-            feature = {
-                "type":"Feature",
-                "geometry":{
-                    "type":"MultiLineString",
-                    "coordinates":[latlng_waypoints]
-                },
-                "properties":{}
-            }
-            self.hlv_geojson = json.dumps(feature)
+            hlv_path_viz = HLVPathViz(self.hlv_path)
+            self.pub_hlv_path.publish(hlv_path_viz)
+            self.pub_hlv_geojson.publish(self.hlv_geojson)
 
-        hlv_path_viz = HLVPathViz(self.hlv_path)
-        self.pub_hlv_path.publish(hlv_path_viz)
-        self.pub_hlv_geojson.publish(self.hlv_geojson)
-
+        
 
     def run(self):
         self.state = 'RUN'

@@ -1,7 +1,11 @@
 
 import numpy as np
 import pymap3d as pm
+import json
 from libs.quadratic_spline_interpolate import QuadraticSplineInterpolate
+
+M_TO_IDX = 1/0.5
+IDX_TO_M = 0.5
 
 def euc_distance(pt1, pt2):
     return np.sqrt((pt2[0]-pt1[0])**2+(pt2[1]-pt1[1])**2)
@@ -9,6 +13,23 @@ def euc_distance(pt1, pt2):
 def convert2enu(base, lat, lng):
     x, y, _ = pm.geodetic2enu(lat, lng, 20, base[0], base[1], base[2])
     return [x, y]
+
+def to_geojson(path, base):
+
+    latlng_waypoints = []
+    for wp in path:
+        lat, lng, _ = pm.enu2geodetic(wp[0], wp[1], 0, base[0], base[1], base[2])
+        latlng_waypoints.append((lng, lat))
+
+    feature = {
+        "type":"Feature",
+        "geometry":{
+            "type":"MultiLineString",
+            "coordinates":[latlng_waypoints]
+        },
+        "properties":{}
+    }   
+    return json.dumps(feature)
 
 def lanelet_matching(tile, tile_size, t_pt):
     row = int(t_pt[0] // tile_size)
@@ -115,6 +136,28 @@ def get_possible_successor(lanelet, node, prior='Left'):
 
     return successor
 
+def get_straight_path(lanelet, s_n, s_i, path_len):
+    wps = lanelet[s_n]['waypoints']
+    lls_len = len(wps)
+
+    u_n = s_n
+    u_i = s_i+int(path_len*M_TO_IDX)
+    e_i = u_i
+
+    while u_i >= lls_len:
+        _u_n = get_possible_successor(lanelet, u_n, prior='Left')
+        if _u_n == None:
+            e_i = len(wps-1)
+            break
+        u_n = _u_n
+        u_i -= lls_len
+        e_i += u_i
+        u_wp = lanelet[u_n]['waypoints']
+        lls_len = len(u_wp)
+        wps += u_wp
+    r = wps[s_i:e_i]
+
+    return r, u_n, u_i
 
 def ref_interpolate(points, precision):
     points = filter_same_points(points)
@@ -136,6 +179,21 @@ def node_matching(lanelet, l_id, l_idx):
                 break
     
     return node_id
+
+def do_compressing(points, n):
+    if len(points) < 2:
+        return 
+
+    x1, y1 = points[0]
+    x2, y2 = points[-1]
+
+    new_points = [(x1, y1)]
+    for i in range(n, len(points), n):
+        x, y = points[i]
+        new_points.append((x, y))
+
+    new_points.append((x2, y2))
+    return new_points
 
 def find_nearest_idx(pts, pt):
     min_dist = float('inf')
