@@ -76,7 +76,7 @@ const TLV = () => {
   });
 
   hlvPoseTopic.subscribe(function (message) {
-    setHLVPose({ latitude: message.position.x, longitude: message.position.y, heading: message.position.z, speed:message.orientation.x });
+    setHLVPose({ latitude: message.position.x, longitude: message.position.y, heading: message.position.z+180, speed:message.orientation.x });
   });
 
   hlvPathTopic.subscribe(function (message) {
@@ -85,7 +85,7 @@ const TLV = () => {
   });
 
   tlvPoseTopic.subscribe(function (message) {
-    setTLVPose({ latitude: message.position.x, longitude: message.position.y, heading: message.position.z, speed:message.orientation.x });
+    setTLVPose({ latitude: message.position.x, longitude: message.position.y, heading: message.position.z+180, speed:message.orientation.x });
   });
 
   tlvPathTopic.subscribe(function (message) {

@@ -62,35 +62,41 @@ const DeckMap = (props) => {
   const [viewport, setViewport] = useState({
     latitude: 37.384553,
     longitude: 126.657895,
-    pitch: 45,
+    pitch: 60,
     bearing: -65,
-    zoom: 20,
+    zoom: 25,
   });
 
   useEffect(() => {
     if (props.HLVPose) {
       setHLVPosition({ latitude: props.HLVPose.latitude, longitude: props.HLVPose.longitude });
-
-      setTLVPosition({ latitude: props.TLVPose.latitude, longitude: props.TLVPose.longitude });
       if (props.main == 'hlv') {
         setViewport({ latitude: props.HLVPose.latitude, longitude: props.HLVPose.longitude, bearing: props.HLVPose.heading });
       }
-      else if (props.main == 'tlv') {
+    }
+  }, [props.HLVPose])
+
+  useEffect(() => {
+    if(props.TLVPose){
+      setTLVPosition({ latitude: props.TLVPose.latitude, longitude: props.TLVPose.longitude });
+      if (props.main == 'tlv') {
         setViewport({ latitude: props.TLVPose.latitude, longitude: props.TLVPose.longitude, bearing: props.TLVPose.heading });
       }
     }
-   
-  }, [props.HLVPose, props.TLVPose])
+  }, [props.TLVPose])
 
   useEffect(() => {
     if (props.HLVPath) {
       setHLVPath(props.HLVPath);
     }
-    else if (props.TLVPath) {
+  }, [props.HLVPath]);
+
+  useEffect(() => {
+    if (props.TLVPath) {
       setTLVPath(props.TLVPath);
     }
 
-  }, [props.HLVPath, props.TLVPath]);
+  }, [props.TLVPath]);
 
   return (
     <Map
