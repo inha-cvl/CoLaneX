@@ -224,6 +224,7 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.Long = longitude;
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
+		
 		for (int i = 0; i < path_len; ++i)
 		{
 			Path *bsmPath = (Path *)calloc(1, sizeof(Path));
@@ -548,6 +549,7 @@ void tlvPoseCallback(const geometry_msgs::Pose::ConstPtr &msg){
 	int _heading = (msg->position.z <= 0 && msg->position.z >= -180) ? msg->position.z + 360 : msg->position.z;
  	long _yaw = int(_heading / 0.0125);
 	long _vel = msg->orientation.x / 0.02;
+	//print(_lat, _lng, _yaw, _vel);
 	pubTLVPose(_lat, _lng, _yaw, _vel);
 }
 
