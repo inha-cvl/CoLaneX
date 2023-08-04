@@ -1,6 +1,8 @@
 import paramiko
 import re
 import time
+import rospy
+from geometry_msgs.msg import Pose
 
 def get_latitude_longitude():
     # SSH 접속 정보 설정
@@ -11,6 +13,11 @@ def get_latitude_longitude():
     # SSH 클라이언트 생성
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    rospy.init_node('OBU', anonymous=False)
+    pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
+    pose = Pose()
+
 
     try:
         # SSH 접속
@@ -25,12 +32,20 @@ def get_latitude_longitude():
                 latitude_match = re.search(r'"lat":(-?\d+\.\d+)', data)
                 longitude_match = re.search(r'"lon":(-?\d+\.\d+)', data)
                 speed_match = re.search(r'"speed":([\d.]+)', data)
+                heading_match = re.search(r'"track":([\d.]+)', data)
 
-                if latitude_match and longitude_match and speed_match:
+                if latitude_match and longitude_match and speed_match and heading_match:
                     latitude = float(latitude_match.group(1))
                     longitude = float(longitude_match.group(1))
                     speed = float(speed_match.group(1))
-                    print(latitude, longitude, speed)
+                    heading = float(heading_match.group(1))
+
+                    pose.position.x = latitude
+                    pose.position.y = longitude
+                    pose.position.z = heading 
+                    pose.orientation.x = speed
+                    pub_pose.publish(pose)
+                    print(latitude, longitude, speed, heading)
                 else:
                     print("Unable to extract latitude, longitude, and speed from the data.")
 

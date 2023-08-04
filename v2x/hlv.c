@@ -79,7 +79,7 @@ std::vector<std::pair<double, double>> path;
 int path_len;
 bool show_result = true;
 
-int whileHz = 500*1000; //Hz
+int whileHz = 100*1000; //Hz
 
 int connect_v2x_socket(void)
 {
@@ -225,15 +225,15 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
 		
-		for (int i = 0; i < path_len; ++i)
-		{
-			Path *bsmPath = (Path *)calloc(1, sizeof(Path));
-			bsmPath->x = path[i].first;
-			bsmPath->y = path[i].second;
-			ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
-		}
+		// for (int i = 0; i < path_len; ++i)
+		// {
+		// 	Path *bsmPath = (Path *)calloc(1, sizeof(Path));
+		// 	bsmPath->x = path[i].first;
+		// 	bsmPath->y = path[i].second;
+		// 	ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
+		// }
 
-		int byteLen = sizeof(MessageFrame_t) + sizeof(BasicSafetyMessage_t)+sizeof(ptrBSM->path);
+		int byteLen = sizeof(MessageFrame_t) + sizeof(BasicSafetyMessage_t);//+sizeof(ptrBSM->path);
 		// Prepare the Ext_WSReq_t structure
 		int db_v2x_tmp_size = sizeof(DB_V2X_T)+byteLen;//SAMPLE_V2X_MSG_LEN;
 		int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
@@ -301,7 +301,7 @@ void *v2x_tx_cmd_process(void *arg)
 		}
 		else
 		{
-			printf(" \n\ntx send success(%ld bytes)\n", n);
+			//printf(" \n\ntx send success(%ld bytes)\n", n);
 			time_t current_time = time(NULL);
 			double send_time_s = (difftime(current_time, start_time));
 			double mbps = ( n / send_time_s )/1000000.0;
@@ -320,22 +320,23 @@ void *v2x_tx_cmd_process(void *arg)
 				MessageFrame_t *test_msg = NULL;
 				test_msg = (MessageFrame_t *)malloc(ntohl(test->ulPayloadLength));
 				memcpy(test_msg, &test->data, ntohl(test->ulPayloadLength));
+				printf("Tx = %ld\n", test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt);
 
-				printf("\nV2X Tx Test Msg>>\n"
-					"  ID         :  0x%02x\n"
-					"  CNT        :  %ld\n"
-					"  latitude   :  %ld\n"
-					"  longitude  :  %ld\n"
-					"  heading    :  %ld\n"
-					"  velocity   :  %ld\n"
-					"  path len   :  %d\n",
-					test_msg->value.choice.BasicSafetyMessage.coreData.id.buf[0],
-					test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
-					test_msg->value.choice.BasicSafetyMessage.coreData.lat,
-					test_msg->value.choice.BasicSafetyMessage.coreData.Long,
-					test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
-					test_msg->value.choice.BasicSafetyMessage.coreData.speed,
-					test_msg->value.choice.BasicSafetyMessage.path.count);
+				// printf("\nV2X Tx Test Msg>>\n"
+				// 	"  ID         :  0x%02x\n"
+				// 	"  CNT        :  %ld\n"
+				// 	"  latitude   :  %ld\n"
+				// 	"  longitude  :  %ld\n"
+				// 	"  heading    :  %ld\n"
+				// 	"  velocity   :  %ld\n"
+				// 	"  path len   :  %d\n",
+				// 	test_msg->value.choice.BasicSafetyMessage.coreData.id.buf[0],
+				// 	test_msg->value.choice.BasicSafetyMessage.coreData.msgCnt,
+				// 	test_msg->value.choice.BasicSafetyMessage.coreData.lat,
+				// 	test_msg->value.choice.BasicSafetyMessage.coreData.Long,
+				// 	test_msg->value.choice.BasicSafetyMessage.coreData.heading, 
+				// 	test_msg->value.choice.BasicSafetyMessage.coreData.speed,
+				// 	test_msg->value.choice.BasicSafetyMessage.path.count);
 
 				// if(test_msg->value.choice.BasicSafetyMessage.path.count> 0){
 				// 	for (int i = 0; i < test_msg->value.choice.BasicSafetyMessage.path.count; ++i){
@@ -344,8 +345,8 @@ void *v2x_tx_cmd_process(void *arg)
 				// }
 			}
 		}
-		free(v2x_tx_pdu_p);
-		free(db_v2x_tmp_p);
+		// free(v2x_tx_pdu_p);
+		// free(db_v2x_tmp_p);
 		usleep(whileHz);
 	}
 
@@ -417,7 +418,7 @@ void *v2x_rx_cmd_process(void *arg)
 			}
 			else
 			{
-				printf("wait. . . \n");
+				// printf("wait. . . \n");
 				usleep(10000);
 			}
 		}
@@ -428,7 +429,7 @@ void *v2x_rx_cmd_process(void *arg)
 		}
 		else
 		{
-			printf("\n\nrecv() success : len[%u]\n", n);
+			// printf("\n\nrecv() success : len[%u]\n", n);
 			time_t current_time = time(NULL);
 			double delay_time_ms = round((difftime(current_time, start_time))*1000);
 			hlv_system.data[3] = delay_time_ms;
@@ -436,33 +437,33 @@ void *v2x_rx_cmd_process(void *arg)
 			
 			v2x_rx_pdu_p = (Ext_V2X_RxPDU_t *)malloc(n);
 			memcpy(v2x_rx_pdu_p, buf, n);
-			printf("\nV2X RX PDU>>\n"
-				   "  magic_num        : 0x%04X\n"
-				   "  ver              : 0x%04X\n"
-				   "  e_payload_type   : 0x%04X\n"
-				   "  psid             : %u\n"
-				   "  v2x length       : %d\n",
-				   ntohs(v2x_rx_pdu_p->magic_num),
-				   ntohs(v2x_rx_pdu_p->ver),
-				   v2x_rx_pdu_p->e_payload_type,
-				   ntohl(v2x_rx_pdu_p->psid),
-				   ntohs(v2x_rx_pdu_p->v2x_msg.length));
+			// printf("\nV2X RX PDU>>\n"
+			// 	   "  magic_num        : 0x%04X\n"
+			// 	   "  ver              : 0x%04X\n"
+			// 	   "  e_payload_type   : 0x%04X\n"
+			// 	   "  psid             : %u\n"
+			// 	   "  v2x length       : %d\n",
+			// 	   ntohs(v2x_rx_pdu_p->magic_num),
+			// 	   ntohs(v2x_rx_pdu_p->ver),
+			// 	   v2x_rx_pdu_p->e_payload_type,
+			// 	   ntohl(v2x_rx_pdu_p->psid),
+			// 	   ntohs(v2x_rx_pdu_p->v2x_msg.length));
 
 			int v2x_msg_length = ntohs(v2x_rx_pdu_p->v2x_msg.length);
 			db_v2x_tmp_p = (DB_V2X_T *)malloc(v2x_msg_length);
 			memcpy(db_v2x_tmp_p, v2x_rx_pdu_p->v2x_msg.data, v2x_msg_length);
 
-			printf("\nV2X RX Data>>\n"
-				   "  deivce ID    :  %u\n"
-				   "  Payload Type :  0x%04X\n"
-				   "  Payload Length :  %u\n"
-				   "  Region ID    :  0x%04x\n"
-				   "  data Size    :  %ld\n",
-				   ntohl(db_v2x_tmp_p->unDeviceId),
-				   db_v2x_tmp_p->ePayloadType,
-				   ntohl(db_v2x_tmp_p->ulPayloadLength),
-				   ntohs(db_v2x_tmp_p->eRegionId),
-				   sizeof(db_v2x_tmp_p->data));
+			// printf("\nV2X RX Data>>\n"
+			// 	   "  deivce ID    :  %u\n"
+			// 	   "  Payload Type :  0x%04X\n"
+			// 	   "  Payload Length :  %u\n"
+			// 	   "  Region ID    :  0x%04x\n"
+			// 	   "  data Size    :  %ld\n",
+			// 	   ntohl(db_v2x_tmp_p->unDeviceId),
+			// 	   db_v2x_tmp_p->ePayloadType,
+			// 	   ntohl(db_v2x_tmp_p->ulPayloadLength),
+			// 	   ntohs(db_v2x_tmp_p->eRegionId),
+			// 	   sizeof(db_v2x_tmp_p->data));
 
 			int payload_length = sizeof(db_v2x_tmp_p->data);
 			msgFrame = (MessageFrame_t *)malloc(payload_length);
@@ -470,27 +471,29 @@ void *v2x_rx_cmd_process(void *arg)
 
 			BasicSafetyMessage_t *ptrBSM = &msgFrame->value.choice.BasicSafetyMessage;
 
-			printf("\nV2X RX Test Msg>>\n"
-				   "  CNT        :  %ld\n"
-				   "  latitude   :  %ld\n"
-				   "  longitude  :  %ld\n"
-				   "  heading    :  %ld\n"
-				   "  velocity   :  %ld\n",
-				   ptrBSM->coreData.msgCnt,
-				   ptrBSM->coreData.lat,
-				   ptrBSM->coreData.Long,
-				   ptrBSM->coreData.heading, 
-				   ptrBSM->coreData.speed);
+			// printf("\nV2X RX Test Msg>>\n"
+			// 	   "  CNT        :  %ld\n"
+			// 	   "  latitude   :  %ld\n"
+			// 	   "  longitude  :  %ld\n"
+			// 	   "  heading    :  %ld\n"
+			// 	   "  velocity   :  %ld\n",
+			// 	   ptrBSM->coreData.msgCnt,
+			// 	   ptrBSM->coreData.lat,
+			// 	   ptrBSM->coreData.Long,
+			// 	   ptrBSM->coreData.heading, 
+			// 	   ptrBSM->coreData.speed);
+
+			printf("                     Rx = %ld\n", ptrBSM->coreData.msgCnt);
 
 			pubTLVPose(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed);
-			if(ptrBSM->path.count > 0){
-				std::vector<std::pair<double, double>> _t_path;
-				for (int i = 0; i < ptrBSM->path.count; ++i)
-				{
-					_t_path.push_back(std::make_pair(ptrBSM->path.array[i]->x, ptrBSM->path.array[i]->y));
-				}
-				pubTLVPath(_t_path);
-			}
+			// if(ptrBSM->path.count > 0){
+			// 	std::vector<std::pair<double, double>> _t_path;
+			// 	for (int i = 0; i < ptrBSM->path.count; ++i)
+			// 	{
+			// 		_t_path.push_back(std::make_pair(ptrBSM->path.array[i]->x, ptrBSM->path.array[i]->y));
+			// 	}
+			// 	pubTLVPath(_t_path);
+			// }
 		}
 		usleep(whileHz);
 	}
