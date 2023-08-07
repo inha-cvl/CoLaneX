@@ -79,7 +79,7 @@ std::vector<std::pair<double, double>> path;
 int path_len;
 bool show_result = true;
 
-int whileHz = 100*1000; //Hz
+int whileHz = 100*1000; //10Hz
 
 int connect_v2x_socket(void)
 {
@@ -199,6 +199,61 @@ int v2x_wsr_cmd_process(void)
 	return res;
 }
 
+Ext_V2X_TxPDU_t* prepare_v2x_pdu(MessageFrame_t msg){
+	int byteLen = sizeof(MessageFrame_t) + sizeof(BasicSafetyMessage_t)+sizeof(ptrBSM->path);
+	int db_v2x_tmp_size = sizeof(DB_V2X_T)+byteLen;
+	int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
+
+	Ext_V2X_TxPDU_t *v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
+	memset(v2x_tx_pdu_p, 0, v2x_tx_pdu_size);
+
+	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
+	v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
+	v2x_tx_pdu_p->psid = htonl(psid_g);
+	v2x_tx_pdu_p->tx_power = tx_power_g;
+	v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
+	v2x_tx_pdu_p->e_priority = e_priority_g;
+
+	if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
+	{
+		v2x_tx_pdu_p->magic_num = htons(MAGIC_CV2X_TX_PDU);
+		v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id = htonl(transmitter_profile_id_g);
+		v2x_tx_pdu_p->u.config_cv2x.peer_l2id = htonl(peer_l2id_g);
+	}
+	else if (e_comm_type_g == eV2XCommType_DSRC)
+	{
+		v2x_tx_pdu_p->magic_num = htons(MAGIC_DSRC_TX_PDU);
+		v2x_tx_pdu_p->u.config_wave.freq = htons(freq_g);
+		v2x_tx_pdu_p->u.config_wave.e_data_rate = htons(e_data_rate_g);
+		v2x_tx_pdu_p->u.config_wave.e_time_slot = e_time_slot_g;
+		memcpy(v2x_tx_pdu_p->u.config_wave.peer_mac_addr, peer_mac_addr_g, MAC_EUI48_LEN);
+	}
+	
+	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
+	DB_V2X_T *db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
+	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
+
+	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
+	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
+	db_v2x_tmp_p->unDeviceId =htonl(71);
+	db_v2x_tmp_p->ulTimeStamp = 0ULL;
+	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_ADVANCED_DRIVING;
+	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
+	db_v2x_tmp_p->eRegionId = DB_V2X_REGION_ID_SEOUL;
+	db_v2x_tmp_p->ePayloadType = DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM;
+	db_v2x_tmp_p->eCommId = DB_V2X_COMM_ID_V2V;
+	db_v2x_tmp_p->usDbVer = 0;
+	db_v2x_tmp_p->usHwVer = 0;
+	db_v2x_tmp_p->usSwVer = 0;
+	db_v2x_tmp_p->data = msg;
+	db_v2x_tmp_p->ulPayloadLength = htonl(db_v2x_tmp_size);
+
+	memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
+	free(db_v2x_tmp_p);
+
+	return db_v2x_pdu_p;
+}
+
 /* function : V2X TX processing */
 void *v2x_tx_cmd_process(void *arg)
 {
@@ -216,79 +271,23 @@ void *v2x_tx_cmd_process(void *arg)
 		msg.messageId = 20;
 		msg.value.present = MessageFrame__value_PR_BasicSafetyMessage;
 		BasicSafetyMessage_t *ptrBSM = &msg.value.choice.BasicSafetyMessage;	
-		ptrBSM->coreData.id.buf = (uint8_t *)malloc(1);
-		ptrBSM->coreData.id.size = 1;
-		ptrBSM->coreData.id.buf[0] = 0x71;
 		ptrBSM->coreData.msgCnt = cnt;
 		ptrBSM->coreData.lat = latitude;
 		ptrBSM->coreData.Long = longitude;
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
 		
-		// for (int i = 0; i < path_len; ++i)
-		// {
-		// 	Path *bsmPath = (Path *)calloc(1, sizeof(Path));
-		// 	bsmPath->x = path[i].first;
-		// 	bsmPath->y = path[i].second;
-		// 	ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
-		// }
-
-		int byteLen = sizeof(MessageFrame_t) + sizeof(BasicSafetyMessage_t);//+sizeof(ptrBSM->path);
-		// Prepare the Ext_WSReq_t structure
-		int db_v2x_tmp_size = sizeof(DB_V2X_T)+byteLen;//SAMPLE_V2X_MSG_LEN;
-		int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
-
-		Ext_V2X_TxPDU_t *v2x_tx_pdu_p = NULL;
-		DB_V2X_T *db_v2x_tmp_p = NULL;
-
-		v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
-		memset(v2x_tx_pdu_p, 0, v2x_tx_pdu_size);
-
-		v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
-		v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
-		v2x_tx_pdu_p->psid = htonl(psid_g);
-		v2x_tx_pdu_p->tx_power = tx_power_g;
-		v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
-		v2x_tx_pdu_p->e_priority = e_priority_g;
-
-		if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
+		for (int i = 0; i < path_len; ++i)
 		{
-			v2x_tx_pdu_p->magic_num = htons(MAGIC_CV2X_TX_PDU);
-			v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id = htonl(transmitter_profile_id_g);
-			v2x_tx_pdu_p->u.config_cv2x.peer_l2id = htonl(peer_l2id_g);
-		}
-		else if (e_comm_type_g == eV2XCommType_DSRC)
-		{
-			v2x_tx_pdu_p->magic_num = htons(MAGIC_DSRC_TX_PDU);
-			v2x_tx_pdu_p->u.config_wave.freq = htons(freq_g);
-			v2x_tx_pdu_p->u.config_wave.e_data_rate = htons(e_data_rate_g);
-			v2x_tx_pdu_p->u.config_wave.e_time_slot = e_time_slot_g;
-			memcpy(v2x_tx_pdu_p->u.config_wave.peer_mac_addr, peer_mac_addr_g, MAC_EUI48_LEN);
+			Path *bsmPath = (Path *)calloc(1, sizeof(Path));
+			bsmPath->x = path[i].first;
+			bsmPath->y = path[i].second;
+			ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
 		}
 
-		// Payload = KETI Format
-		v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
-		db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
-		memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
-
-		db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
-		db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-		db_v2x_tmp_p->unDeviceId =htonl(71);
-		db_v2x_tmp_p->ulTimeStamp = 0ULL;
-		db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_PLATOONING;
-		db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
-		db_v2x_tmp_p->eRegionId = DB_V2X_REGION_ID_SEOUL;
-		db_v2x_tmp_p->ePayloadType = DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM;
-		db_v2x_tmp_p->eCommId = DB_V2X_COMM_ID_V2V;
-		db_v2x_tmp_p->usDbVer = 0;
-		db_v2x_tmp_p->usHwVer = 0;
-		db_v2x_tmp_p->usSwVer = 0;
-		db_v2x_tmp_p->data = msg;
-		db_v2x_tmp_p->ulPayloadLength = htonl(db_v2x_tmp_size);
-
-		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
+		Ext_V2X_TxPDU_t *v2x_tx_pdu_p = prepare_v2x_pdu(msg);
 		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
-
+		free(v2x_tx_pdu_p)
 		if (n < 0)
 		{
 			perror("send() failed");
@@ -345,8 +344,6 @@ void *v2x_tx_cmd_process(void *arg)
 				// }
 			}
 		}
-		// free(v2x_tx_pdu_p);
-		// free(db_v2x_tmp_p);
 		usleep(whileHz);
 	}
 
@@ -392,7 +389,6 @@ void pubTLVPath(std::vector<std::pair<double, double>> _path){
 	pub_tlv_path.publish(tlv_path);
 }
 
-/* function : V2X RX processing */
 void *v2x_rx_cmd_process(void *arg)
 {
 	
@@ -418,8 +414,7 @@ void *v2x_rx_cmd_process(void *arg)
 			}
 			else
 			{
-				// printf("wait. . . \n");
-				usleep(10000);
+				usleep(1000);
 			}
 		}
 		else if (n == 0)
@@ -429,7 +424,6 @@ void *v2x_rx_cmd_process(void *arg)
 		}
 		else
 		{
-			// printf("\n\nrecv() success : len[%u]\n", n);
 			time_t current_time = time(NULL);
 			double delay_time_ms = round((difftime(current_time, start_time))*1000);
 			hlv_system.data[3] = delay_time_ms;
@@ -504,7 +498,6 @@ void *v2x_rx_cmd_process(void *arg)
 	return NULL;
 }
 
-/* function : Process Commands */
 int process_commands(void)
 {
 	pthread_t tx_thread;
@@ -576,9 +569,6 @@ void stateCallback(const std_msgs::Int8::ConstPtr &msg){
 void signalCallback(const std_msgs::Int8::ConstPtr &msg){
 	_signal = msg->data;
 }
-
-
-
 
 void sigint_handler(int sig) {
     is_running = false; // 스레드 종료 플래그 설정
