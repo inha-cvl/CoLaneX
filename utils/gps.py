@@ -7,6 +7,7 @@ from geometry_msgs.msg import Pose
 def get_latitude_longitude():
     # SSH 접속 정보 설정
     host = '192.168.1.12'
+    
     port = 45345
     username = 'sirius'
     password = 'alphacma'
@@ -17,6 +18,8 @@ def get_latitude_longitude():
     rospy.init_node('OBU', anonymous=False)
     pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
     pose = Pose()
+    pub_pose_t = rospy.Publisher('/car/tlv_pose', Pose, queue_size=1)
+    pose_t = Pose()
 
 
     try:
@@ -45,6 +48,11 @@ def get_latitude_longitude():
                     pose.position.z = heading 
                     pose.orientation.x = speed
                     pub_pose.publish(pose)
+                    pose_t.position.x = latitude
+                    pose_t.position.y = longitude
+                    pose_t.position.z = heading 
+                    pose_t.orientation.x = speed
+                    pub_pose_t.publish(pose_t)
                     print(latitude, longitude, speed, heading)
                 else:
                     print("Unable to extract latitude, longitude, and speed from the data.")
