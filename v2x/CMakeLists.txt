@@ -20,15 +20,19 @@ link_directories(
     include/j2735
 )
 
-set(
-    SOURCES ./hlv.c
+set( HLVSRC ./hlv.c)
+set( TLVSRC ./tlv.c)
+
+add_executable(
+    hlv ${HLVSRC}
 )
 add_executable(
-    v2x ${SOURCES}
+    tlv ${TLVSRC}
 )
 
-set_source_files_properties( ${SOURCES} PROPERTIES LANGUAGE CXX )
+set_source_files_properties( ${HLVSRC} PROPERTIES LANGUAGE CXX )
+set_source_files_properties( ${TLVSRC} PROPERTIES LANGUAGE CXX )
 
-target_link_libraries(
-    v2x ${catkin_LIBRARIES} asncodec
-)
+
+target_link_libraries(hlv ${catkin_LIBRARIES} asncodec)
+target_link_libraries(tlv ${catkin_LIBRARIES} asncodec)

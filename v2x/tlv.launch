@@ -1,3 +1,3 @@
 <launch>
-	<node pkg="v2x" type="v2x" name="tlv" output="screen"/>
+	<node pkg="v2x" type="tlv" name="tlv" output="screen"/>
 </launch>
