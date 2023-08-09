@@ -7,7 +7,7 @@ import json
 from scipy.spatial import KDTree
 from std_msgs.msg import Int8, Float32, String
 from geometry_msgs.msg import PoseStamped, PoseArray, Pose, Point
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 from novatel_oem7_msgs.msg import INSPVA
 
 from libs.map import LaneletMap, TileMap

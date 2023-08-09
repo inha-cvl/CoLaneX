@@ -1,14 +1,9 @@
 import rospy
 import sys
-import time
 import signal
-import json
-import pymap3d as pm
-from scipy.spatial import KDTree
-from std_msgs.msg import Int8, Float32, String
-from geometry_msgs.msg import PoseStamped, PoseArray, Pose, Point
+from std_msgs.msg import String
+from geometry_msgs.msg import Pose
 from visualization_msgs.msg import Marker
-from novatel_oem7_msgs.msg import INSPVA
 
 from libs.map import LaneletMap, TileMap
 from libs.micro_lanelet_graph import MicroLaneletGraph
@@ -52,8 +47,8 @@ class SafeDistance:
 
         #TODO: below INS, PATH, Velocity have to get from V2X  
         rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
-        # rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
-        # rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
+        rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
+        rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
         rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
         ####################
@@ -65,8 +60,8 @@ class SafeDistance:
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
         self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
         
-        # lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
-        # self.pub_lanelet_map.publish(lanelet_map_viz)
+        lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
+        self.pub_lanelet_map.publish(lanelet_map_viz)
 
     def tlv_pose_cb(self, msg):
         self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
@@ -80,7 +75,7 @@ class SafeDistance:
             pt.x, pt.y) for pt in msg.points]
         compress_path = do_compressing(self.hlv_path, 10)
         hlv_geojson = to_geojson(compress_path, self.base_lla)
-        #self.pub_hlv_geojson(hlv_geojson)
+        self.pub_hlv_geojson(hlv_geojson)
     
     def need_update(self):
         if self.final_path == None:
@@ -165,8 +160,9 @@ class SafeDistance:
         rate = rospy.Rate(10)
         
         while not rospy.is_shutdown():
-                self.get_node_path()
-                self.calc_safe_distance()
+            self.get_node_path()
+            self.calc_safe_distance()
+            rate.sleep()
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
