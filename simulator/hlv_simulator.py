@@ -31,7 +31,6 @@ class HLVSimulator:
         self._accel = 0
         self._brake = 0
 
-
         self.pub_ego_car = rospy.Publisher('/car/ego_car', Marker, queue_size=1)
         self.pub_ego_car_info = rospy.Publisher('/car/ego_car_info', Marker, queue_size=1)
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
