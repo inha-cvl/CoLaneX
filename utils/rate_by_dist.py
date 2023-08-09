@@ -17,9 +17,8 @@ class RateDistanceCalculator:
             # 거리를 10m 단위로 나누어서 인덱스 계산
             distance_index = min(int(distance / 10), 10)
             
-            if self.count[distance_index] <= 50:
-                self.rate_sum[distance_index] += rate
-                self.count[distance_index] += 1
+            self.rate_sum[distance_index] += rate
+            self.count[distance_index] += 1
 
 
     def calculate_averages(self):
