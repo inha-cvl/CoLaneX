@@ -38,10 +38,13 @@ def get_latitude_longitude(vehicle_type):
                 matches = re.findall(r'"(lat|lon|speed|track)":(-?\d+\.\d+|[\d.]+)', data)
 
                 if len(matches) == 4:
-                    latitude, longitude, speed, heading = [float(match[1]) for match in matches]
-                    pose.position.x, pose.position.y, pose.position.z, pose.orientation.x = latitude, longitude, heading, speed
+                    latitude, longitude, heading, speed = [float(match[1]) for match in matches]
+                    pose.position.x = latitude
+                    pose.position.y= longitude
+                    pose.position.z = heading 
+                    pose.orientation.x = speed * 0.44704 # mph to m/s
                     pub_pose.publish(pose)
-                    print(latitude, longitude, speed, heading)
+                    print(latitude, longitude, speed*0.44704, heading)
                 rate.sleep()
 
     except paramiko.AuthenticationException:
