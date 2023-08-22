@@ -30,7 +30,7 @@ const hlvPathTopic = new ROSLIB.Topic({
 
 const tlvPoseTopic = new ROSLIB.Topic({
   ros: ros,
-  name: '/v2x/tlv_pose',
+  name: '/car/tlv_pose',
   messageType: 'geometry_msgs/Pose'
 });
 const tlvPathTopic = new ROSLIB.Topic({
@@ -46,8 +46,10 @@ const HLV = () => {
   const [system, setSystem] = useState([0, 0, 0, 0]);
   const [messages, setMessages] = useState([
     "Wait",
-    "TLV Accepted",
-    "TLV Rejected",
+    "Attempt to Merge into the Left Lane",
+    "Attempt to Merge into the Right Lane",
+    "TLV Accepts Request to Join Lane",
+    "TLV Rejects Request to Join Lane",
     "Over",
   ]);
   const [messageIdx, setMessageIdx] = useState(1);
