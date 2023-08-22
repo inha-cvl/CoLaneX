@@ -75,7 +75,7 @@ class SafeDistance:
             pt.x, pt.y) for pt in msg.points]
         compress_path = do_compressing(self.hlv_path, 10)
         hlv_geojson = to_geojson(compress_path, self.base_lla)
-        self.pub_hlv_geojson(hlv_geojson)
+        self.pub_hlv_geojson.publish(hlv_geojson)
     
     def need_update(self):
         if self.final_path == None:
