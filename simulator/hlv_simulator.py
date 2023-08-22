@@ -8,8 +8,8 @@ import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Pose, Vector3
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Int8
-from rviz_utils import *
-from vehicle import Vehicle
+from libs.rviz_utils import *
+from libs.vehicle import Vehicle
 
 def signal_handler(sig, frame):
     sys.exit(0)

@@ -7,7 +7,7 @@ import signal
 import rospy
 from geometry_msgs.msg import  Pose
 from visualization_msgs.msg import Marker
-from rviz_utils import *
+from libs.rviz_utils import *
 
 def signal_handler(sig, frame):
     sys.exit(0)

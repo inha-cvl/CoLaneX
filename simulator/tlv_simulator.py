@@ -8,8 +8,8 @@ import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped, Pose, Vector3
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Int8
-from rviz_utils import *
-from vehicle import Vehicle
+from libs.rviz_utils import *
+from libs.vehicle import Vehicle
 
 def signal_handler(sig, frame):
     sys.exit(0)
@@ -82,6 +82,16 @@ class TLVSimulator:
             info = f"{(v*3.6):.2f}km/h {self.yaw:.2f}deg"
             self.target_car_info.text = info
 
+            self.target_car.pose.position.x = x
+            self.target_car.pose.position.y = y
+            quaternion = tf.transformations.quaternion_from_euler(0,0,math.radians(90+self.yaw))
+            self.target_car.pose.orientation.x = quaternion[0]
+            self.target_car.pose.orientation.y = quaternion[1]
+            self.target_car.pose.orientation.z = quaternion[2]
+            self.target_car.pose.orientation.w = quaternion[3] 
+
+            self.target_car_info.pose.position.x = x
+            self.target_car_info.pose.position.y = y
             self.pub_target_car.publish(self.target_car)
             self.pub_target_car_info.publish(self.target_car_info)
 
