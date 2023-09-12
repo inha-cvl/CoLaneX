@@ -35,6 +35,9 @@ def update_button_state(current_mode):
     enable_button.config(state=tk.NORMAL if current_mode == 0 else tk.DISABLED)
     disable_button.config(state=tk.NORMAL if current_mode == 1 else tk.DISABLED)
 
+def shutdown_hook():
+    window.quit()
+
 if __name__ == "__main__":
     rospy.init_node("ui_node")
 
@@ -61,5 +64,6 @@ if __name__ == "__main__":
     right_button = tk.Button(window, text="Right", command=publish_right, bg="#ff5340", width=10, height=3, font=button_font)
     right_button.grid(row=1, column=2, padx=5, pady=5)
 
+    rospy.on_shutdown(shutdown_hook) 
 
     window.mainloop()
