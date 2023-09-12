@@ -32,8 +32,8 @@ class AdaptiveCruiseControl:
             ["ego_vel", "object_dist", "vel_error", "safe_distance", "dist_error", "acceleration", "out_vel"],
             [ego_vel, self.object_dist, vel_error, safe_distance, dist_error, acceleration, out_vel]
         ]
-        print("Get Target Velocity")
-        print(tabulate(data,  tablefmt="grid"))
+        # print("Get Target Velocity")
+        # print(tabulate(data,  tablefmt="grid"))
 
         return out_vel
     
