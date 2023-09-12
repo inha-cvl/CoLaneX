@@ -64,9 +64,10 @@ class DynamicPath:
 
     def tlv_path_cb(self,msg):
         tlv_path = [(pt.x, pt.y) for pt in msg.points]
-        compress_path = do_compressing(tlv_path, 10)
-        tlv_geojson = to_geojson(compress_path, self.base_lla)
-        self.pub_tlv_geojson.publish(tlv_geojson)
+        #compress_path = do_compressing(tlv_path, 10)
+        if len(tlv_path) > 0:
+            tlv_geojson = to_geojson(tlv_path, self.base_lla)
+            self.pub_tlv_geojson.publish(tlv_geojson)
 
     def hlv_signal_cb(self, msg):
         self.signal = msg.data
@@ -126,8 +127,8 @@ class DynamicPath:
             r1 += r0
             final_path = r1+r3
 
-        compress_path = do_compressing(final_path, 10)
-        return final_path, compress_path
+        #compress_path = do_compressing(final_path, 10)
+        return final_path #, compress_path
 
     def get_node_path(self):
         if self.ego_pos == None:
@@ -137,12 +138,12 @@ class DynamicPath:
         compress_path = []
         need_update = self.need_update()
         if need_update != -1:    
-            final_path, compress_path = self.make_path(need_update)
+            final_path = self.make_path(need_update)
             self.final_path = final_path
             self.hlv_path = ref_interpolate(final_path, self.precision)[0]
-            self.hlv_geojson = to_geojson(compress_path,self.base_lla)
-            
-
+            self.hlv_path = limit_path_length(self.hlv_path, 50) # cause limitation of v2x max length
+            self.hlv_geojson = to_geojson(self.hlv_path, self.base_lla)
+                    
             hlv_path_viz = HLVPathViz(self.hlv_path)
             self.pub_hlv_path.publish(hlv_path_viz)
             self.pub_hlv_geojson.publish(self.hlv_geojson)

@@ -49,8 +49,8 @@ class SafeDistance:
         rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
         rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
-        rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
-        rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
+        # rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
+        # rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
         ####################
 
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
@@ -71,11 +71,11 @@ class SafeDistance:
         self.hlv_v = msg.orientation.x
 
     def hlv_path_cb(self, msg):
-        self.hlv_path = [(
-            pt.x, pt.y) for pt in msg.points]
-        compress_path = do_compressing(self.hlv_path, 10)
-        hlv_geojson = to_geojson(compress_path, self.base_lla)
-        self.pub_hlv_geojson.publish(hlv_geojson)
+        self.hlv_path = [( pt.x, pt.y) for pt in msg.points]
+        # compress_path = do_compressing(self.hlv_path, 10)
+        if len(self.hlv_path) > 0:
+            hlv_geojson = to_geojson(self.hlv_path, self.base_lla)
+            self.pub_hlv_geojson.publish(hlv_geojson)
     
     def need_update(self):
         if self.final_path == None:
@@ -108,12 +108,14 @@ class SafeDistance:
             r1, _, _ = get_straight_path(self.lmap.lanelets, ego_lanelets[0], ego_lanelets[1], x1)
 
             final_path = r0+r1
-            compress_path = do_compressing(final_path, 10)
+            #compress_path = do_compressing(final_path, 10)
             self.final_path = final_path
             self.tlv_path = ref_interpolate(final_path, self.precision)[0]
-            self.tlv_geojson = to_geojson(compress_path, self.base_lla)
-                
-                
+            # cause limitation of v2x max length 
+            self.tlv_path = limit_path_length(self.tlv_path, 50)
+            self.tlv_geojson = to_geojson(self.tlv_path, self.base_lla)
+            
+            
             tlv_path_viz = TLVPathViz(self.tlv_path)
             self.pub_tlv_path.publish(tlv_path_viz)
             self.pub_tlv_geojson.publish(self.tlv_geojson)
@@ -152,8 +154,8 @@ class SafeDistance:
             dg = d1-d2
             ds = self.ego_v*3.6-self.d_c #m
             safety = 'Safe' if dg > ds else 'Dangerous'
-
-            self.pub_move.publish(Sphere('move', 0, self.tlv_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
+            if d2_idx < len(self.tlv_path):  
+                self.pub_move.publish(Sphere('move', 0, self.tlv_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
         
     def run(self):
         self.state = 'RUN'

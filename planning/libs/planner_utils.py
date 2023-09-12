@@ -195,6 +195,7 @@ def do_compressing(points, n):
     new_points.append((x2, y2))
     return new_points
 
+
 def find_nearest_idx(pts, pt):
     min_dist = float('inf')
     min_idx = 0
@@ -206,3 +207,18 @@ def find_nearest_idx(pts, pt):
             min_idx = idx
 
     return min_idx
+
+
+def limit_path_length(path, max_length):
+    if len(path) <= max_length:
+        return path
+    
+    new_path = [path[0]]
+    interval = (len(path)-1)/(max_length-2)
+
+    for i in range(1, max_length -1):
+        index = int(i*interval)
+        new_path.append(path[index])
+    
+    new_path.append(path[-1])
+    return new_path
