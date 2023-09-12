@@ -18,12 +18,10 @@ class RosManager:
         self.sampling_rate = config["common"]["sampling_rate"]
         self.ros_rate = rospy.Rate(self.sampling_rate)
         self.base_lla = config['map']['base_lla']
-        print(self.vehicle_type)
         if self.vehicle_type == 'hlv':
             self.color = [250, 171, 210]
         else:
             self.color = [168, 232, 255]
-        print(self.color)
 
         self.self_drive = self_drive
         self.vehicle_state = VehicleState()
@@ -73,7 +71,6 @@ class RosManager:
         marker.id = 0
         marker.lifetime = rospy.Duration(0)
         marker.scale.x = 0.7
-        print("color", self.color)
         marker.color.r = self.color[0]/255
         marker.color.g = self.color[1]/255
         marker.color.b = self.color[2]/255
