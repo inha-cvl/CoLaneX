@@ -25,10 +25,11 @@ extern "C" {
 /* Forward declarations */
 struct PartIIcontent;
 struct RegionalExtension;
-struct Path{
+
+typedef struct Path{
 	double x;
 	double y;
-};
+}Path_t;
 
 /* BasicSafetyMessage */
 typedef struct BasicSafetyMessage
@@ -46,6 +47,7 @@ typedef struct BasicSafetyMessage
 		/* Context for parsing across buffer boundaries */
 		asn_struct_ctx_t _asn_ctx;
 	} *regional;
+
 	/*
 	 * This type is extensible,
 	 * possible extensions are below.

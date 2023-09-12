@@ -248,7 +248,14 @@ typedef enum {
 * @param ulPacketCrc32      header + payload crc32
 * @param data
 */
-typedef struct DB_V2X {
+
+struct path{
+    double x;
+    double y;
+};
+
+typedef struct DB_V2X
+{
     DB_V2X_DEVICE_TYPE_E                        eDeviceType;
     DB_V2X_TELECOMMUNICATION_TYPE_E             eTeleCommType;
     uint32_t                                    unDeviceId;
@@ -264,7 +271,7 @@ typedef struct DB_V2X {
     uint32_t                                    ulPayloadLength;
     uint32_t                                    ulPacketCrc32;
     /* OBIGO-knkim  Custom  */
-    MessageFrame_t                             data;
+    MessageFrame                                messageFrame;
 } DB_V2X_T;
 
 /***************************** Function Protype ******************************/

@@ -34,9 +34,9 @@
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
+#define SAMPLE_LOCAL "127.0.0.1"
 #define SAMPLE_V2X_PORT_ADDR 47347
-
-#define SAMPLE_V2X_MSG_LEN 2000
+#define MAX_UPER_SIZE 4096
 
 volatile bool is_running = true;
 
@@ -81,7 +81,8 @@ int rx_msg_cnt;
 int path_len;
 bool show_result = true;
 bool same_machine = true;
-int hz = 10;
+bool server_test = false;
+int hz = 2;
 int tx_packet_count = 0;
 int rx_packet_count = 0;
 
@@ -176,51 +177,8 @@ void *v2x_tx_cmd_process(void *arg)
 {
 	(void)arg;
 	unsigned long cnt = 0;
-	ssize_t n;
+	ssize_t n; 
 	time_t start_time = time(NULL);
-
-	int db_v2x_tmp_size = sizeof(DB_V2X) + sizeof(MessageFrame);
-	int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t) + db_v2x_tmp_size;
-
-	Ext_V2X_TxPDU_t *v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
-	memset(v2x_tx_pdu_p, 0, v2x_tx_pdu_size);
-	
-	v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
-	v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
-	v2x_tx_pdu_p->psid = htonl(psid_g);
-	v2x_tx_pdu_p->tx_power = tx_power_g;
-	v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
-	v2x_tx_pdu_p->e_priority = e_priority_g;
-
-	if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
-	{
-		v2x_tx_pdu_p->magic_num = htons(MAGIC_CV2X_TX_PDU);
-		v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id = htonl(transmitter_profile_id_g);
-		v2x_tx_pdu_p->u.config_cv2x.peer_l2id = htonl(peer_l2id_g);
-	}
-	else if (e_comm_type_g == eV2XCommType_DSRC)
-	{
-		v2x_tx_pdu_p->magic_num = htons(MAGIC_DSRC_TX_PDU);
-		v2x_tx_pdu_p->u.config_wave.freq = htons(freq_g);
-		v2x_tx_pdu_p->u.config_wave.e_data_rate = htons(e_data_rate_g);
-		v2x_tx_pdu_p->u.config_wave.e_time_slot = e_time_slot_g;
-		memcpy(v2x_tx_pdu_p->u.config_wave.peer_mac_addr, peer_mac_addr_g, MAC_EUI48_LEN);
-	}
-
-	v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
-	DB_V2X_T *db_v2x_tmp_p = (DB_V2X_T *)malloc(db_v2x_tmp_size); //DB_V2X_T
-	memset(db_v2x_tmp_p, 0, db_v2x_tmp_size);
-
-	db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
-	db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-	db_v2x_tmp_p->unDeviceId =htonl(73);
-	db_v2x_tmp_p->ulTimeStamp = 0ULL;
-	db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_ADVANCED_DRIVING;
-	db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
-	db_v2x_tmp_p->eRegionId = DB_V2X_REGION_ID_SEOUL;
-	db_v2x_tmp_p->ePayloadType = DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM;
-	db_v2x_tmp_p->eCommId = DB_V2X_COMM_ID_V2V;
-	db_v2x_tmp_p->ulPayloadLength = htonl(db_v2x_tmp_size);
 
 	while (is_running)
 	{
@@ -239,17 +197,63 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
 		
-		for (int i = 0; i < path_len; ++i)
-		{
-			Path *bsmPath = (Path *)calloc(1, sizeof(Path));
-			bsmPath->x = path[i].first;
-			bsmPath->y = path[i].second;
-			ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
+		struct path paths[path_len];
+		if (path_len > 0){
+			for (int i = 0; i < path_len; i++)
+			{
+				paths[i].x = path[i].first;
+				paths[i].y = path[i].second;
+			}
 		}
 
-		db_v2x_tmp_p->data = msg;
-		memcpy(v2x_tx_pdu_p->v2x_msg.data, db_v2x_tmp_p, db_v2x_tmp_size); //(dst, src, length)
-		n = send(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size, 0);
+		int paths_size = path_len * sizeof(struct path);
+
+		int db_v2x_tmp_size = sizeof(DB_V2X_T)+paths_size;
+		int v2x_tx_pdu_size = sizeof(Ext_V2X_TxPDU_t)+db_v2x_tmp_size;
+		char packet[MAX_UPER_SIZE];
+
+		DB_V2X_T *db_v2x_tmp_p = (DB_V2X_T *)&packet[0];
+		
+		db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
+		db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
+		db_v2x_tmp_p->unDeviceId =htonl(72);
+		db_v2x_tmp_p->ulTimeStamp = 0ULL;
+		db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_ADVANCED_DRIVING;
+		db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
+		db_v2x_tmp_p->eRegionId = DB_V2X_REGION_ID_SEOUL;
+		db_v2x_tmp_p->ePayloadType = DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM;
+		db_v2x_tmp_p->eCommId = DB_V2X_COMM_ID_V2V;
+		db_v2x_tmp_p->ulPayloadLength = htonl(sizeof(MessageFrame_t)+paths_size);
+		db_v2x_tmp_p->messageFrame = msg;
+
+		Ext_V2X_TxPDU_t *v2x_tx_pdu_p = (Ext_V2X_TxPDU_t *)malloc(v2x_tx_pdu_size);
+		memset(v2x_tx_pdu_p, 0, v2x_tx_pdu_size);
+		v2x_tx_pdu_p->ver = htons(SAMPLE_V2X_API_VER);
+		v2x_tx_pdu_p->e_payload_type = e_payload_type_g;
+		v2x_tx_pdu_p->psid = htonl(psid_g);
+		v2x_tx_pdu_p->tx_power = tx_power_g;
+		v2x_tx_pdu_p->e_signer_id = e_signer_id_g;
+		v2x_tx_pdu_p->e_priority = e_priority_g;
+
+		if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X)
+		{
+			v2x_tx_pdu_p->magic_num = htons(MAGIC_CV2X_TX_PDU);
+			v2x_tx_pdu_p->u.config_cv2x.transmitter_profile_id = htonl(transmitter_profile_id_g);
+			v2x_tx_pdu_p->u.config_cv2x.peer_l2id = htonl(peer_l2id_g);
+		}
+		else if (e_comm_type_g == eV2XCommType_DSRC)
+		{
+			v2x_tx_pdu_p->magic_num = htons(MAGIC_DSRC_TX_PDU);
+			v2x_tx_pdu_p->u.config_wave.freq = htons(freq_g);
+			v2x_tx_pdu_p->u.config_wave.e_data_rate = htons(e_data_rate_g);
+			v2x_tx_pdu_p->u.config_wave.e_time_slot = e_time_slot_g;
+			memcpy(v2x_tx_pdu_p->u.config_wave.peer_mac_addr, peer_mac_addr_g, MAC_EUI48_LEN);
+		}
+
+		memcpy(packet + sizeof(DB_V2X_T), paths, paths_size);
+		v2x_tx_pdu_p->v2x_msg.length = htons(db_v2x_tmp_size);
+		memcpy(v2x_tx_pdu_p->v2x_msg.data, packet, db_v2x_tmp_size);
+		n = write(sock_g, v2x_tx_pdu_p, v2x_tx_pdu_size);
 
 		if (n < 0)
 		{
@@ -276,11 +280,9 @@ void *v2x_tx_cmd_process(void *arg)
 
 			cnt += 1;
 		}
+		free(v2x_tx_pdu_p);
 		usleep(1e6/hz); // microseconds
 	}
-
-	free(v2x_tx_pdu_p);
-	free(db_v2x_tmp_p);
 	return NULL;
 }
 
@@ -290,18 +292,14 @@ void *v2x_tx_cmd_process(void *arg)
 void *v2x_rx_cmd_process(void *arg)
 {
 	(void)arg;
-	uint8_t buf[4096] = {0};
+	uint8_t recvbuf[MAX_UPER_SIZE] = {0};
 	int n = -1;
 	time_t start_time = time(NULL);
-
-	DB_V2X_T *db_v2x_tmp_p = NULL;
-	MessageFrame_t *msgFrame = NULL;
-	Ext_V2X_RxPDU_t *v2x_rx_pdu_p = NULL;
-
+	
 	while (is_running)
 	{
-		n = recv(sock_g, buf, sizeof(buf), 0);
-
+		
+		n = read(sock_g, recvbuf, sizeof(recvbuf));
 		if (n < 0)
 		{
 			if (errno != EAGAIN && errno != EWOULDBLOCK)
@@ -323,54 +321,49 @@ void *v2x_rx_cmd_process(void *arg)
 		{
 			rx_packet_count++;
 
-			v2x_rx_pdu_p = (Ext_V2X_RxPDU_t *)malloc(n);
-			memcpy(v2x_rx_pdu_p, buf, n);
-			int v2x_msg_length = ntohs(v2x_rx_pdu_p->v2x_msg.length);
-			db_v2x_tmp_p = (DB_V2X_T *)malloc(v2x_msg_length);
-			memcpy(db_v2x_tmp_p, v2x_rx_pdu_p->v2x_msg.data, v2x_msg_length);
-			int payload_length = ntohl(db_v2x_tmp_p->ulPayloadLength);
-			msgFrame = (MessageFrame_t *)malloc(payload_length);
-			memcpy(msgFrame, &db_v2x_tmp_p->data, payload_length);
-			BasicSafetyMessage_t *ptrBSM = &msgFrame->value.choice.BasicSafetyMessage;
+			Ext_V2X_RxPDU_t ext_v2x_rx_pdu_p;
+			memcpy(&ext_v2x_rx_pdu_p, recvbuf, sizeof(Ext_V2X_RxPDU_t));
+			int db_v2x_len = ntohs(ext_v2x_rx_pdu_p.v2x_msg.length);
+			int read_len = sizeof(Ext_V2X_RxPDU_t);
+			DB_V2X_T db_v2x_tmp;
+			memcpy(&db_v2x_tmp, recvbuf+read_len, db_v2x_len);
 
+			read_len += (sizeof(DB_V2X_T) - sizeof(MessageFrame_t));
+			int msgFrame_len = ntohl(db_v2x_tmp.ulPayloadLength);
+
+			MessageFrame_t msgFrame;
+			memcpy(&msgFrame, &db_v2x_tmp.messageFrame, msgFrame_len);
+			BasicSafetyMessage_t *ptrBSM = &msgFrame.value.choice.BasicSafetyMessage;
+			
 			rx_msg_cnt = ptrBSM->coreData.msgCnt;
 			int rx_dsecond = ptrBSM->coreData.secMark;
 			check_rtt(rx_dsecond);
 
+			int get_path_len = (msgFrame_len - sizeof(MessageFrame_t))/sizeof(struct path);
+			read_len += sizeof(MessageFrame_t);
+
+			struct path received_paths[get_path_len];
+			memcpy(received_paths, recvbuf + read_len, get_path_len * sizeof(struct path));
+			
 			std::vector<std::pair<double, double>> _h_path;
+			printf("V2X Rx Test Msg>>\n"
+					"  Receive Size: %ld\n"
+					"  CNT        :  %ld\n"
+					"  path len   :  %d\n",
+					n,
+					ptrBSM->coreData.msgCnt,
+					get_path_len);
 
-			// for(int i=0; i<ptrBSM->path.count; i++){
-			// 	struct Path *currentPath = ptrBSM->path.array[i];
-			// 	if (currentPath != NULL)
-			// 	{
-			// 		// currentPath의 x와 y 데이터에 접근합니다.
-			// 		double x_data = currentPath->x;
-			// 		double y_data = currentPath->y;
-
-			// 		// x_data와 y_data를 사용하면 됩니다.
-			// 		// 예를 들어:
-			// 		printf("Point %d: x = %f, y = %f\n", i, x_data, y_data);
-			// 	}
-			// 	else
-			// 	{
-			// 		// currentPath가 NULL인 경우, 유효하지 않은 포인터입니다.
-			// 		printf("Point %d: Invalid pointer\n", i);
-			// 	}
-
-			// 	//_h_path.push_back(std::make_pair(ptrBSM->path.array[i]->x, ptrBSM->path.array[i]->y));
-	
-			// }
+			for (int i = 0; i < get_path_len; i++)
+			{
+				_h_path.push_back(std::make_pair(received_paths[i].x, received_paths[i].y));
+			}
 
 			pubHLV(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed, _h_path);
-
+			
 		}
 		usleep(1e6/hz); // microseconds
-
 	}
-	free(v2x_rx_pdu_p);
-	free(db_v2x_tmp_p);
-	free(msgFrame);
-
 	return NULL;
 }
 
@@ -381,8 +374,9 @@ int connect_v2x_socket(void)
 	int res = -1; // failure
 
 	// Create the socket
-	int sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock < 0)
+	int server_sock = socket(AF_INET, SOCK_STREAM, 0);
+	int sock = server_sock;
+	if (server_sock < 0)
 	{
 		perror("socket() failed");
 		res = sock;
@@ -394,6 +388,7 @@ int connect_v2x_socket(void)
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr(SAMPLE_V2X_IP_ADDR);
+	// server_addr.sin_addr.s_addr = inet_addr(SAMPLE_LOCAL);
 	server_addr.sin_port = htons(SAMPLE_V2X_PORT_ADDR);
 	if(same_machine){
 		const char *interface_name = "enx00e04e69e57a";
@@ -409,13 +404,25 @@ int connect_v2x_socket(void)
 			exit(EXIT_FAILURE);
     	}
 	}
+	if(server_test){
+		if((bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)))){
+			perror("Socket Bind failed");
+			exit(EXIT_FAILURE);
+		}
+		if((listen(server_sock, 5)) != 0){
+			perror("Listen Failed");
+			exit(EXIT_FAILURE);
+		}
+		sock = accept(server_sock, NULL, NULL);
+	}
+
 	if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0)
 	{
 		perror("connect() failed");
 		return res;
 	}
+
 #if 1
-	// Change to NON-BLOCK socket
 	int flags = fcntl(sock, F_GETFL, 0);
 	if (flags == -1)
 	{
@@ -497,7 +504,6 @@ int v2x_wsr_cmd_process(void)
 		{
 			fprintf(stderr, "recv() received a different number of bytes than expected\n");
 		}
-
 		usleep(1000);
 	}
 	printf("WSR RECV Sucess\n");
