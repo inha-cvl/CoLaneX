@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8;" pageEncoding="UTF-8"%>
+<aside class="main-sidebar">
+	<!-- sidebar: style can be found in sidebar.less -->
+	<section class="sidebar">
+		<!-- Sidebar user panel (optional) -->
+		<div class="user-panel">
+			<div class="pull-left role-image">
+			    <sec:authorize access="hasRole('ROLE_MASTER')">
+                    <img src="/images/role_admin.png">
+                </sec:authorize>
+			    <sec:authorize access="hasRole('ROLE_USER')">
+                    <img src="/images/role_user_512.png">
+                </sec:authorize>
+			</div>
+			<br />
+			<div class="pull-left info">
+				<p>
+					<sec:authentication property="name" />
+				</p>
+				<a><i class="fa fa-circle" style="color: #387CFF"></i> 접속 중</a> <br />
+			</div>
+			<button class="btn btn-obigo btn-block" onclick="mv('/signout')">로그아웃</button>
+		</div>
+
+		<!-- Sidebar Menu -->
+		<ul class="sidebar-menu">
+			<li class="header">메뉴</li>
+				<li class="${(menu == 1000 ? 'active' : '')}"><a href="/admin/scheduler">Scheduler History<span></span></a></li>
+				<li class="${(menu == 2000 ? 'active' : '')}"><a href="/status/scheduler">Scheduler Status<span></span></a></li>
+				<li class="${(menu == 3000 ? 'active' : '')}"><a href="/admin/file">File System<span></span></a></li>
+<!-- 			<sec:authorize access="hasRole('ROLE_USER')"> -->
+<%-- 				<li class="${(menu == 1000 ? 'active' : '')}"><a href="/unit/list"><span>단위 테스트</span></a></li> --%>
+<%-- 				<li class="${(menu == 9000 ? 'active' : '')}"><a href="/scenario/list"><span>시나리오 테스트</span></a></li> --%>
+<%-- 				<li class="${(menu == 2000 ? 'active' : '')}"><a href="/unit/history"><span>단위 테스트 이력</span></a></li> --%>
+<%-- 				<li class="${(menu == 6000 ? 'active' : '')}"><a href="/scenario/history/list"><span>시나리오 테스트 이력</span></a></li> --%>
+<%-- 				<li class="${(menu == 7000 ? 'active' : '')}"><a href="/ccu/history"><span>CCU 이력</span></a></li> --%>
+<%-- 				<li class="${(menu == 8000 ? 'active' : '')}"><a href="/field/test"><span>필드 테스트</span></a></li> --%>
+<%-- 				<li class="${(menu == 8100 ? 'active' : '')}"><a href="/field/history"><span>필드 테스트 이력</span></a></li> --%>
+<%-- 				<li class="${(menu == 4000 ? 'active' : '')}"><a href="/sms/wakeup"><span>SMS 필드 테스트</span></a></li> --%>
+<%--                 <li class="${(menu == 5000 ? 'active' : '')}"><a href="/manage/fota/fotaList"><span>FOTA 관리</span></a></li> --%>
+<!-- 			</sec:authorize> -->
+<!-- 			<sec:authorize access="hasRole('ROLE_ADMIN')"> -->
+<%-- 			<li class="treeview ${((menu > 5000 && menu < 6000) ? 'active' : '')}"> --%>
+<!-- 					<a> -->
+<!-- 					    <span>관리 서비스</span> <span class="pull-right-container"> <i class="fa fa-angle-left pull-right"></i></span> -->
+<!-- 					</a> -->
+<!-- 				    <ul class="treeview-menu"> -->
+<!-- 				    Add Admin menu -->
+<%--                         <li class="${(menu == 5500 ? 'active' : '')}"><a href="/manage/member/memberList"><span>사용자 관리</span></a></li> --%>
+<%-- 				        <li class="${(menu == 5400 ? 'active' : '')}"><a href="/manage/project/projectList"><span>프로젝트 관리</span></a></li> --%>
+<%-- 				        <li class="${(menu == 5300 ? 'active' : '')}"><a href="/manage/category/categoryList"><span>카테고리 관리</span></a></li> --%>
+<%-- 				        <li class="${(menu == 5100 ? 'active' : '')}"><a href="/admin/protocol/list"><span>프로토콜 관리</span></a></li> --%>
+<%-- 						<li class="${(menu == 5600 ? 'active' : '')}"><a href="/admin/codelist"><span>코드 관리</span></a></li> --%>
+<%--                         <li class="${(menu == 5700 ? 'active' : '')}"><a href="/manage/scenario/list"><span>시나리오 관리</span></a></li> --%>
+<%-- 						<li class="${(menu == 5600 ? 'active' : '')}"><a href="/manage/fota/fotaList"><span>FOTA 관리</span></a></li> --%>
+<%-- 						<li class="${(menu == 5200 ? 'active' : '')}"><a href="/manage/sms/detail"><span>SMS 관리</span></a></li> --%>
+<!-- 					</ul> -->
+<!-- 				</li> -->
+<!-- 			</sec:authorize> -->
+		</ul>
+		<!-- /.sidebar-menu -->
+	</section>
+	<!-- /.sidebar -->
+
+</aside>
+<script src="/js/include/left.js"></script>

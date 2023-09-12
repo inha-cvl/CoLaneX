@@ -1,0 +1,54 @@
+<!-- Main Footer -->
+<footer class="main-footer">
+	<!-- To the right -->
+	<div class="pull-right hidden-xs">
+	</div>
+	<!-- Default to the left -->
+	<strong>Copyright &copy; 2021 <a href="http://www.obigo.com/">OBIGO</a>.</strong> All rights reserved.
+</footer>
+
+<!-- Modal Pop : progress -->
+<div class="modal fade" id="pgModal" tabindex="-1" role="dialog" aria-labelledby="pgModalLabel" aria-hidden="true" data-toggle="modal">
+	<div class="modal-dialog" style="margin-top: 100px;">
+		<div class="modal-content">
+			<div class="modal-header bg-primary">
+				<h4 class="modal-title" id="pgModalLabel">Progress Bar</h4>
+     		</div>
+	     	<div class="modal-body">
+				<span id="modalMsgArea">Working....</span>
+				<div class="progress" style="margin-top:3%; margin-bottom:0;">
+					<div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+						<span class="sr-only">10% Complete</span>
+					</div>
+				</div>
+	     	</div>
+	     	<div class="modal-footer">
+	     		<button type="button" id="btnPgModalOk" class="btn btn-primary">OK</button>
+				<button type="button" id="btnPgModalCancel" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.Modal Pop : progress -->
+
+<script>
+/* $('#srhUpdtDtStart')
+.datepicker({format:"yyyy-mm-dd"})
+.datepicker("setDate", new Date() ); */
+
+//iCheck for checkbox and radio inputs
+$('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+  checkboxClass: 'icheckbox_minimal-blue',
+  radioClass: 'iradio_minimal-blue'
+});
+//Red color scheme for iCheck
+$('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+  checkboxClass: 'icheckbox_minimal-red',
+  radioClass: 'iradio_minimal-red'
+});
+//Flat red color scheme for iCheck
+$('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+  checkboxClass: 'icheckbox_flat-green',
+  radioClass: 'iradio_flat-green'
+});
+</script>

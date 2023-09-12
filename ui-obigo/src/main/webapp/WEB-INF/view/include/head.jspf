@@ -1,0 +1,184 @@
+<%@ include file="./declare.jspf" %>
+<c:set var="ua" value="${header['User-Agent']}" />
+<%-- <c:out value="${ua}" /> --%>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <%-- <title><spring:message code="main.title" /></title> --%>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- favicon -->
+    <link href="/images/obigo_Favicon.png" rel="shortcut icon" type="image/x-icon" />
+
+
+
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap-select.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/dist/css/font-awesom.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="/plugins/ionicons/ionicons-2.0.1.min.css">
+
+
+    <!-- daterange picker
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">-->
+    <!-- bootstrap datepicker -->
+    <link rel="stylesheet" href="/plugins/datepicker/datepicker3.css">
+    <link rel="stylesheet" href="/plugins/datetimepicker/bootstrap-datetimepicker.css">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="/plugins/iCheck/all.css">
+    <link rel="stylesheet" href="/plugins/datatables/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="/css/comboTreePluginStyle.css">
+    <link rel="stylesheet" href="/css/component-custom-switch.css">
+    <!-- Theme style -->
+    <%-- <link rel="stylesheet" href="/dist/css/AdminLTE-obigo.css">--%>
+
+    <!-- <link rel="stylesheet" href="/dist/css/skins/skin-blue.min.css"> -->
+    <!-- <link rel="stylesheet" href="/dist/css/skins/skin-lg-gray.css"> -->
+    <link rel="stylesheet" href="/dist/css/skins/skin-obigo-tms-simulator.css">
+    <link rel="stylesheet" href="/dist/css/AdminLTE-obigo-tms.css">
+    <link rel="stylesheet" href="/dist/css/Cabin-obigo.css">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <%--<link rel="stylesheet" href="/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.css">--%>
+
+
+
+
+
+
+    <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumBarunGothic@latest/nanumbarungothicsubset.css">
+
+    <!-- jQuery 2.2.3 -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6ede651e5785dc0151f510d6f91aa7ea&libraries=services"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsi_y3m1b8BdeyGjDTFUj-s671mfLSxOU&libraries=geometry"></script>
+    <script src="/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="/js/jquery-ui.min.js"></script>
+    <script src="/plugins/jQuery/jquery.validate.min.js"></script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/bootstrap/js/bootstrap-select.js"></script>
+    <!-- iCheck 1.0.1 -->
+    <script src="/plugins/iCheck/icheck.min.js"></script>
+    <!-- bootstrap datepicker -->
+    <script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
+    <script src="/plugins/datetimepicker/bootstrap-datetimepicker.js"></script>
+    <!-- chart -->
+    <script src="/plugins/chartjs/apexcharts.js"></script>
+    <script src="/plugins/yaml/js-yaml.js"></script>
+    <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/plugins/datatables/dataTables.bootstrap.min.js"></script>
+    <script src="/plugins/yaml/yaml.js"></script>
+    <script src="/plugins/yaml/json2yaml.js"></script>
+    <script src="/js/include/customChart.js"></script>
+    <script src="/js/include/customDash.js"></script>
+    <script src="/js/include/common.js"></script>
+    <script src="/js/ui_front.js"></script>
+
+
+    <!-- App -->
+    <!-- <script src="/dist/js/app.min.js"></script> -->
+    <script src="/dist/js/app.js"></script>
+
+    <!-- drag disable.. after delete it -->
+    <%-- <c:if test="${pathURI eq '/scenario'}"> --%>
+    <script type="text/javascript" src="/js/commonHelper.js" ></script>
+    <%-- </c:if> --%>
+
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/src/history/historyState.js"></script>
+
+    <!-- Scripts -->
+
+    <script src="/js/browser.min.js"></script>
+    <script src="/js/breakpoints.min.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/util.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/string.js"></script>
+    <script src="/js/sockjs.min.js"></script>
+    <script src="/js/stomp.min.js"></script>
+
+    <script src="/js/comboTreePlugin.js"></script>
+    <script src="/js/PageCtrl.js"></script>
+
+
+    <security:authentication var="user" property="principal" />
+    <c:if test="${fn:containsIgnoreCase(ua, 'Trident')}"><!-- For IE11 -->
+    <style>
+        body  { font-family: 'NanumBarunGothic', sans-serif; }
+        .preload * {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -ms-transition: none !important;
+            -o-transition: none !important;
+        }
+    </style>
+    <script>
+        var kor_lan = {
+            pageLength: 5,
+            bInfo : true,
+            searching : false,
+            paging: true,
+            bPaginate: false,
+            responsive: true,
+            processing: false,
+            serverSide: true,
+            autoWidth: false,
+            lengthChange: false,
+            ordering : false,
+            language : { // 언어번경
+                emptyTable: "데이터가 없습니다.",
+                //info: "현재 _START_ - _END_ / _TOTAL_건",
+                info:"<b>Total count : _TOTAL_</b>",
+                infoEmpty: "데이터가 없습니다.",
+                loadingRecords: "로딩중...",
+                processing:     "잠시만 기다려 주세요...",
+                paginate: {
+                    "next": '<i class="fa fa-lg fa-angle-right"></i>',
+                    "previous": '<i class="fa fa-lg fa-angle-left"></i>'
+                }
+            }
+        };
+
+
+        $(window).load(function() {
+            $("body").removeClass("preload");
+
+        });
+    </script>
+    <script src="/js/es6-promise.auto.min.js"></script>
+    </c:if>
+    <script src="/js/bootbox.min.js"></script> <!-- http://bootboxjs.com/examples.html -->
+    <script src='/js/util.js'></script>
+    <script src="/js/string.js"></script>
+
+    <!-- html to json -->
+    <script src="/js/jquery.serialize-object.min.js"></script>
+    <!-- tree view -->
+    <script src="/js/bootstrap-treeview.js"></script>
+
+    <!-- center modal display -->
+    <style>
+        .modal {
+            text-align: center;
+        }
+        .table {cursor: pointer;}
+        @media screen and (min-width: 768px) {
+            .modal:before {
+                display: inline-block;
+                vertical-align: middle;
+                content: " ";
+                height: 100%;
+            }
+        }
+        .modal-dialog {
+            display: inline-block;
+            text-align: left;
+            vertical-align: middle;
+        }
+    </style>
+</head>

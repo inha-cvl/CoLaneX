@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    active: dev
+  devtools:
+    livereload:
+      enabled: true
+    thymeleaf:
+      cache: false
+  mvc:
+    view:
+      prefix: /WEB-INF/view
+      suffix: .jsp

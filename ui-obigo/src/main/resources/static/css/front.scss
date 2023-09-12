@@ -1,0 +1,266 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+#route {
+  z-index: 1;
+}
+
+#route2 {
+  z-index: 1;
+}
+
+#test {
+  z-index: 99;
+}
+
+#test22 {
+  z-index: 99;
+}
+
+.main {
+
+  background-image: url( "/images/bg2.png" );
+
+  .v-line{
+    float: left;
+    margin-top: 5px;
+  }
+
+  .v-line::before {
+      display: inline-block;
+      content: "";
+      width: 1px;
+      height: 38px;
+      background-color: rgba(255, 255, 255, 0.2);
+  }
+
+    width: 1920px;
+    height: 1080px;
+    .header {
+      width: 1920px;
+      height: 80px;
+      //padding: 28px 537px 28px 538px;
+      background: #01080E;
+    }
+    .map {
+      width: 750px !important;
+      height: 1000px;
+      float: left
+    }
+    .info {
+      width: 1170px;
+      height: 1000px;
+      float: left;
+
+      .info-detail{
+        margin-top: 43px;
+        margin-left: 32px;
+        width: 1106px;
+        height: 655px;
+        border-radius: 15px;
+        border: 2px solid rgba(105, 115, 134, 0.40);
+        background: rgba(0, 0, 0, 0.40);
+
+
+        .info-title {
+          width: 100%;
+          height: 90px;
+          border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+          color: #4D5460;
+          text-align: center;
+          leading-trim: both;
+          text-edge: cap;
+          font-family: Pretendard;
+          font-size: 35px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 90px;
+
+          .select {
+            color: #FFF;
+          }
+
+          .title-select {
+            margin-left: 30px;
+            width: 189px;
+            height: 100%;
+            float: left;
+            cursor: pointer;
+          }
+
+          .title-select:hover:after,
+          .select:after {
+            content: "";
+            display: block;
+            width: 100%;
+            border-bottom: 1px solid #FFF;
+          }
+        }
+
+        .info-body {
+          margin-left: 30px;
+          margin-right: 28px;
+          padding-top: 101px;
+          width: 1048px;
+          height: 215px;
+          border-bottom: 1px solid #666;
+          float: left;
+          color: #FFF;
+          leading-trim: both;
+          text-edge: cap;
+          font-family: Pretendard;
+          font-size: 45px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+          .info-btn {
+            width: 480px;
+            height: 113px;
+            margin-right: 30px;
+            border-radius: 10px;
+            border: 4px solid #393E44;
+            background-color: #2F3641;
+            line-height: 108px;
+            text-align: center;
+            cursor: pointer;
+            float: left;
+          }
+
+        }
+
+        .info-footer {
+          width: 882px;
+          height: 176px;
+          margin-top: 68px;
+          margin-left: 112px;
+          margin-right: 112px;
+          float: left;
+
+          .footer-title {
+            width: 100%;
+            height: 52px;
+            color: #FFF;
+            font-size: 45px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 52px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+          }
+          img {
+            height: 52px;
+            margin-right: 12px;
+          }
+          .footer-message {
+            margin-top: 23px;
+            width: 100%;
+            height: 100%;
+            color: #FFF;
+            font-family: Pretendard;
+            font-size: 30px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            text-align: center;
+            opacity: 0.5;
+
+          }
+        }
+      }
+
+      .info-detail-gps {
+        width: 1006px;
+        height: 132px;
+        padding: 50px;
+        top: 805px;
+        left: 782px;
+        border-radius: 15px;
+        border: 2px solid rgba(105, 115, 134, 0.40);
+        background: rgba(0, 0, 0, 0.40);
+        margin-top: 43px;
+        margin-left: 32px;
+
+        .iconArea {
+
+          width: 226px;
+          height: 132px;
+          border-right: 1px solid #666;
+          color: #FFF;
+          font-family: Pretendard;
+          font-size: 32px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+          float: left;
+          .icon-body{
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+          }
+          img {
+            height: 45px;
+            margin-right: 23px;
+          }
+        }
+        .gps-data {
+          width: 294px;
+          height: 132px;
+          margin-left: 77px;
+          float: left;
+        }
+
+        .gps-data2 {
+          width: 332px;
+          height: 132px;
+          margin-left: 75px;
+          float: left;
+        }
+        .gps-title {
+          color: #838383;
+          font-family: Pretendard;
+          font-size: 35px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: normal;
+        }
+
+        .gps-body {
+          width: 100%;
+          .gps-value {
+            color: #FFF;
+            font-family: Pretendard;
+            font-size: 60px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            float: left;
+          }
+          .gps-unit {
+            color: #838383;
+            text-align: right;
+            font-family: Pretendard;
+            font-size: 40px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            float: right;
+            line-height: 90px;
+          }
+
+        }
+
+
+
+
+      }
+    }
+
+  .mt32 {
+    margin-top: 32px;
+  }
+}

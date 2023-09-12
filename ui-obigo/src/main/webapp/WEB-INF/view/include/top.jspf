@@ -1,0 +1,178 @@
+<!-- Modal Pop : profile -->
+<div class="modal fade" id="pfModal" tabindex="-1" role="dialog" aria-labelledby="pfModalLabel" aria-hidden="true" data-toggle="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-obigo-modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                	<span aria-hidden="true">�</span>
+                </button>
+				<h4 class="modal-title" id="pfModalLabel">User profile</h4>
+     		</div>
+	     	<div class="modal-body">
+				<div class="form-group has-feedback">
+					<input id="pf-email" class="form-control" placeholder="Email" readonly />
+					<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+
+					<span id="pf-email-w1" class="pf-help-block" style="display: none; color: #2E86C1;">Please enter the e-mail pattern</span>
+					<span id="pf-email-w2" class="pf-help-block" style="display: none; color: #C0392B;">Exist Duplicate Email</span>
+				</div>
+				<div class="form-group has-feedback">
+					<input id="pf-name" class="form-control" placeholder="User Name" />
+					<span class="glyphicon glyphicon-user form-control-feedback"></span>
+					<span id="pf-name-w" class="pf-help-block" style="display: none; color: #2E86C1;">Please enter 2~30 characters</span>
+				</div>
+				<div class="form-group has-feedback">
+					<input id="pf-pw" type="password" class="form-control" placeholder="Password" />
+					<span class="glyphicon glyphicon-lock form-control-feedback"></span>
+					<span id="pf-pw-w" class="pf-help-block" style="display: none; color: #2E86C1;">Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters</span>
+				</div>
+				<div class="form-group has-feedback">
+					<input id="pf-pwConfirm" type="password" class="form-control" placeholder="Retype Password" />
+					<span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+					<span id="pf-pwConfirm-w" class="pf-help-block" style="display: none; color: #C0392B;">Password mismatch</span>
+				</div>
+	     	</div>
+	     	<div class="modal-footer">
+	     		<button type="button" id="btnPfModalSave" class="btn btn-obigo">Save</button>
+				<button type="button" id="btnPfModalCancel" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.Modal Pop : profile -->
+
+<!-- Modal Pop : pw check -->
+<div class="modal fade" id="pwModal" tabindex="-1" role="dialog" aria-labelledby="pwModalLabel" aria-hidden="true" data-toggle="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-obigo-modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                	<span aria-hidden="true">�</span>
+                </button>
+				<h4 class="modal-title" id="pwModalLabel">Streamming server password</h4>
+     		</div>
+	     	<div class="modal-body">
+				<div class="form-group has-feedback">
+					<input id="stream-pw" type="password" class="form-control" placeholder="Password" />
+					<span class="glyphicon glyphicon-lock form-control-feedback"></span>
+					<span id="stream-pw-w" class="pf-help-block" style="display: none; color: #2E86C1;">Must contain at least password.</span>
+				</div>
+	     	</div>
+	     	<div class="modal-footer">
+	     		<button type="button" id="btnConfirmPw" class="btn btn-obigo" data-dismiss="modal">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.Modal Pop : pw check -->
+
+
+<!-- Modal Pop : LogDetail -->
+<div class="modal fade" id="ldModal" tabindex="-1" role="dialog" aria-labelledby="ldModalLabel" aria-hidden="true" data-toggle="modal">
+	<style>
+	pre {outline: 1px solid #ccc; padding: 0; margin: 0; }
+	div.obigo-textarea>.string { color: green; }
+	div.obigo-textarea>.number { color: darkorange; }
+	div.obigo-textarea>.boolean { color: blue; }
+	div.obigo-textarea>.null { color: magenta; }
+	div.obigo-textarea>.key { color: darkred; }
+	div.obigo-textarea {
+	    -moz-appearance: textfield-multiline;
+	    -webkit-appearance: textarea;
+	    font: medium -moz-fixed;
+	    font: -webkit-small-control;
+	    overflow: auto;
+	    resize: none;
+	    font-family: Lucida Console, serif;
+	}
+	</style>
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header bg-obigo-modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                	<span aria-hidden="true">�</span>
+                </button>
+				<h4 class="modal-title" id="ldModalLabel">History Detail</h4>
+     		</div>
+	     	<div class="modal-body">
+				<div class="form-group has-feedback">
+					<pre>
+						<div id="hist-content" contenteditable="false" class="obigo-textarea"></div>
+					</pre>
+				</div>
+	     	</div>
+	     	<div class="modal-footer">
+				<button type="button" id="btnldModalOK" class="btn btn-default" data-dismiss="modal">OK</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /.Modal Pop : LogDetail -->
+
+<script src="/js/include/top.js"></script>
+<header class="main-header">
+    <!-- Logo -->
+
+
+	<!-- Header Navbar -->
+	<nav class="navbar navbar-static-top" role="navigation" style="min-height: 83px;">
+		<a href="/" class="logo">
+			<!-- logo for regular state and mobile devices -->
+			<span class="logo-lg" >
+			Cabin Infotainment Home Control System Server
+			</span>
+		</a>
+		<!-- Sidebar toggle button-->
+<%--		<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">--%>
+<%--			<img src="/dist/img/obigo/menu_btn.png" />--%>
+<%--			<span class="sr-only">Toggle navigation</span>--%>
+<%--		</a>--%>
+		<!-- Navbar Right Menu -->
+		<div class="navbar-custom-menu">
+			<ul class="nav navbar-nav">
+				<!-- User Account Menu -->
+				<li class="dropdown user user-menu">
+					<!-- Menu Toggle Button -->
+					 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						<!-- The user image in the navbar-->
+						<c:if test="${empty sessionScope.role_id}"><img src="/dist/img/no-image.png" class="user-image" alt="User Image"></c:if>
+						<c:if test="${not empty sessionScope.role_id}"><img src="/images/role/<c:out value='${sessionScope.role_id}'/>.png" class="user-image" alt="User Image" onerror='this.src="/dist/img/no-image.png"'></c:if>
+
+						<!-- hidden-xs hides the username on small devices so only the image appears. -->
+						<span class="hidden-xs" style="font-size: 13px;">
+						<sec:authorize access="isAuthenticated()">
+			               <font>[<sec:authentication property="name"/>]</font>
+			            </sec:authorize>
+						</span>
+					</a>
+					<ul class="dropdown-menu">
+						<!-- The user image in the menu -->
+						<li class="user-header">
+							<c:if test="${empty sessionScope.role_id}"><img src="/dist/img/no-image.png" class="img-circle" alt="User Image"></c:if>
+							<c:if test="${not empty sessionScope.role_id}"><img src="/images/role/<c:out value='${sessionScope.role_id}'/>.png" class="img-circle" alt="User Image" onerror='this.src="/dist/img/no-image.png"'></c:if>
+							<p>
+								<c:out value='${sessionScope.name}'/>
+								<small><c:out value='${sessionScope.role_name}'/></small>
+							</p>
+						</li>
+						<!-- Menu Footer-->
+						<li class="user-footer">
+							<div class="pull-left">
+								<a href="#" class="btn btn-default btn-flat" style="display: none;">Profile</a>
+							</div>
+							<div class="pull-right">
+								<a href="/manage/logout" class="btn btn-default btn-flat">Sign out</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<!-- Control Sidebar Toggle Button -->
+				<li>
+					<!-- 
+					<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+					-->
+				</li>
+			</ul>
+		</div>
+	</nav>
+</header>

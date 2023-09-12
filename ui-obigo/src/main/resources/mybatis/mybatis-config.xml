@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration 
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+	
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="false" />
+		<setting name="useGeneratedKeys" value="true" />
+		<setting name="defaultExecutorType" value="REUSE" />
+		<setting name="aggressiveLazyLoading" value="false" />
+	</settings>
+
+	<!-- 별명 -->
+	<typeAliases>	
+		<typeAlias alias="string" 		 type="java.lang.String" />
+		<typeAlias alias="int" 			 type="java.lang.Integer" />
+		<typeAlias alias="boolean" 			 type="java.lang.Boolean" />
+		<typeAlias alias="hashMap" 		 type="java.util.HashMap" />
+		<typeAlias alias="map" 			 type="java.util.Map" />
+		<typeAlias alias="linkedHashMap" type="java.util.LinkedHashMap" />
+	</typeAliases>
+
+</configuration>

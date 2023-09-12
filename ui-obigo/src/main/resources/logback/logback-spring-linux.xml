@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true">
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-3level %logger{5} - [%M] %msg %n</pattern>
+    </encoder>
+  </appender>
+  
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+     <encoder>
+         <pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %magenta(%-4relative) --- [ %thread{10} ] %cyan(%logger{20}) : %msg%n </pattern>
+     </encoder>
+  </appender>
+  
+  <!-- 파일로 로그를 남김 : zip으로 압축해서... -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/root/logs/v2x.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</Pattern>
+    </encoder>
+        
+    <!-- 로그를 남기는 파일의 용량이 1000KB(1MB)가 넘으면, 이를 압축 파일로 만들고 새로 로그 파일로 만들라는 정책 -->
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <MaxFileSize>10MB</MaxFileSize>
+    </triggeringPolicy>
+
+    <!-- 파일을 덮어쓰는 정책 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <FileNamePattern>/root/logs/v2x.%i.log.zip</FileNamePattern>
+      <!--
+        MinIndex가 1이고, MaxIndex가 10이므로, 위의 파일 이름 패턴에 따라 아래의 로그 파일이 생길 것이다.
+        hrapoc-spring-boot.1.log.zip  hrapoc-spring-boot.2.log.zip  .... hrapoc-spring-boot.10.log.zip    
+              이 상태에서 또 1MB가 넘으면 hrapoc-spring-boot.1.log.zip이 된다.
+      -->
+      <MinIndex>1</MinIndex>
+      <MaxIndex>10</MaxIndex>
+    </rollingPolicy>
+  </appender>
+         
+  <logger name="jdbc" level="OFF"/>
+  <logger name="jdbc.sqlonly" level="OFF"/>
+  <logger name="jdbc.sqltiming" level="debug"/>
+  <logger name="jdbc.audit" level="OFF"/>
+  <logger name="jdbc.resultset" level="debug"/>
+  <logger name="jdbc.resultsettable" level="debug"/>
+  <logger name="jdbc.connection" level="OFF"/>
+  
+  <!-- 로그 중복 출력 막기 : additivity="false" -->
+  <logger name="com.obigo" level="debug" additivity="false">
+    <appender-ref ref="FILE" />
+  </logger>
+  
+  <root level="info">
+    <appender-ref ref="FILE" />
+  </root>
+  
+</configuration>

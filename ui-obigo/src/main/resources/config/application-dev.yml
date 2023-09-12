@@ -1,0 +1,11 @@
+
+
+#-------------------------------------------------------
+# log setting
+# trace > debug > info > warn > error
+logging:
+  level:
+    org:
+      springframework: error
+  # logback config file
+  config: "classpath:logback/logback-spring.xml"

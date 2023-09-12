@@ -1,0 +1,35 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8;" pageEncoding="UTF-8"%>
+<header class="main-header" style="z-index: 0; max-height: 77px;">
+	<nav class="navbar main-navbar navbar-static-top" role="navigation" style=" max-height: 77px;">
+		<!-- Sidebar toggle button-->
+		<div class="navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li class="${(menu == 1000 ? 'active' : '')}"><a href="/vehicleDash">실시간 모니터링</a></li>
+				<li class="${(menu == 2000 ? 'active' : '')}"><a href="/vehicle">셔틀 관리</a></li>
+				<li class="${(menu == 3000 ? 'active' : '')}"><a href="/reservation">예약 관리</a></li>
+				<li class="${(menu == 4000 ? 'active' : '')}"><a href="/driving">운행 이력</a></li>
+				<li class="${(menu == 5000 ? 'active' : '')}"><a href="/disability">장애 이력</a></li>
+				<li class="${(menu == 6000 ? 'active' : '')}"><a href="/scheduler/scheduler">푸시 관리</a></li>
+				<li class="${(menu == 7000 ? 'active' : '')}"><a href="/user/info">회원 관리</a></li>
+				<li class="${(menu == 8000 ? 'active' : '')}"><a href="/mqtt/log">데이터 관리</a></li>
+			</ul>
+		</div>
+		<!-- Navbar Right Menu -->
+		<div class="navbar-custom-menu">
+			<ul class="nav navbar-nav">
+				<!-- User Account Menu -->
+				<li class="dropdown user user-menu">
+					<ul class="dropdown-menu">
+					</ul>
+				</li>
+				<!-- Control Sidebar Toggle Button -->
+				<li>
+					<!--
+					<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+					-->
+				</li>
+			</ul>
+		</div>
+	</nav>
+</header>
+<%--</header>--%>
