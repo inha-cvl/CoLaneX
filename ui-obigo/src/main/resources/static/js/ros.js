@@ -66,7 +66,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 const initRos = function() {
-    ros.connect('ws://10.28.2.120:9090');
+    ros.connect('ws://localhost:9090');
 
 
     hlvPoseTopic.subscribe(function (message) {
