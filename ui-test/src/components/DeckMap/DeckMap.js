@@ -37,7 +37,7 @@ const tlvPathStyle: LineLayer = {
   },
 }
 const hlvPathStyle: LineLayer = {
-  id: 'THLV Path',
+  id: 'HLV Path',
   type: 'line',
   "paint": {
     "line-color": "#ff75ba",

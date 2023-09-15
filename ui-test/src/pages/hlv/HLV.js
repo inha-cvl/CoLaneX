@@ -46,13 +46,13 @@ const HLV = () => {
   const [system, setSystem] = useState([0, 0, 0, 0]);
   const [messages, setMessages] = useState([
     "Wait",
-    "Attempt to Merge into the Left Lane",
-    "Attempt to Merge into the Right Lane",
-    "TLV Accepts Request to Join Lane",
-    "TLV Rejects Request to Join Lane",
+    "Attempt to Merge\ninto the Left Lane",
+    "Attempt to Merge\ninto the Right Lane",
+    "TLV Accepts Request\nto Join Lane",
+    "TLV Rejects Request\nto Join Lane",
     "Over",
   ]);
-  const [messageIdx, setMessageIdx] = useState(1);
+  const [messageIdx, setMessageIdx] = useState(0);
   const [HLVPose, setHLVPose] = useState({
     latitude: 37.384553,
     longitude: 126.657895,
