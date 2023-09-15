@@ -17,9 +17,11 @@ def signal_handler(sig, frame):
 
 class TLVSimulator:
     def __init__(self):
-        self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
+        #self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
+        self.base_lla = [37.383378,126.656798,7] # Sondo-Site
         
-        self.ego = Vehicle(-124.023, 420.685, 2.317, 0.0, 2.367)
+        #self.ego = Vehicle(-124.023, 420.685, 2.317, 0.0, 2.367) #KIAPI
+        self.ego = Vehicle(-3793.467, 3837.518, -3.133, 0.0, 2.367) 
         self.roll = 0.0
         self.pitch = 0.0
 
