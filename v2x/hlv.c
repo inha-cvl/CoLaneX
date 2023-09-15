@@ -37,7 +37,7 @@
 #define SAMPLE_LOCAL "127.0.0.1"
 
 #define SAMPLE_V2X_PORT_ADDR 47347
-#define MAX_UPER_SIZE 200000
+#define MAX_UPER_SIZE  4096
 
 volatile bool is_running = true;
 
@@ -92,8 +92,7 @@ int v2x_wsr_cmd_process(void);
 void *v2x_tx_cmd_process(void *);
 void *v2x_rx_cmd_process(void *);
 int process_commands(void);
-void pubTLVPose(long, long, long, long);
-void pubTLVPath(std::vector<std::pair<double, double>>);
+void pubTLV(long, long, long, long, long, std::vector<std::pair<double, double>>);
 void* check_packet_rates(void *);
 void check_rtt(int);
 void check_distance(long, long);
@@ -119,6 +118,7 @@ void pathCallback(const visualization_msgs::Marker::ConstPtr &msg){
 	path_len = atoi(msg->text.c_str());
 	for (size_t i = 0; i < path_len; i++)
 	{
+
 		path.push_back(std::make_pair(msg->points[i].x, msg->points[i].y));
 	}
 }
@@ -193,6 +193,7 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.secMark = rx_msg_cnt;
 		ptrBSM->coreData.lat = latitude;
 		ptrBSM->coreData.Long = longitude;
+		ptrBSM->coreData.elev = _signal;
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
 		
@@ -315,6 +316,7 @@ void *v2x_tx_cmd_process(void *arg)
 					n,
 					test_bsm->coreData.msgCnt,
 					test_path_len);
+				
 			}
 		}
 		free(v2x_tx_pdu_p);
@@ -329,14 +331,14 @@ void *v2x_rx_cmd_process(void *arg)
 {
 	
 	(void)arg;
-	uint8_t buf[MAX_UPER_SIZE] = {0};
+	uint8_t recvbuf[MAX_UPER_SIZE] = {0};
 	int n = -1;
 	time_t start_time = time(NULL);
 
 
 	while (is_running)
 	{
-		n = recv(sock_g, buf, sizeof(buf), 0);
+		n = recv(sock_g, recvbuf, sizeof(recvbuf), 0);
 		
 		if (n < 0)
 		{
@@ -358,39 +360,38 @@ void *v2x_rx_cmd_process(void *arg)
 		else
 		{
 			rx_packet_count++;
-			
+
 			Ext_V2X_RxPDU_t ext_v2x_rx_pdu_p;
 			memcpy(&ext_v2x_rx_pdu_p, recvbuf, sizeof(Ext_V2X_RxPDU_t));
-			int db_v2x_len = ntohs(ext_v2x_rx_pdu_p.v2x_msg.length);
 			int read_len = sizeof(Ext_V2X_RxPDU_t);
 			DB_V2X_T db_v2x_tmp;
-			memcpy(&db_v2x_tmp, recvbuf+read_len, db_v2x_len);
 
-			read_len += (sizeof(DB_V2X_T) - sizeof(MessageFrame_t));
+			memcpy(&db_v2x_tmp, recvbuf+read_len, sizeof(DB_V2X_T)-sizeof(MessageFrame_t));
+			read_len += (sizeof(DB_V2X_T)- sizeof(MessageFrame_t));
 			int msgFrame_len = ntohl(db_v2x_tmp.ulPayloadLength);
 
 			MessageFrame_t msgFrame;
-			memcpy(&msgFrame, &db_v2x_tmp.messageFrame, msgFrame_len);
+			memcpy(&msgFrame, recvbuf+read_len, msgFrame_len);
 			BasicSafetyMessage_t *ptrBSM = &msgFrame.value.choice.BasicSafetyMessage;
 
 			rx_msg_cnt = ptrBSM->coreData.msgCnt;
 			int rx_dsecond = ptrBSM->coreData.secMark;
 			check_rtt(rx_dsecond);
-			check_distance(ptrBSM->coreData.lat, ptrBSM->coreData.Long);
 
 			int get_path_len = (msgFrame_len - sizeof(MessageFrame_t))/sizeof(struct path);
 			read_len += sizeof(MessageFrame_t);
+
 			struct path received_paths[get_path_len];
 			memcpy(received_paths, recvbuf + read_len, get_path_len * sizeof(struct path));
 
-			pubTLVPose(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed);
-
 			std::vector<std::pair<double, double>> _t_path;
-			for (int i = 0; i < get_path_len); ++i)
+			for (int i = 0; i < get_path_len; ++i)
 			{
 				_t_path.push_back(std::make_pair(received_paths[i].x, received_paths[i].y));
 			}
-			pubTLVPath(_t_path);
+
+			pubTLV(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed, ptrBSM->coreData.elev, _t_path);
+
 		}
 		usleep(1e6/hz);
 	}
@@ -546,15 +547,14 @@ int process_commands(void)
 	return -1;
 }
 
-void pubTLVPose(long lat, long lng, long yaw, long vel){
+void pubTLV(long lat, long lng, long yaw, long vel, long sig, std::vector<std::pair<double, double>> _path){
 	tlv_pose.position.x = lat / pow(10, 7);
 	tlv_pose.position.y = lng / pow(10, 7);
 	tlv_pose.position.z = yaw * 0.0125;
 	tlv_pose.orientation.x = vel * 0.02;
+	tlv_pose.orientation.y = sig;
 	pub_tlv_pose.publish(tlv_pose);
-}
 
-void pubTLVPath(std::vector<std::pair<double, double>> _path){
 	std::vector<geometry_msgs::Point> points_msg;
     for (const auto& point_pair : _path) {
         geometry_msgs::Point point_msg;
@@ -584,6 +584,7 @@ void pubTLVPath(std::vector<std::pair<double, double>> _path){
 
 	pub_tlv_path.publish(tlv_path);
 }
+
 
 void* check_packet_rates(void *){
 	while(is_running){

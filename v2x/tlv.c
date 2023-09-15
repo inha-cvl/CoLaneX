@@ -92,7 +92,7 @@ int v2x_wsr_cmd_process(void);
 void *v2x_tx_cmd_process(void *);
 void *v2x_rx_cmd_process(void *);
 int process_commands(void);
-void pubHLV(long, long, long, long, std::vector<std::pair<double, double>>);
+void pubHLV(long, long, long, long, long, std::vector<std::pair<double, double>>);
 void* check_packet_rates(void *);
 void check_rtt(int);
 void check_distance(long, long);
@@ -128,6 +128,7 @@ void stateCallback(const std_msgs::Int8::ConstPtr &msg){
 void signalCallback(const std_msgs::Int8::ConstPtr &msg){
 	_signal = msg->data;
 }
+
 
 void sigint_handler(int sig) {
     is_running = false; // 스레드 종료 플래그 설정
@@ -194,6 +195,7 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.secMark = rx_msg_cnt;
 		ptrBSM->coreData.lat = latitude;
 		ptrBSM->coreData.Long = longitude;
+		ptrBSM->coreData.elev = _signal;
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
 		
@@ -323,18 +325,17 @@ void *v2x_rx_cmd_process(void *arg)
 
 			Ext_V2X_RxPDU_t ext_v2x_rx_pdu_p;
 			memcpy(&ext_v2x_rx_pdu_p, recvbuf, sizeof(Ext_V2X_RxPDU_t));
-			int db_v2x_len = ntohs(ext_v2x_rx_pdu_p.v2x_msg.length);
 			int read_len = sizeof(Ext_V2X_RxPDU_t);
 			DB_V2X_T db_v2x_tmp;
-			memcpy(&db_v2x_tmp, recvbuf+read_len, db_v2x_len);
 
-			read_len += (sizeof(DB_V2X_T) - sizeof(MessageFrame_t));
+			memcpy(&db_v2x_tmp, recvbuf+read_len, sizeof(DB_V2X_T)-sizeof(MessageFrame_t));
+			read_len += (sizeof(DB_V2X_T)- sizeof(MessageFrame_t));
 			int msgFrame_len = ntohl(db_v2x_tmp.ulPayloadLength);
 
 			MessageFrame_t msgFrame;
-			memcpy(&msgFrame, &db_v2x_tmp.messageFrame, msgFrame_len);
+			memcpy(&msgFrame, recvbuf+read_len, msgFrame_len);
 			BasicSafetyMessage_t *ptrBSM = &msgFrame.value.choice.BasicSafetyMessage;
-			
+
 			rx_msg_cnt = ptrBSM->coreData.msgCnt;
 			int rx_dsecond = ptrBSM->coreData.secMark;
 			check_rtt(rx_dsecond);
@@ -344,24 +345,23 @@ void *v2x_rx_cmd_process(void *arg)
 
 			struct path received_paths[get_path_len];
 			memcpy(received_paths, recvbuf + read_len, get_path_len * sizeof(struct path));
-			
+
 			std::vector<std::pair<double, double>> _h_path;
 			printf("V2X Rx Test Msg>>\n"
-					"  Receive Size: %ld\n"
+					"  Receive Size: %d\n"
 					"  CNT        :  %ld\n"
 					"  path len   :  %d\n",
 					n,
 					ptrBSM->coreData.msgCnt,
 					get_path_len);
-
-			for (int i = 0; i < get_path_len; i++)
+			
+			for (int i = 0; i < get_path_len-1; i++)
 			{
 				_h_path.push_back(std::make_pair(received_paths[i].x, received_paths[i].y));
 			}
 
-			pubHLV(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed, _h_path);
-			
-		}
+			pubHLV(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed, ptrBSM->coreData.elev, _h_path);
+				}
 		usleep(1e6/hz); // microseconds
 	}
 	return NULL;
@@ -529,13 +529,13 @@ int process_commands(void)
 	return -1;
 }
 
-void pubHLV(long lat, long lng, long yaw, long vel, std::vector<std::pair<double, double>> _path){
+void pubHLV(long lat, long lng, long yaw, long vel, long sig, std::vector<std::pair<double, double>> _path){
 	hlv_pose.position.x = lat / pow(10, 7);
 	hlv_pose.position.y = lng / pow(10, 7);
 	hlv_pose.position.z = yaw * 0.0125;
 	hlv_pose.orientation.x = vel * 0.02;
+	hlv_pose.orientation.y = sig;
 	pub_hlv_pose.publish(hlv_pose);
-
 
 	std::vector<geometry_msgs::Point> points_msg;
     for (const auto& point_pair : _path) {
