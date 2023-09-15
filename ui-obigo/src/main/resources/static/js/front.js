@@ -1,5 +1,5 @@
-mapboxgl.accessToken = "pk.eyJ1Ijoia2FyaW5sZWUiLCJhIjoiY2xlY2k3MmhrMHp4aDNudDl3N3U2NzR5MyJ9.SeuDJKWvsCKsKOkZutIYLw";
-const styleUrl = 'mapbox://styles/karinlee/cldtw24nn000k01mxdqwb5tpq';
+mapboxgl.accessToken = "pk.eyJ1Ijoia2thLW5hIiwiYSI6ImNsazd3cXB6ajBjbW0zZXByYmRzd2FtYXYifQ.F-q5aMxHrdlt6o49OcRtrw";
+const styleUrl = "mapbox://styles/kka-na/ckrbxk1fd0z5z18ljxdswgu1s";
 
 const MAP_LNG = 127.11058607387321;
 const MAP_LAT = 37.39984828837143;
@@ -257,9 +257,9 @@ const initLine = function() {
             'line-cap': 'round'
         },
         'paint': {
-            'line-color': 'blue',
-            'line-width': 8,
-            'line-opacity':0.3
+            'line-color': '#ff75ba',
+            'line-width': 10,
+            'line-opacity':0.5
         }
     });
     map.addSource('tlv-line', {
@@ -286,9 +286,9 @@ const initLine = function() {
             'line-cap': 'round'
         },
         'paint': {
-            'line-color': 'red',
-            'line-width': 8,
-            'line-opacity':0.3
+            'line-color': '#5cdcff',
+            'line-width': 10,
+            'line-opacity':0.5
         }
     });
 
