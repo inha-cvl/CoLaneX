@@ -1,11 +1,14 @@
 
 import numpy as np
 import pymap3d as pm
+import copy
 import json
 from libs.quadratic_spline_interpolate import QuadraticSplineInterpolate
 
 M_TO_IDX = 1/0.5
 IDX_TO_M = 0.5
+
+lanelets = None
 
 def euc_distance(pt1, pt2):
     return np.sqrt((pt2[0]-pt1[0])**2+(pt2[1]-pt1[1])**2)
@@ -66,12 +69,12 @@ def filter_same_points(points):
 
     return filtered_points
 
-def get_neighbor(lanelet, node):
-    l_id = lanelet[node]['adjacentLeft']
-    r_id = lanelet[node]['adjacentRight']
+def get_neighbor(node):
+    l_id = lanelets[node]['adjacentLeft']
+    r_id = lanelets[node]['adjacentRight']
     return l_id, r_id
 
-def get_whole_neighbor(lanelet, node):
+def get_whole_neighbor(node):
     num = 1
     find_node = node
     left_most = True
@@ -80,8 +83,8 @@ def get_whole_neighbor(lanelet, node):
     right_lanes = []
 
     while left_most:
-        if lanelet[find_node]['adjacentLeft'] != None:
-            find_node = lanelet[find_node]['adjacentLeft']
+        if lanelets[find_node]['adjacentLeft'] != None:
+            find_node = lanelets[find_node]['adjacentLeft']
             left_lanes.append(find_node)
             num += 1
             
@@ -90,8 +93,8 @@ def get_whole_neighbor(lanelet, node):
             find_node = node
     
     while right_most:
-        if lanelet[find_node]['adjacentRight'] != None:
-            find_node = lanelet[find_node]['adjacentRight']
+        if lanelets[find_node]['adjacentRight'] != None:
+            find_node = lanelets[find_node]['adjacentRight']
             right_lanes.append(find_node)
             num += 1
             
@@ -105,20 +108,20 @@ def get_whole_neighbor(lanelet, node):
 
 
     
-def find_most_successor(lanelet, check_l):
+def find_most_successor(check_l):
     most_successor = None
     for c in check_l:
-        if len(lanelet[c]['successor']) <= 0:
+        if len(lanelets[c]['successor']) <= 0:
             continue
         else:
-            most_successor = lanelet[c]['successor'][0]
+            most_successor = lanelets[c]['successor'][0]
             break
     return most_successor
 
-def get_possible_successor(lanelet, node, prior='Left'):
+def get_possible_successor(node, prior='Left'):
     successor = None
-    left_lanes, right_lanes, me = get_whole_neighbor(lanelet, node)
-    if len(lanelet[node]['successor']) <= 0:
+    left_lanes, right_lanes, me = get_whole_neighbor(node)
+    if len(lanelets[node]['successor']) <= 0:
         if prior == 'Left':
             check_a = left_lanes
             check_b = right_lanes
@@ -126,37 +129,36 @@ def get_possible_successor(lanelet, node, prior='Left'):
             check_a = right_lanes
             check_b = left_lanes
         
-        most_successor = find_most_successor(lanelet, check_a)
+        most_successor = find_most_successor(check_a)
         if most_successor == None:
-            most_successor = find_most_successor(lanelet, check_b)
+            most_successor = find_most_successor(check_b)
 
         successor = most_successor
     else:
-        successor = lanelet[node]['successor'][0]
+        successor = lanelets[node]['successor'][0]
 
     return successor
 
-def get_straight_path(lanelet, s_n, s_i, path_len):
-    wps = lanelet[s_n]['waypoints']
+def get_straight_path(s_n, s_i, path_len):
+    wps = copy.deepcopy(lanelets[s_n]['waypoints'])
     lls_len = len(wps)
-
+    
     u_n = s_n
     u_i = s_i+int(path_len*M_TO_IDX)
     e_i = u_i
 
     while u_i >= lls_len:
-        _u_n = get_possible_successor(lanelet, u_n, prior='Left')
+        _u_n = get_possible_successor(u_n, prior='Left')
         if _u_n == None:
             e_i = len(wps-1)
             break
         u_n = _u_n
         u_i -= lls_len
         e_i += u_i
-        u_wp = lanelet[u_n]['waypoints']
+        u_wp = lanelets[u_n]['waypoints']
         lls_len = len(u_wp)
         wps += u_wp
     r = wps[s_i:e_i]
-
     return r, u_n, u_i
 
 def ref_interpolate(points, precision):
@@ -170,10 +172,10 @@ def ref_interpolate(points, precision):
 
     return itp_points, itp.s[-1]
 
-def node_matching(lanelet, l_id, l_idx):
+def node_matching(l_id, l_idx):
     node_id = l_id
-    if lanelet[l_id].get('cut_idx') is not None:
-        for n, (s_idx, e_idx) in enumerate(lanelet[l_id]['cut_idx']):
+    if lanelets[l_id].get('cut_idx') is not None:
+        for n, (s_idx, e_idx) in enumerate(lanelets[l_id]['cut_idx']):
             if l_idx >= s_idx and l_idx < e_idx:
                 node_id += '_%s' % (n)
                 break

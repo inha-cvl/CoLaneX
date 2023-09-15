@@ -15,6 +15,16 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def HLVPathViz(waypoints):
     return FinalPath(waypoints, 999, 0.2, 1.5, (241/255,76/255,152/255, 0.5))
+
+def R1PathViz(waypoints):
+    return FinalPath(waypoints, 999, 0.5, 1.5, (1,0,0, 0.5))
+def R11PathViz(waypoints):
+    return FinalPath(waypoints, 999, 0.5, 1.5, (1,1,0, 0.5))
+def R2PathViz(waypoints):
+    return FinalPath(waypoints, 999, 0.5, 1.5, (0,1,0, 0.5))
+def R3PathViz(waypoints):
+    return FinalPath(waypoints, 999, 0.5, 1.5, (0,0,1, 0.5))
+
 def TLVPathViz(waypoints):
     return FinalPath(waypoints, 999, 0.2, 1.5, (94/255, 204/255, 243/255, 0.5))
 

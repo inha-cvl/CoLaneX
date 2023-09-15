@@ -1,13 +1,13 @@
 import rospy
 import sys
 import signal
-from std_msgs.msg import String
+from std_msgs.msg import String, Int8
 from geometry_msgs.msg import Pose
 from visualization_msgs.msg import Marker
 
 from libs.map import LaneletMap, TileMap
 from libs.micro_lanelet_graph import MicroLaneletGraph
-from libs.planner_utils import *
+import libs.planner_utils as p
 from libs.rviz_utils import *
 
 KPH_TO_MPS = 1 / 3.6
@@ -19,12 +19,13 @@ def signal_handler(sig, frame):
 class SafeDistance:
     def __init__(self):
         self.state = 'WAIT'
-        self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
+        #self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
+        self.base_lla = [37.383378,126.656798, 46.746] #SONGDO-SITE
         self.tile_size = 5.0
         self.cut_dist = 15.0
         self.precision = 0.5
 
-        self.lmap = LaneletMap("KIAPI.json")
+        self.lmap = LaneletMap("songdo-site.json")
         self.tmap = TileMap(self.lmap.lanelets, self.tile_size)
         self.graph = MicroLaneletGraph(self.lmap, self.cut_dist).graph
         self.M_TO_IDX = 1/self.precision
@@ -34,6 +35,8 @@ class SafeDistance:
         self.tlv_geojson = None
         self.hlv_path = None
         self.hlv_v = None
+        self.hlv_signal = 0 #0 : none, 1 : left, 2 : right
+        self.safety = 0 #0: none, 1: safe, 2: dangerous
 
         self.path_make_cnt = 0
         self.final_path = None
@@ -57,31 +60,48 @@ class SafeDistance:
         self.pub_tlv_path = rospy.Publisher('/planning/tlv_path', Marker, queue_size=1)
         self.pub_intersection = rospy.Publisher('/planning/intersection', Marker, queue_size=1)
         self.pub_move = rospy.Publisher('/planning/move', Marker, queue_size=1)
+        self.pub_safety = rospy.Publisher('/planning/safety', Int8, queue_size=1)
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
-        self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
+        #self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
+        self.pub_tlv_state = rospy.Publisher('/tlv_state', Int8, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
+        p.lanelets = self.lmap.lanelets
 
-    def tlv_pose_cb(self, msg):
-        self.ego_pos = convert2enu(self.base_lla, msg.position.x, msg.position.y)
+    def tlv_pose_cb(self, msg): 
+        self.ego_pos = p.convert2enu(self.base_lla, msg.position.x, msg.position.y)
         self.ego_v = msg.orientation.x
     
     def hlv_pose_cb(self, msg):
         self.hlv_v = msg.orientation.x
+        self.hlv_signal = msg.orientation.y
 
     def hlv_path_cb(self, msg):
         self.hlv_path = [( pt.x, pt.y) for pt in msg.points]
         # compress_path = do_compressing(self.hlv_path, 10)
         if len(self.hlv_path) > 0:
-            hlv_geojson = to_geojson(self.hlv_path, self.base_lla)
-            self.pub_hlv_geojson.publish(hlv_geojson)
+            hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
+            #self.pub_hlv_geojson.publish(hlv_geojson)
     
+
+    def publish_state(self):
+        state = 0
+        if self.hlv_signal == 1:
+            state = 1
+        elif self.hlv_signal == 2:
+            state = 2
+        if self.safety == 1:
+            state = 3
+        elif self.safety == 2:
+            state = 4
+        self.pub_tlv_state.publish(Int8(state))
+
     def need_update(self):
         if self.final_path == None:
             return 0
-        threshold = (self.ego_v * MPS_TO_KPH)*self.M_TO_IDX
-        idx = find_nearest_idx(self.final_path, self.ego_pos)
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX)*1.5
+        idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1
         else:
@@ -100,20 +120,20 @@ class SafeDistance:
                 start_pose = self.ego_pos
             elif need_update == 1:
                 start_pose = self.final_path[-1]
-                idx = find_nearest_idx(self.final_path, self.ego_pos)
+                idx = p.find_nearest_idx(self.final_path, self.ego_pos)
                 r0 = self.final_path[idx:]
 
-            ego_lanelets = lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
+            ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
             x1 = self.ego_v * MPS_TO_KPH + self.ego_v * self.x_p + self.x_c #m
-            r1, _, _ = get_straight_path(self.lmap.lanelets, ego_lanelets[0], ego_lanelets[1], x1)
+            r1, _, _ = p.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
 
             final_path = r0+r1
             #compress_path = do_compressing(final_path, 10)
             self.final_path = final_path
-            self.tlv_path = ref_interpolate(final_path, self.precision)[0]
+            self.tlv_path = p.ref_interpolate(final_path, self.precision)[0]
             # cause limitation of v2x max length 
-            self.tlv_path = limit_path_length(self.tlv_path, 50)
-            self.tlv_geojson = to_geojson(self.tlv_path, self.base_lla)
+            self.tlv_path = p.limit_path_length(self.tlv_path, 50)
+            self.tlv_geojson = p.to_geojson(self.tlv_path, self.base_lla)
             
             
             tlv_path_viz = TLVPathViz(self.tlv_path)
@@ -153,15 +173,18 @@ class SafeDistance:
             d2_idx = int(d2*self.M_TO_IDX)
             dg = d1-d2
             ds = self.ego_v*3.6-self.d_c #m
-            safety = 'Safe' if dg > ds else 'Dangerous'
+            self.safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
             if d2_idx < len(self.tlv_path):  
                 self.pub_move.publish(Sphere('move', 0, self.tlv_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
-        
+        else:
+            self.safety = 0
+
     def run(self):
         self.state = 'RUN'
         rate = rospy.Rate(10)
         
         while not rospy.is_shutdown():
+            self.publish_state()
             self.get_node_path()
             self.calc_safe_distance()
             rate.sleep()
