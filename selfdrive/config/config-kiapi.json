@@ -5,16 +5,16 @@
         "wheelbase": 2.8
     },
     "map": {
-        "name": "songdo-site",
+        "name": "KIAPI",
         "base_lla": {
-            "latitude" : 37.383378,
-            "longitude" : 126.656798,
+            "latitude" : 35.64588122580907,
+            "longitude" : 128.40214778762413,
             "altitude" : 46.746
         }
     },
     "planning": {
         "velocity_profile": {
-            "max_velocity": 30.0,
+            "max_velocity": 80.0,
             "road_friction": 0.15,
             "window_size": 25
         },
