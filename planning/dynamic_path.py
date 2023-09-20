@@ -36,6 +36,8 @@ class DynamicPath:
         self.M_TO_IDX = 1/self.precision
         self.IDX_TO_M = self.precision
         self.ego_pos = None
+        self.hlv_path = []
+        self.hlv_geojson = None
 
 
         self.path_make_cnt = 0
@@ -56,7 +58,7 @@ class DynamicPath:
         self.pub_hlv_path = rospy.Publisher('/planning/hlv_path', Marker, queue_size=1)
         self.pub_hlv_state = rospy.Publisher('/hlv_state', Int8, queue_size=1)
         self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
-        # self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
+        self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
@@ -74,7 +76,7 @@ class DynamicPath:
         #compress_path = do_compressing(tlv_path, 10)
         if len(tlv_path) > 0:
             tlv_geojson = p.to_geojson(tlv_path, self.base_lla)
-            # self.pub_tlv_geojson.publish(tlv_geojson)
+            self.pub_tlv_geojson.publish(tlv_geojson)
 
     def hlv_signal_cb(self, msg):
         self.signal = msg.data
@@ -95,9 +97,10 @@ class DynamicPath:
         if self.final_path == None:
             return 0
         if self.temp_signal != self.signal and self.signal != 0:
+            print("Here!", self.temp_signal, self.signal)
             self.temp_signal = self.signal
             return 2
-        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX)*1.2
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX)*1.3
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1
@@ -157,19 +160,18 @@ class DynamicPath:
         need_update = self.need_update()
         if need_update != -1:
             final_path = self.make_path(need_update)
-            self.final_path = final_path
-            self.hlv_path = p.ref_interpolate(final_path, self.precision)[0]
-            self.hlv_path = p.limit_path_length(self.hlv_path, 50) # cause limitation of v2x max length
+            self.final_path = p.ref_interpolate(final_path, self.precision)[0]
+            self.hlv_path = p.limit_path_length(self.final_path, 50) # cause limitation of v2x max length
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
                     
-            hlv_path_viz = HLVPathViz(self.hlv_path)
-            self.pub_hlv_path.publish(hlv_path_viz)
-            self.pub_hlv_geojson.publish(self.hlv_geojson)
+        hlv_path_viz = HLVPathViz(self.hlv_path)
+        self.pub_hlv_path.publish(hlv_path_viz)
+        self.pub_hlv_geojson.publish(self.hlv_geojson)
         
 
     def run(self):
         self.state = 'RUN'
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(2)
         
         while not rospy.is_shutdown():
             if self.state != 'Path':

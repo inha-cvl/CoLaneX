@@ -31,7 +31,7 @@ class SafeDistance:
         self.M_TO_IDX = 1/self.precision
         self.IDX_TO_M = self.precision
         self.ego_pos = None
-        self.tlv_path = None
+        self.tlv_path = []
         self.tlv_geojson = None
         self.hlv_path = None
         self.hlv_v = None
@@ -62,7 +62,7 @@ class SafeDistance:
         self.pub_move = rospy.Publisher('/planning/move', Marker, queue_size=1)
         self.pub_safety = rospy.Publisher('/planning/safety', Int8, queue_size=1)
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
-        #self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
+        self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
         self.pub_tlv_state = rospy.Publisher('/tlv_state', Int8, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
@@ -78,13 +78,14 @@ class SafeDistance:
         self.hlv_signal = msg.orientation.y
 
     def hlv_path_cb(self, msg):
-        self.hlv_path = [( pt.x, pt.y) for pt in msg.points]
+        hlv_path = [( pt.x, pt.y) for pt in msg.points]
+        self.hlv_path = p.ref_interpolate(hlv_path, self.precision)[0]
         # compress_path = do_compressing(self.hlv_path, 10)
-        if len(self.hlv_path) > 0:
-            hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
-            #self.pub_hlv_geojson.publish(hlv_geojson)
+        if len(hlv_path) > 0:
+            hlv_geojson = p.to_geojson(hlv_path, self.base_lla)
+            self.pub_hlv_geojson.publish(hlv_geojson)
+        
     
-
     def publish_state(self):
         state = 0
         if self.hlv_signal == 1:
@@ -100,7 +101,7 @@ class SafeDistance:
     def need_update(self):
         if self.final_path == None:
             return 0
-        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX)*1.5
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX)*1.3
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1
@@ -129,17 +130,16 @@ class SafeDistance:
 
             final_path = r0+r1
             #compress_path = do_compressing(final_path, 10)
-            self.final_path = final_path
-            self.tlv_path = p.ref_interpolate(final_path, self.precision)[0]
+            self.final_path = p.ref_interpolate(final_path, self.precision)[0]
             # cause limitation of v2x max length 
-            self.tlv_path = p.limit_path_length(self.tlv_path, 50)
+            self.tlv_path = p.limit_path_length(self.final_path, 50)
             self.tlv_geojson = p.to_geojson(self.tlv_path, self.base_lla)
             
             
-            tlv_path_viz = TLVPathViz(self.tlv_path)
-            self.pub_tlv_path.publish(tlv_path_viz)
-            self.pub_tlv_geojson.publish(self.tlv_geojson)
-        
+        tlv_path_viz = TLVPathViz(self.tlv_path)
+        self.pub_tlv_path.publish(tlv_path_viz)
+        self.pub_tlv_geojson.publish(self.tlv_geojson)
+    
     def is_insied_circle(self, pt1, pt2, radius):
         distance = math.sqrt((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)
         if distance <=  radius:
@@ -148,7 +148,7 @@ class SafeDistance:
             return False
 
     def calc_safe_distance(self):
-        if self.hlv_path == None or self.hlv_v == None or self.tlv_path == None:
+        if self.hlv_path == None or self.hlv_v == None or self.final_path == None:
             return
         
         find = False
@@ -158,7 +158,7 @@ class SafeDistance:
         for hi, hwp in enumerate(self.hlv_path):
             if find:
                 break
-            for ti, twp in enumerate(self.tlv_path):
+            for ti, twp in enumerate(self.final_path):
                 if self.is_insied_circle(twp, hwp, self.intersection_radius):
                     inter_pt = twp
                     inter_idx = ti
@@ -169,19 +169,19 @@ class SafeDistance:
             self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
         
             d1 = inter_idx*self.IDX_TO_M
-            d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v)
+            d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v) if self.hlv_v != 0 else 0
             d2_idx = int(d2*self.M_TO_IDX)
             dg = d1-d2
             ds = self.ego_v*3.6-self.d_c #m
             self.safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
-            if d2_idx < len(self.tlv_path):  
-                self.pub_move.publish(Sphere('move', 0, self.tlv_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
+            if d2_idx < len(self.final_path):  
+                self.pub_move.publish(Sphere('move', 0, self.final_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
         else:
             self.safety = 0
 
     def run(self):
         self.state = 'RUN'
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(2)
         
         while not rospy.is_shutdown():
             self.publish_state()
