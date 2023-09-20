@@ -134,6 +134,8 @@ class DynamicPath:
         
        
         ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
+        if ego_lanelets == None:
+            return None
         
         x1 = self.ego_v * MPS_TO_KPH if self.ego_v != 0 else 100
         r1, n1, i1 = p.get_straight_path( ego_lanelets[0], ego_lanelets[1], x1)
@@ -160,6 +162,8 @@ class DynamicPath:
         need_update = self.need_update()
         if need_update != -1:
             final_path = self.make_path(need_update)
+            if final_path == None:
+                return
             self.final_path = p.ref_interpolate(final_path, self.precision)[0]
             self.hlv_path = p.limit_path_length(self.final_path, 50) # cause limitation of v2x max length
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
