@@ -80,7 +80,7 @@ std::vector<std::pair<int, time_t>> ts_list;
 int rx_msg_cnt;
 int path_len;
 bool show_result = true;
-bool same_machine = true;
+bool same_machine = false;
 bool server_test = false;
 int hz = 2;
 int tx_packet_count = 0;
