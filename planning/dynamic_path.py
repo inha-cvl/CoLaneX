@@ -162,8 +162,9 @@ class DynamicPath:
         need_update = self.need_update()
         if need_update != -1:
             final_path = self.make_path(need_update)
-            if final_path == None:
+            if final_path == None or len(final_path) <= 0:
                 return
+            
             self.final_path = p.ref_interpolate(final_path, self.precision)[0]
             self.hlv_path = p.limit_path_length(self.final_path, 50) # cause limitation of v2x max length
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
@@ -175,7 +176,7 @@ class DynamicPath:
 
     def run(self):
         self.state = 'RUN'
-        rate = rospy.Rate(2)
+        rate = rospy.Rate(10)
         
         while not rospy.is_shutdown():
             if self.state != 'Path':
