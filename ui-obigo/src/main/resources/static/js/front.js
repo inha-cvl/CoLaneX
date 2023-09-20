@@ -15,9 +15,9 @@ let minZoom = 17;
 let mapConfig = {
     map: {
         center: [MAP_LNG, MAP_LAT],
-        zoom: 20,
+        zoom: 25,
         pitch: 60,
-        bearing: 90
+        bearing: -65
     },
     hlv: {
         origin: [MAP_LNG, MAP_LAT, 0],
@@ -315,7 +315,7 @@ const updateVehicle = function(id, data) {
         tlvObj.setCoords([vehicleData['tlv']['y'], vehicleData['tlv']['x']]);
         let options = {
             center: vehicleObj.coordinates,
-            bearing: deg-90,
+            bearing: deg,
             easing: easing
         };
 
@@ -327,7 +327,7 @@ const updateVehicle = function(id, data) {
         hlvObj.setCoords([vehicleData['hlv']['y'], vehicleData['hlv']['x']]);
         let options = {
             center: vehicleObj.coordinates,
-            bearing: deg-90,
+            bearing: deg,
             easing: easing
         };
 
@@ -356,8 +356,8 @@ const getMessage = function(id, status) {
 
     let tlvMessage = [];
     tlvMessage[0]= 'Wait';
-    tlvMessage[1]= 'Lane Merge Request from Left HLV';
-    tlvMessage[2]= 'Lane Merge Request from Right HLV';
+    tlvMessage[1]= 'Lane Merge Request from Right HLV';
+    tlvMessage[2]= 'Lane Merge Request from Left HLV';
     tlvMessage[3]= 'Safe for opposing HLV to merge into lane';
     tlvMessage[4]= 'Dangerous for opposing HLV to merge into lane';
     tlvMessage[5]= 'Over';
@@ -386,7 +386,7 @@ const updateSystem = function(id,data) {
         updateIcon('v2xStatus', v2x, 'v2x');
         getID('hlvMessageTxt').innerText = getMessage(id, state);
 
-        if(state == 3) {
+        if(state == 5) {
             hlvSignalTopic.publish({ data: 0 });
         }
     }
@@ -398,7 +398,7 @@ const updateSystem = function(id,data) {
         getID('tlvMessageTxt').innerText = getMessage(id, state);
 
 
-        if(state == 3) {
+        if(state == 5) {
             tlvSignalTopic.publish({ data: 0 });
         }
     }
@@ -420,28 +420,34 @@ const updateIcon = function(id, status, icon) {
 
 //hlv 클릭 이벤트
 const setHlvClick = function(signalData) {
-
+    let signal = signalData
+    if (signalData == 3) {
+        signal = 2
+    }
     const interval = setInterval(() => {
-        hlvSignalTopic.publish({ data: signalData });
+        hlvSignalTopic.publish({ data: signal });
     }, 200);
 
     setTimeout(() => {
         clearInterval(interval);
-    }, 10000);
+    }, 100);
 }
 
 
 
 //tlv 클릭 이벤트
 const setTlvClick = function(signalData) {
-
+    let signal = signalData
+    if (signalData == 3) {
+        signal = 2
+    }
     const interval = setInterval(() => {
         tlvSignalTopic.publish({ data: signalData });
     }, 200);
 
     setTimeout(() => {
         clearInterval(interval);
-    }, 10000);
+    }, 100);
 
 }
 
