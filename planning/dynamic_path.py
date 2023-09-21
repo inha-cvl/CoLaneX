@@ -134,6 +134,8 @@ class DynamicPath:
         
        
         ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
+        if ego_lanelets == None:
+            return None
         
         if ego_lanelets == None:
             return None

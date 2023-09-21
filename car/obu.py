@@ -44,7 +44,7 @@ def get_latitude_longitude(vehicle_type):
                     pose.position.z = heading 
                     pose.orientation.x = speed * 0.44704 # mph to m/s
                     pub_pose.publish(pose)
-                    print(latitude, longitude, speed*0.44704, heading)
+                    #print(latitude, longitude, speed*0.44704, heading)
                 rate.sleep()
 
     except paramiko.AuthenticationException:
