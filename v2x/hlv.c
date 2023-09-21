@@ -385,7 +385,7 @@ void *v2x_rx_cmd_process(void *arg)
 			memcpy(received_paths, recvbuf + read_len, get_path_len * sizeof(struct path));
 
 			std::vector<std::pair<double, double>> _t_path;
-			for (int i = 0; i < get_path_len; ++i)
+			for (int i = 0; i < get_path_len-1; ++i)
 			{
 				_t_path.push_back(std::make_pair(received_paths[i].x, received_paths[i].y));
 			}
