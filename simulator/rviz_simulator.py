@@ -34,10 +34,14 @@ class RVizSimulator:
         rospy.init_node(f'{vehicle_type}_simulator', anonymous=False)
         self.pub_car_marker = rospy.Publisher(f'/simulator/{vehicle_type}_marker', Marker, queue_size=1)
         self.pub_car_info = rospy.Publisher(f'/simulator/{vehicle_type}_info', Marker, queue_size=1)
+        self.pub_car_path = rospy.Publisher(f'/simulator/{vehicle_type}_path', Marker, queue_size=1)
         self.pub_a_car_marker = rospy.Publisher(f'/simulator/{another_type}_marker', Marker, queue_size=1)
         self.pub_a_car_info = rospy.Publisher(f'/simulator/{another_type}_info', Marker, queue_size=1)
+        self.pub_a_car_path = rospy.Publisher(f'/simulator/{another_type}_path', Marker, queue_size=1)
         rospy.Subscriber(f'/car/{vehicle_type}_pose', Pose, self.pose_cb)
         rospy.Subscriber(f'/v2x/{another_type}_pose', Pose, self.another_pose_cb)
+        rospy.Subscriber(f'/planning/{vehicle_type}_path', Marker, self.path_cb)
+        rospy.Subscriber(f'/v2x/{another_type}_path', Marker, self.another_path_cb)
 
 
     def pose_cb(self, msg):
@@ -49,6 +53,12 @@ class RVizSimulator:
         self.a_x, self.a_y, _ = pymap3d.geodetic2enu(msg.position.x, msg.position.y, 0, self.base_lla[0], self.base_lla[1], self.base_lla[2])
         self.a_h = msg.position.z
         self.a_v = msg.orientation.x 
+    
+    def path_cb(self, msg):
+        self.pub_car_path.publish(msg)
+    
+    def another_path_cb(self, msg):
+        self.pub_a_car_path.publish(msg)
         
     def run(self):
         rate = rospy.Rate(10)

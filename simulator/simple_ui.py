@@ -1,12 +1,13 @@
 import sys
 import math
 import signal
-import time
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QHBoxLayout,QWidget, QTabWidget
 import rospy
 from std_msgs.msg import Float32MultiArray, Int8
 from PyQt5.QtCore import Qt, QCoreApplication, QTimer
 from rviz import bindings as rviz
+
+app = None
 
 class RvizWidget(rviz.VisualizationFrame):
     def __init__(self, parent=None):
@@ -15,7 +16,7 @@ class RvizWidget(rviz.VisualizationFrame):
         self.initialize()
         reader = rviz.YamlConfigReader()
         config = rviz.Config()
-        reader.readFile(config, "./rviz/simulator.rviz")
+        reader.readFile(config, "./rviz/field.rviz")
         self.load(config)
         self.setFixedHeight(500)
 
@@ -242,24 +243,13 @@ class MyApp(QMainWindow):
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
 
-def signal_handler(sig, frame):
-    QApplication.quit()
-    sys.exit(0)
-
 def main():
-    signal.signal(signal.SIGINT, signal_handler)
     app = QApplication(sys.argv)
-    try:
-        ex = MyApp()
-        ex.show()
-        if app.exec_() == 0:
-            print("UI Shut Down")
-        sys.exit(app.exec_())
-    except KeyboardInterrupt:
-        ex.close()
-        app.quit()
-        sys.exit(0)
-
+    ex = MyApp()
+    ex.show()
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    app.exec_()
+    
 
 if __name__ == '__main__':
     main()
