@@ -1,4 +1,5 @@
 import rospy
+import random
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Int8, Float32MultiArray
@@ -9,7 +10,6 @@ v2x_hlv_path = rospy.Publisher('/v2x/hlv_path', Marker, queue_size=1)
 v2x_tlv_path = rospy.Publisher('/v2x/tlv_path', Marker, queue_size=1)  
 hlv_system = rospy.Publisher('/hlv_system', Float32MultiArray, queue_size=1)
 tlv_system = rospy.Publisher('/tlv_system', Float32MultiArray, queue_size=1)
-
 
 def hlv_pose_cb(data):
     v2x_hlv_pose.publish(data)
@@ -25,12 +25,13 @@ def tlv_path_cb(data):
 
 def hlv_state_cb(data):
     _hlv_system = Float32MultiArray()
-    _hlv_system.data = [float(data.data), 0, 0, 0, 0]
+    latency = random.randint(0,3000)
+    _hlv_system.data = [float(data.data), 1, 1, latency, 1500,70, 30]
     hlv_system.publish(_hlv_system)
 
 def tlv_state_cb(data):
     _tlv_system = Float32MultiArray()
-    _tlv_system.data = [float(data.data), 0, 0, 0, 0]
+    _tlv_system.data = [float(data.data), 1, 1, 4000, 1400,80, 45]
     tlv_system.publish(_tlv_system)
 
 def listener():

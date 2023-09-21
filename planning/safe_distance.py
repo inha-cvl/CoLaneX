@@ -44,7 +44,7 @@ class SafeDistance:
         self.calc_safe_cnt = 0
         self.ego_v = 12 #m/s -> callback velocity
         self.x_p = 1.5
-        self.x_c = 60
+        self.x_c = 80
         self.intersection_radius = 1.0
         self.d_c = 15 # If at noraml road || on high way == 0
 
@@ -79,7 +79,8 @@ class SafeDistance:
 
     def hlv_path_cb(self, msg):
         hlv_path = [( pt.x, pt.y) for pt in msg.points]
-        self.hlv_path = p.ref_interpolate(hlv_path, self.precision)[0]
+        if len(hlv_path) > 0:
+            self.hlv_path = p.ref_interpolate(hlv_path, self.precision)[0]
         # compress_path = do_compressing(self.hlv_path, 10)
         if len(hlv_path) > 0:
             hlv_geojson = p.to_geojson(hlv_path, self.base_lla)
@@ -101,7 +102,7 @@ class SafeDistance:
     def need_update(self):
         if self.final_path == None:
             return 0
-        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX)*1.3
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 1.4
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1
@@ -125,6 +126,8 @@ class SafeDistance:
                 r0 = self.final_path[idx:]
 
             ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
+            if ego_lanelets == None:
+                return 
             x1 = self.ego_v * MPS_TO_KPH + self.ego_v * self.x_p + self.x_c #m
             r1, _, _ = p.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
 

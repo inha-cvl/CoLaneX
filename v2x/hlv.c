@@ -572,10 +572,10 @@ void pubTLV(long lat, long lng, long yaw, long vel, long sig, std::vector<std::p
 	tlv_path.text = std::to_string(_path.size());
 	tlv_path.lifetime = ros::Duration(0);
 	tlv_path.points = points_msg;
-	tlv_path.scale.x = 0.4;
-	tlv_path.color.r = 94 / 255;
-	tlv_path.color.g = 204 / 255;
-	tlv_path.color.b = 243 / 255;
+	tlv_path.scale.x = 2;
+	tlv_path.color.r = 243;
+	tlv_path.color.g = 204;
+	tlv_path.color.b = 94;
 	tlv_path.color.a = 1;
 	tlv_path.pose.orientation.x = 0;
 	tlv_path.pose.orientation.y = 0;
