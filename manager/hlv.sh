@@ -2,8 +2,8 @@
 cd ../car
 python3 obu.py hlv &
 cd ../simulator
-rviz -d rviz/field.rviz &
+python3 rviz_simulator hlv &
+python3 simple_ui.py &
 cd ../planning
-python3 dynamic_path.py &
-# python3 map_publisher.py &
+python3 hlv_planning.py&
 rosrun v2x hlv
