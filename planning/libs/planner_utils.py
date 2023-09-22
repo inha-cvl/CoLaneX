@@ -150,7 +150,7 @@ def get_straight_path(s_n, s_i, path_len):
     while u_i >= lls_len:
         _u_n = get_possible_successor(u_n, prior='Left')
         if _u_n == None:
-            e_i = len(wps)-1
+            e_i = len(wps)
             break
         u_n = _u_n
         u_i -= lls_len

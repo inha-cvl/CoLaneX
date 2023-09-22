@@ -82,7 +82,7 @@ int rx_msg_cnt;
 int path_len;
 bool show_result = true;
 bool same_machine = false;
-int hz = 5;
+int hz = 2;
 int tx_packet_count = 0;
 int rx_packet_count = 0;
 
@@ -385,7 +385,7 @@ void *v2x_rx_cmd_process(void *arg)
 			memcpy(received_paths, recvbuf + read_len, get_path_len * sizeof(struct path));
 
 			std::vector<std::pair<double, double>> _t_path;
-			for (int i = 0; i < get_path_len; ++i)
+			for (int i = 0; i < get_path_len-1; ++i)
 			{
 				_t_path.push_back(std::make_pair(received_paths[i].x, received_paths[i].y));
 			}

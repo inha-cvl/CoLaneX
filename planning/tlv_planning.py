@@ -158,6 +158,7 @@ class SafeDistance:
         inter_pt = None
         inter_idx = 0
         hlv_idx = 0
+
         for hi, hwp in enumerate(self.hlv_path):
             if find:
                 break
@@ -168,15 +169,24 @@ class SafeDistance:
                     hlv_idx = hi
                     find = True
                     break
-        if find:       
+        if find:
             self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
-        
-            d1 = inter_idx*self.IDX_TO_M
+            now_idx = p.find_nearest_idx(self.final_path, self.ego_pos)
+            d1 = (inter_idx-now_idx)*self.IDX_TO_M
             d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v) if self.hlv_v != 0 else 0
-            d2_idx = int(d2*self.M_TO_IDX)
+            d2_idx = int(d2*self.M_TO_IDX) + now_idx 
             dg = d1-d2
             ds = self.ego_v*3.6-self.d_c #m
-            self.safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
+            
+            if inter_idx <= now_idx+10:
+                self.safety = 0
+            else:
+                self.safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
+            
+            if self.safety == 1:
+                self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
+            elif self.safety == 2:
+                self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (255/255, 38/255, 85/255, 0.7)))
             if d2_idx < len(self.final_path):  
                 self.pub_move.publish(Sphere('move', 0, self.final_path[d2_idx], 3.0, (91/255, 113/255, 255/255, 0.7)))
         else:
@@ -184,7 +194,7 @@ class SafeDistance:
 
     def run(self):
         self.state = 'RUN'
-        rate = rospy.Rate(2)
+        rate = rospy.Rate(10)
         
         while not rospy.is_shutdown():
             self.publish_state()

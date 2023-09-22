@@ -1,10 +1,9 @@
 #!/bin/bash
-cd ../car
-python3 obu.py hlv &
-cd ../simulator
+cd ../car/src
+python3  main.py &
+cd ../../simulator
 python3 rviz_simulator.py hlv &
-rviz -d rviz/field.rviz &
+python3 simple_ui.py &
 cd ../planning
-python3 dynamic_path.py &
-# python3 map_publisher.py &
+python3 hlv_planning.py &
 rosrun v2x hlv

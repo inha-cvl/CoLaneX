@@ -44,7 +44,8 @@ class DynamicPath:
         self.ego_v = 12 #m/s -> callback velocity
         self.signal = 0 # 0 : default, 1 : left, 2 : right
         self.temp_signal = self.signal
-        self.x_p = 1.5
+        self.x_p = 3
+        self.x_c = 50
         self.x2_i = 10
         self.x3_c = 7
         self.final_path = None
@@ -97,7 +98,6 @@ class DynamicPath:
         if self.final_path == None:
             return 0
         if self.temp_signal != self.signal and self.signal != 0:
-            print("Here!", self.temp_signal, self.signal)
             self.temp_signal = self.signal
             return 2
         threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 1.4
@@ -124,13 +124,14 @@ class DynamicPath:
 
     def make_path(self, update_type):
         r0 = []
-        
+        c = 0
         if update_type == 0 or update_type == 2:
             start_pose = self.ego_pos
         else:
             start_pose = self.final_path[-1]
             idx = p.find_nearest_idx(self.final_path, self.ego_pos)
             r0 = self.final_path[idx:]
+            c = self.x_c
         
        
         ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
@@ -140,7 +141,7 @@ class DynamicPath:
         if ego_lanelets == None:
             return None
         
-        x1 = self.ego_v * MPS_TO_KPH if self.ego_v != 0 else 50
+        x1 = self.ego_v * MPS_TO_KPH + c if self.ego_v != 0 else 50
         r1, n1, i1 = p.get_straight_path( ego_lanelets[0], ego_lanelets[1], x1)
 
         if self.signal == 0 or self.signal == 3:
@@ -165,9 +166,8 @@ class DynamicPath:
         need_update = self.need_update()
         if need_update != -1:
             final_path = self.make_path(need_update)
-            if final_path == None or len(final_path) <= 0:
+            if final_path == None:
                 return
-            
             self.final_path = p.ref_interpolate(final_path, self.precision)[0]
             self.hlv_path = p.limit_path_length(self.final_path, 50) # cause limitation of v2x max length
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
