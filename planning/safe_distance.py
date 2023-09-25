@@ -44,7 +44,7 @@ class SafeDistance:
         self.calc_safe_cnt = 0
         self.ego_v = 12 #m/s -> callback velocity
         self.x_p = 1.5
-        self.x_c = 80
+        self.x_c = 120
         self.intersection_radius = 1.0
         self.d_c = 15 # If at noraml road || on high way == 0
 
@@ -102,7 +102,7 @@ class SafeDistance:
     def need_update(self):
         if self.final_path == None:
             return 0
-        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 1.4
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 2.0
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1

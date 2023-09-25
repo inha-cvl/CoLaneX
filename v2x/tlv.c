@@ -556,9 +556,9 @@ void pubHLV(long lat, long lng, long yaw, long vel, long sig, std::vector<std::p
 	hlv_path.lifetime = ros::Duration(0);
 	hlv_path.points = points_msg;
 	hlv_path.scale.x = 1.5;
-	hlv_path.color.r = 241.0/255.0;
-	hlv_path.color.g = 76.0/255.0;
-	hlv_path.color.b = 152.0/255.0;
+	hlv_path.color.r = float(241.0/255.0);
+	hlv_path.color.g = float(76.0/255.0);
+	hlv_path.color.b = float(152.0/255.0);
 	hlv_path.color.a = 0.5;
 	hlv_path.pose.orientation.x = 0;
 	hlv_path.pose.orientation.y = 0;
