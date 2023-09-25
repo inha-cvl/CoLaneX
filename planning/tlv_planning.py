@@ -48,12 +48,9 @@ class SafeDistance:
         self.intersection_radius = 1.0
         self.d_c = 15 # If at noraml road || on high way == 0
 
-        #TODO: below INS, PATH, Velocity have to get from V2X  
         rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
         rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
-        # rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
-        # rospy.Subscriber('/planning/hlv_path', Marker, self.hlv_path_cb)
         ####################
 
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
