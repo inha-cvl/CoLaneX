@@ -26,7 +26,7 @@ class OdometryReader:
             self.data = self.db.decode_message(self.CAN_data.arbitration_id, self.CAN_data.data)
             self.RL_vel = self.data[self.wheel_vel_rl]
             self.RR_vel = self.data[self.wheel_vel_rr]
-            self.velocity = (self.RL_vel + self.RR_vel)/2
+            self.velocity = ((self.RL_vel + self.RR_vel)/2)/3.6
 
         # if the default value is 0,
         # stop and None cannot be distinduished

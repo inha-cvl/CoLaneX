@@ -1,7 +1,10 @@
 #!/bin/bash
 cd ../car/src
-python3  main.py &
+python3 main.py &
 cd ../../simulator
+# cd ../car
+# python3 obu.py hlv &
+# cd ../simulator
 python3 rviz_simulator.py hlv &
 python3 simple_ui.py &
 cd ../planning
