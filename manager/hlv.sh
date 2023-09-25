@@ -6,4 +6,6 @@ python3 rviz_simulator.py hlv &
 python3 simple_ui.py &
 cd ../planning
 python3 hlv_planning.py &
+cd ../utils
+python3 rate_by_dist.py hlv &
 rosrun v2x hlv
