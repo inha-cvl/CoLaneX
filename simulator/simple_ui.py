@@ -46,9 +46,17 @@ class MyApp(QMainWindow):
         self.tlv_in = False
         self.tlv_timer = QTimer(self)
         self.tlv_timer.timeout.connect(self.pub_tlv_signal)
+    
+
 
     def hlv_system_cb(self, msg):
         self.label_tab1.setText(self.hlv_message[int(msg.data[0])])
+        if int(msg.data[0]) == 3:
+            self.label_tab1.setStyleSheet('background-color: #63ffaf; font-size: 50px; font-weight: bold;')
+        elif int(msg.data[0]) == 4:
+            self.label_tab1.setStyleSheet('background-color: #ff638a; font-size: 50px; font-weight: bold;')
+        else:
+            self.label_tab1.setStyleSheet('background-color: #fff; font-size: 50px; font-weight: bold;')
         self.side1.setText(f"{math.ceil(msg.data[3])}ms")
         self.side2.setText(f"{round(msg.data[4], 3)}mbps")
         self.side3.setText(f"{int(msg.data[5])}%")
@@ -56,6 +64,17 @@ class MyApp(QMainWindow):
 
     def tlv_system_cb(self, msg):
         self.label_tab2.setText(self.tlv_message[int(msg.data[0])])
+        if int(msg.data[0]) == 3:
+            self.label_tab2.setStyleSheet('background-color: #63ffaf; font-size: 50px; font-weight: bold;')
+        elif int(msg.data[0]) == 4:
+            self.label_tab2.setStyleSheet('background-color: #ff638a; font-size: 50px; font-weight: bold;')
+        else:
+            self.label_tab2.setStyleSheet('background-color: #fff; font-size: 50px; font-weight: bold;')
+            
+        self.side1.setText(f"{math.ceil(msg.data[3])}ms")
+        self.side2.setText(f"{round(msg.data[4], 3)}mbps")
+        self.side3.setText(f"{int(msg.data[5])}%")
+        self.side4.setText(f"{round(msg.data[6], 2)}m")
 
     def pub_mode(self, mode):
         self.mode_pub.publish(Int8(mode))
@@ -101,7 +120,7 @@ class MyApp(QMainWindow):
             self.tlv_signal_pub.publish(Int8(0))
 
     def initUI(self):
-        self.setGeometry(100, 100, 1280,800)
+        self.setGeometry(100, 100, 1920,1080)
         self.setWindowTitle('CoLaneX')
         
         self.rviz_widget = RvizWidget(self)
@@ -124,30 +143,30 @@ class MyApp(QMainWindow):
 
 
         button1_tab1 = QPushButton('<', tab1)
-        button1_tab1.setFixedHeight(80)
-        button1_tab1.setStyleSheet('font-size: 30px;')
+        button1_tab1.setFixedHeight(100)
+        button1_tab1.setStyleSheet('font-size: 40px; font-weight: bold;')
         button1_tab1.clicked.connect(lambda:self.click_hlv(1))
         button2_tab1 = QPushButton('>', tab1)
-        button2_tab1.setFixedHeight(80)
-        button2_tab1.setStyleSheet('font-size: 30px;')
+        button2_tab1.setFixedHeight(100)
+        button2_tab1.setStyleSheet('font-size: 40px; font-weight: bold;')
         button2_tab1.clicked.connect(lambda:self.click_hlv(2))
 
         button1_tab2 = QPushButton('O', tab2)
-        button1_tab2.setFixedHeight(80)
-        button1_tab2.setStyleSheet('font-size: 30px;')
+        button1_tab2.setFixedHeight(100)
+        button1_tab2.setStyleSheet('font-size: 40px; font-weight: bold;')
         button1_tab2.clicked.connect(lambda:self.click_tlv(1))
         button2_tab2 = QPushButton('X', tab2)
-        button2_tab2.setFixedHeight(80)
-        button2_tab2.setStyleSheet('font-size: 30px;')
+        button2_tab2.setFixedHeight(100)
+        button2_tab2.setStyleSheet('font-size: 40px; font-weight: bold;')
         button2_tab2.clicked.connect(lambda:self.click_tlv(2))
 
         self.label_tab1 = QLabel("대기", tab1)
         self.label_tab1.setAlignment(Qt.AlignCenter)  # Center-align the text
-        self.label_tab1.setStyleSheet("font-size: 18px;")  # Increase the font size
+        self.label_tab1.setStyleSheet("font-size: 50px; font-weight: bold;")  # Increase the font size
 
         self.label_tab2 = QLabel("대기", tab2)
         self.label_tab2.setAlignment(Qt.AlignCenter)  # Center-align the text
-        self.label_tab2.setStyleSheet("font-size: 18px;")  # Increase the font size
+        self.label_tab2.setStyleSheet("font-size: 50px; font-weight: bold;")  # Increase the font size
 
 
         button_layout_tab1 = QHBoxLayout()  # Use QHBoxLayout for horizontal layout
