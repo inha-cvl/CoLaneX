@@ -339,6 +339,7 @@ void *v2x_rx_cmd_process(void *arg)
 			rx_msg_cnt = ptrBSM->coreData.msgCnt;
 			int rx_dsecond = ptrBSM->coreData.secMark;
 			check_rtt(rx_dsecond);
+			check_distance(ptrBSM->coreData.lat, ptrBSM->coreData.Long);
 
 			int get_path_len = (msgFrame_len - sizeof(MessageFrame_t))/sizeof(struct path);
 			read_len += sizeof(MessageFrame_t);
@@ -554,11 +555,11 @@ void pubHLV(long lat, long lng, long yaw, long vel, long sig, std::vector<std::p
 	hlv_path.text = std::to_string(_path.size());
 	hlv_path.lifetime = ros::Duration(0);
 	hlv_path.points = points_msg;
-	hlv_path.scale.x = 2;
-	hlv_path.color.r =  152;
-	hlv_path.color.g = 76;
-	hlv_path.color.b =241;
-	hlv_path.color.a = 1;
+	hlv_path.scale.x = 1.5;
+	hlv_path.color.r = 241.0/255.0;
+	hlv_path.color.g = 76.0/255.0;
+	hlv_path.color.b = 152.0/255.0;
+	hlv_path.color.a = 0.5;
 	hlv_path.pose.orientation.x = 0;
 	hlv_path.pose.orientation.y = 0;
 	hlv_path.pose.orientation.z= 0;
