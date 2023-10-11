@@ -1,7 +1,10 @@
 #!/bin/bash
+#When Use sensors
 #cd ../car/src
 #python3 main.py &
 #cd ../../simulator
+
+#When Use OBU
 cd ../car
 python3 obu.py tlv &
 cd ../simulator
