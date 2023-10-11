@@ -42,7 +42,7 @@ def get_latitude_longitude(vehicle_type):
                     pose.position.x = latitude
                     pose.position.y= longitude
                     pose.position.z = heading 
-                    pose.orientation.x = speed * 0.44704 # mph to m/s
+                    pose.orientation.x = speed #* 0.44704 # mph to m/s
                     pub_pose.publish(pose)
                     #print(latitude, longitude, speed*0.44704, heading)
                 rate.sleep()
