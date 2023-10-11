@@ -28,7 +28,7 @@ class RateDistanceCalculator:
         now = datetime.datetime.now()
         mmdd = now.strftime("%m%d")
 
-        num = 0
+        num = 1
         while True:
             file_name = f"./log/{mmdd}_{vehicle_type}_{num}.txt"
             if not os.path.exists(file_name):
@@ -39,7 +39,7 @@ class RateDistanceCalculator:
             for i in range(11):
                 if self.count[i] > 0:
                     average_rate = self.rate_sum[i] / self.count[i]
-                    file.write(f"Average rate for {i*10}m to {(i+1)*10}m distance: {average_rate:.2f} cnt= [{int(self.count[i]/10)}]")
+                    file.write(f"Average rate for {i*10}m to {(i+1)*10}m distance: {average_rate:.2f} cnt= [{int(self.count[i]/10)}]\n")
                     # print()
 
 if __name__ == '__main__':
