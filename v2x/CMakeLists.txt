@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(v2x LANGUAGES CXX)
 
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs geometry_msgs genmsg)
+find_package(json-c CONFIG)
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
@@ -34,5 +35,5 @@ set_source_files_properties( ${HLVSRC} PROPERTIES LANGUAGE CXX )
 set_source_files_properties( ${TLVSRC} PROPERTIES LANGUAGE CXX )
 
 
-target_link_libraries(hlv ${catkin_LIBRARIES} asncodec)
-target_link_libraries(tlv ${catkin_LIBRARIES} asncodec)
+target_link_libraries(hlv ${catkin_LIBRARIES} asncodec json-c)
+target_link_libraries(tlv ${catkin_LIBRARIES} asncodec json-c)

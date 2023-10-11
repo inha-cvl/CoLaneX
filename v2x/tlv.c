@@ -31,6 +31,7 @@
 #include "std_msgs/Int8.h"
 #include "visualization_msgs/Marker.h"
 
+#include <json-c/json.h>
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
@@ -350,11 +351,9 @@ void *v2x_rx_cmd_process(void *arg)
 			std::vector<std::pair<double, double>> _h_path;
 			printf("V2X Rx Test Msg>>\n"
 					"  Receive Size: %d\n"
-					"  CNT        :  %ld\n"
-					"  path len   :  %d\n",
+					"  CNT        :  %ld\n",
 					n,
-					ptrBSM->coreData.msgCnt,
-					get_path_len);
+					ptrBSM->coreData.msgCnt);
 			
 			for (int i = 0; i < get_path_len-1; i++)
 			{

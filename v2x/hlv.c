@@ -10,7 +10,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <time.h>
+#include "sys/time.h"
+#include "time.h"
 #include <signal.h>
 #include <pthread.h>
 #include <iostream>
@@ -31,6 +32,7 @@
 #include "std_msgs/Int8.h"
 #include "visualization_msgs/Marker.h"
 
+#include <json-c/json.h>
 
 #define SAMPLE_V2X_API_VER 0x0001
 #define SAMPLE_V2X_IP_ADDR "192.168.1.11"
@@ -166,7 +168,8 @@ int main(int argc, char *argv[])
 	while (is_running)
 	{
 		ros::spinOnce();
-		r.sleep();
+		r.sleep();/home/kana/catkin_ws/src/CoLaneX/v2x/hlv.c:438:21: error: invalid conversion from ‘long unsigned int’ to ‘const char*’ [-fpermissive]
+
 	}
 	close_v2x_socket();
 	return res;
@@ -182,6 +185,20 @@ void *v2x_tx_cmd_process(void *arg)
 
 	while (is_running)
 	{
+		time_t timer;
+		struct tm *t;
+		timer = time(NULL);
+		t = localtime(&timer);
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		char filename_tx[512];
+		long sec_in_mill = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+		sprintf(filename_tx, "/home/kana/catkin_ws/src/CoLaneX/v2x/log/hlv/tx_%ld.json", sec_in_mill);
+		char datetime[30];
+		snprintf(datetime, sizeof(datetime), "%04d.%02d.%02d.%02d:%02d.%02d%06ld",
+             t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+             t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
+
 		hlv_system.data[0] = state;
 		pub_hlv_system.publish(hlv_system);
 
@@ -197,17 +214,6 @@ void *v2x_tx_cmd_process(void *arg)
 		ptrBSM->coreData.heading = heading;
 		ptrBSM->coreData.speed = velocity;
 		
-
-		/*input path on BSM format*/
-		// for (int i = 0; i < path_len; ++i)
-		// {
-		// 	// Path_t *bsmPath = (Path_t *)calloc(1, sizeof(Path));
-		// 	Path_t *bsmPath = (Path_t *)malloc(sizeof(Path));
-		// 	bsmPath->x = path[i].first;
-		// 	bsmPath->y = path[i].second;
-		// 	ASN_SEQUENCE_ADD(&ptrBSM->path, bsmPath);
-		// }
-
 		struct path paths[path_len];
 		if (path_len > 0){
 			for (int i = 0; i < path_len; i++)
@@ -287,9 +293,94 @@ void *v2x_tx_cmd_process(void *arg)
 			}
 			hlv_system.data[4] = mbps;
 			start_time = current_time;
-
 			cnt += 1;
+
+			json_object *Tx = json_object_new_object();
+			json_object_object_add(Tx, "timestamp", json_object_new_string(datetime));
+
+			json_object *extV2XTxPDU = json_object_new_object();
+			json_object_object_add(extV2XTxPDU, "ver", json_object_new_int(SAMPLE_V2X_API_VER));
+			json_object_object_add(extV2XTxPDU, "e_payload_type", json_object_new_int(e_payload_type_g));
+			json_object_object_add(extV2XTxPDU, "psid", json_object_new_int(psid_g));
+			json_object_object_add(extV2XTxPDU, "tx_power", json_object_new_int(tx_power_g));
+			json_object_object_add(extV2XTxPDU, "e_signer_id", json_object_new_int(e_signer_id_g));
+			json_object_object_add(extV2XTxPDU, "e_priority", json_object_new_int(e_priority_g));
+
+			if (e_comm_type_g == eV2XCommType_LTEV2X || e_comm_type_g == eV2XCommType_5GNRV2X) {
+				json_object_object_add(extV2XTxPDU, "magic_num", json_object_new_int(MAGIC_CV2X_TX_PDU));
+				json_object *configCV2X = json_object_new_object();
+				json_object_object_add(configCV2X, "transmitter_profile_id", json_object_new_int(transmitter_profile_id_g));
+				json_object_object_add(configCV2X, "peer_l2id", json_object_new_int(peer_l2id_g));
+				json_object_object_add(extV2XTxPDU, "u.config_cv2x", configCV2X);
+			} else if (e_comm_type_g == eV2XCommType_DSRC) {
+				json_object_object_add(extV2XTxPDU, "magic_num", json_object_new_int(MAGIC_DSRC_TX_PDU));
+				json_object *configWave = json_object_new_object();
+				json_object_object_add(configWave, "freq", json_object_new_int(freq_g));
+				json_object_object_add(configWave, "e_data_rate", json_object_new_int(e_data_rate_g));
+				json_object_object_add(configWave, "e_time_slot", json_object_new_int(e_time_slot_g));
+				char macAddress[18]; // 충분한 크기의 문자열 배열 선언 (12문자 + 5개의 ':'와 널 문자)
+
+				sprintf(macAddress, "%02X:%02X:%02X:%02X:%02X:%02X",
+						peer_mac_addr_g[0], peer_mac_addr_g[1], peer_mac_addr_g[2],
+						peer_mac_addr_g[3], peer_mac_addr_g[4], peer_mac_addr_g[5]);
+
+				json_object_object_add(configWave, "peer_mac_addr", json_object_new_string(macAddress));
+				json_object_object_add(extV2XTxPDU, "u.config_wave", configWave);
+			} 
 			
+
+			json_object *v2xMsgData = json_object_new_object();
+			json_object_object_add(v2xMsgData, "length",  json_object_new_int(db_v2x_tmp_size));
+			json_object *dbV2XData = json_object_new_object();
+
+
+			json_object_object_add(dbV2XData, "eDeviceType", json_object_new_int(DB_V2X_DEVICE_TYPE_OBU));
+			json_object_object_add(dbV2XData, "eTeleCommType", json_object_new_int(DB_V2X_TELECOMM_TYPE_5G_PC5));
+			json_object_object_add(dbV2XData, "unDeviceId", json_object_new_int(72));
+			json_object_object_add(dbV2XData, "ulTimeStamp", json_object_new_int64(0ULL));
+			json_object_object_add(dbV2XData, "eServiceId", json_object_new_int(DB_V2X_SERVICE_ID_ADVANCED_DRIVING));
+			json_object_object_add(dbV2XData, "eActionType", json_object_new_int(DB_V2X_ACTION_TYPE_REQUEST));
+			json_object_object_add(dbV2XData, "eRegionId", json_object_new_int(DB_V2X_REGION_ID_SEOUL));
+			json_object_object_add(dbV2XData, "ePayloadType", json_object_new_int(DB_V2X_PAYLOAD_TYPE_SAE_J2735_BSM));
+			json_object_object_add(dbV2XData, "eCommId", json_object_new_int(DB_V2X_COMM_ID_V2V));
+			json_object_object_add(dbV2XData, "ulPayloadLength", json_object_new_int(sizeof(MessageFrame_t) + paths_size));
+
+
+			json_object *messageFrame = json_object_new_object();
+			json_object *coreData = json_object_new_object();
+
+			json_object_object_add(coreData, "msgCnt", json_object_new_int(cnt));
+			json_object_object_add(coreData, "rx_msg_cnt", json_object_new_int(rx_msg_cnt));
+			json_object_object_add(coreData, "lat", json_object_new_double(latitude));
+			json_object_object_add(coreData, "long", json_object_new_double(longitude));
+			json_object_object_add(coreData, "signal", json_object_new_double(_signal));
+			json_object_object_add(coreData, "heading", json_object_new_double(heading));
+			json_object_object_add(coreData, "velocity", json_object_new_double(velocity));
+
+			json_object_object_add(messageFrame, "coreData", coreData);
+			json_object_object_add(dbV2XData, "messageFrame", messageFrame);
+
+			// 경로 데이터를 JSON 배열로 추가
+			json_object *pathArray = json_object_new_array();
+			for (int i = 0; i < path_len; i++) {
+				json_object *pathObj = json_object_new_object();
+				json_object_object_add(pathObj, "x", json_object_new_double(path[i].first));
+				json_object_object_add(pathObj, "y", json_object_new_double(path[i].second));
+				json_object_array_add(pathArray, pathObj);
+			}
+
+
+
+			json_object_object_add(dbV2XData, "path", pathArray);
+			json_object_object_add(v2xMsgData, "data", dbV2XData);
+			json_object_object_add(extV2XTxPDU, "v2x_msg", v2xMsgData);
+			json_object_object_add(Tx, "Ext_V2X_Tx_PDU", extV2XTxPDU);
+
+			json_object_to_file_ext(filename_tx, json_object_get(Tx), JSON_C_TO_STRING_PRETTY);
+			json_object_put(Tx);
+			
+
+
 			if (show_result){
 				char _test[MAX_UPER_SIZE];
 				memcpy(_test, v2x_tx_pdu_p, n);
@@ -308,15 +399,12 @@ void *v2x_tx_cmd_process(void *arg)
 
 				struct path received_paths[test_path_len];
 				memcpy(received_paths, _test+read_len, test_path_len*sizeof(struct path));
-				
+
 				printf("\nV2X Tx Test Msg>>\n"
-					"  Send Size   : %ld\n"
-					"  CNT        :  %ld\n"
-					"  path len   :  %d\n",
-					n,
-					test_bsm->coreData.msgCnt,
-					test_path_len);
-				
+					   "  Send Size   : %ld\n"
+					   "  CNT        :  %ld\n", 
+					   n,
+					   test_bsm->coreData.msgCnt);
 			}
 		}
 		free(v2x_tx_pdu_p);
@@ -338,6 +426,20 @@ void *v2x_rx_cmd_process(void *arg)
 
 	while (is_running)
 	{
+		time_t timer;
+		struct tm *t;
+		timer = time(NULL);
+		t = localtime(&timer);
+		struct timeval tv;
+		gettimeofday(&tv, NULL);
+		char filename_tx[512];
+		long sec_in_mill = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
+		sprintf(filename_tx, "/home/kana/catkin_ws/src/CoLaneX/v2x/log/hlv/rx_%ld.json", sec_in_mill);
+		char datetime[30];
+		snprintf(datetime, sizeof(datetime), "%04d.%02d.%02d.%02d:%02d.%02d%06ld",
+             t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+             t->tm_hour, t->tm_min, t->tm_sec, tv.tv_usec);
+			 
 		n = recv(sock_g, recvbuf, sizeof(recvbuf), 0);
 		
 		if (n < 0)
@@ -392,6 +494,70 @@ void *v2x_rx_cmd_process(void *arg)
 			}
 
 			pubTLV(ptrBSM->coreData.lat, ptrBSM->coreData.Long, ptrBSM->coreData.heading, ptrBSM->coreData.speed, ptrBSM->coreData.elev, _t_path);
+
+
+			json_object *Rx = json_object_new_object();
+			json_object_object_add(Rx, "timestamp", json_object_new_string(datetime));
+
+			json_object *extV2XRxPDU = json_object_new_object();
+			json_object_object_add(extV2XRxPDU, "magic_num", json_object_new_int(ntohs(ext_v2x_rx_pdu_p.magic_num)));
+			json_object_object_add(extV2XRxPDU, "ver", json_object_new_int(ntohs(ext_v2x_rx_pdu_p.ver)));
+			json_object_object_add(extV2XRxPDU, "psid", json_object_new_int(ntohl(ext_v2x_rx_pdu_p.psid)));
+			json_object_object_add(extV2XRxPDU, "e_v2x_comm_type", json_object_new_int(ext_v2x_rx_pdu_p.e_v2x_comm_type));
+			json_object_object_add(extV2XRxPDU, "e_payload_type", json_object_new_int(ext_v2x_rx_pdu_p.e_payload_type));
+			json_object_object_add(extV2XRxPDU, "freq", json_object_new_int(ntohs(ext_v2x_rx_pdu_p.freq)));
+			json_object_object_add(extV2XRxPDU, "rssi", json_object_new_int(ntohs(ext_v2x_rx_pdu_p.rssi)));
+			json_object_object_add(extV2XRxPDU, "is_signed", json_object_new_int(ext_v2x_rx_pdu_p.is_signed));
+			// json_object_object_add(extV2XRxPDU, "peer_mac_addr", json_object_new_string(ext_v2x_rx_pdu_p.u.peer_mac_addr));
+			// json_object_object_add(extV2XRxPDU, "peer_l2id", json_object_new_int(ntohl(ext_v2x_rx_pdu_p.u.peer_l2id)));
+		
+			json_object *v2xMsgData = json_object_new_object();
+			json_object_object_add(v2xMsgData, "length",  json_object_new_int(ntohs(ext_v2x_rx_pdu_p.v2x_msg.length)));
+			json_object *dbV2XData = json_object_new_object();
+
+			json_object_object_add(dbV2XData, "eDeviceType", json_object_new_int(db_v2x_tmp.eDeviceType));
+			json_object_object_add(dbV2XData, "eTeleCommType", json_object_new_int(db_v2x_tmp.eTeleCommType));
+			json_object_object_add(dbV2XData, "unDeviceId", json_object_new_int(ntohl(db_v2x_tmp.unDeviceId)));
+			json_object_object_add(dbV2XData, "ulTimeStamp", json_object_new_int64(db_v2x_tmp.ulTimeStamp));
+			json_object_object_add(dbV2XData, "eServiceId", json_object_new_int(db_v2x_tmp.eServiceId));
+			json_object_object_add(dbV2XData, "eActionType", json_object_new_int(db_v2x_tmp.eActionType));
+			json_object_object_add(dbV2XData, "eRegionId", json_object_new_int(db_v2x_tmp.eRegionId));
+			json_object_object_add(dbV2XData, "ePayloadType", json_object_new_int(db_v2x_tmp.ePayloadType));
+			json_object_object_add(dbV2XData, "eCommId", json_object_new_int(db_v2x_tmp.eCommId));
+			json_object_object_add(dbV2XData, "ulPayloadLength", json_object_new_int(ntohl(db_v2x_tmp.ulPayloadLength)));
+
+			json_object *messageFrame = json_object_new_object();
+			json_object *coreData = json_object_new_object();
+
+			json_object_object_add(coreData, "msgCnt", json_object_new_int(ptrBSM->coreData.msgCnt));
+			json_object_object_add(coreData, "rx_msg_cnt", json_object_new_int(ptrBSM->coreData.secMark));
+			json_object_object_add(coreData, "lat", json_object_new_double(ptrBSM->coreData.lat));
+			json_object_object_add(coreData, "long", json_object_new_double(ptrBSM->coreData.Long));
+			json_object_object_add(coreData, "signal", json_object_new_double(ptrBSM->coreData.elev));
+			json_object_object_add(coreData, "heading", json_object_new_double(ptrBSM->coreData.heading));
+			json_object_object_add(coreData, "velocity", json_object_new_double(ptrBSM->coreData.speed));
+
+			json_object_object_add(messageFrame, "coreData", coreData);
+			json_object_object_add(dbV2XData, "messageFrame", messageFrame);
+
+			// 경로 데이터를 JSON 배열로 추가
+			json_object *pathArray = json_object_new_array();
+			for (int i = 0; i < _t_path.size(); i++) {
+				json_object *pathObj = json_object_new_object();
+				json_object_object_add(pathObj, "x", json_object_new_double(_t_path[i].first));
+				json_object_object_add(pathObj, "y", json_object_new_double(_t_path[i].second));
+				json_object_array_add(pathArray, pathObj);
+			}
+
+
+			json_object_object_add(dbV2XData, "path", pathArray);
+			json_object_object_add(v2xMsgData, "data", dbV2XData);
+			json_object_object_add(extV2XRxPDU, "v2x_msg", v2xMsgData);
+			json_object_object_add(Rx, "Ext_V2X_Rx_PDU", extV2XRxPDU);
+
+			json_object_to_file_ext(filename_tx, json_object_get(Rx), JSON_C_TO_STRING_PRETTY);
+			json_object_put(Rx);
+			
 
 		}
 		usleep(1e6/hz);
