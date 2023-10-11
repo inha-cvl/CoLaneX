@@ -44,7 +44,7 @@ class SafeDistance:
         self.calc_safe_cnt = 0
         self.ego_v = 12 #m/s -> callback velocity
         self.x_p = 1.5
-        self.x_c = 100
+        self.x_c = 200
         self.intersection_radius = 1.0
         self.d_c = 15 # If at noraml road || on high way == 0
 
