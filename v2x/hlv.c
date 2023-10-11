@@ -168,8 +168,7 @@ int main(int argc, char *argv[])
 	while (is_running)
 	{
 		ros::spinOnce();
-		r.sleep();/home/kana/catkin_ws/src/CoLaneX/v2x/hlv.c:438:21: error: invalid conversion from ‘long unsigned int’ to ‘const char*’ [-fpermissive]
-
+		r.sleep();
 	}
 	close_v2x_socket();
 	return res;
