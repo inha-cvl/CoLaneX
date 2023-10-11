@@ -192,7 +192,7 @@ void *v2x_tx_cmd_process(void *arg)
 		gettimeofday(&tv, NULL);
 		char filename_tx[512];
 		long sec_in_mill = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
-		sprintf(filename_tx, "/home/kana/catkin_ws/src/CoLaneX/v2x/log/hlv/tx_%ld.json", sec_in_mill);
+		sprintf(filename_tx, "/home/inha/catkin_ws/src/CoLaneX/v2x/log/hlv/tx_%ld.json", sec_in_mill);
 		char datetime[30];
 		snprintf(datetime, sizeof(datetime), "%04d.%02d.%02d.%02d:%02d.%02d%06ld",
              t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
@@ -433,7 +433,7 @@ void *v2x_rx_cmd_process(void *arg)
 		gettimeofday(&tv, NULL);
 		char filename_tx[512];
 		long sec_in_mill = (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000;
-		sprintf(filename_tx, "/home/kana/catkin_ws/src/CoLaneX/v2x/log/hlv/rx_%ld.json", sec_in_mill);
+		sprintf(filename_tx, "/home/inha/catkin_ws/src/CoLaneX/v2x/log/hlv/rx_%ld.json", sec_in_mill);
 		char datetime[30];
 		snprintf(datetime, sizeof(datetime), "%04d.%02d.%02d.%02d:%02d.%02d%06ld",
              t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
