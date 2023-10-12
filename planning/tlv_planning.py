@@ -48,9 +48,13 @@ class SafeDistance:
         self.intersection_radius = 1.0
         self.d_c = 15 # If at noraml road || on high way == 0
 
+        self.check_safety = []
+        self.confirm_safety = False
+
         rospy.Subscriber('/car/tlv_pose', Pose, self.tlv_pose_cb)
         rospy.Subscriber('/v2x/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/v2x/hlv_path', Marker, self.hlv_path_cb)
+        rospy.Subscriber('/tlv_signal', Int8, self.tlv_signal_cb)
         ####################
 
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
@@ -68,11 +72,12 @@ class SafeDistance:
 
     def tlv_pose_cb(self, msg): 
         self.ego_pos = p.convert2enu(self.base_lla, msg.position.x, msg.position.y)
-        self.ego_v = msg.orientation.x * 2/3
+        self.ego_v = msg.orientation.x
     
     def hlv_pose_cb(self, msg):
         self.hlv_v = msg.orientation.x
-        self.hlv_signal = msg.orientation.y
+        if msg.orientation.y == 1 or msg.orientation.y == 2:
+            self.hlv_signal = msg.orientation.y
 
     def hlv_path_cb(self, msg):
         hlv_path = [( pt.x, pt.y) for pt in msg.points]
@@ -82,7 +87,12 @@ class SafeDistance:
         if len(hlv_path) > 0:
             hlv_geojson = p.to_geojson(hlv_path, self.base_lla)
             self.pub_hlv_geojson.publish(hlv_geojson)
-        
+    
+    def tlv_signal_cb(self, msg):
+        if msg.data != 0:
+            self.check_safety = []
+            self.confirm_safety = False
+            self.hlv_signal = 0
     
     def publish_state(self):
         state = 0
@@ -94,12 +104,13 @@ class SafeDistance:
             state = 3
         elif self.safety == 2:
             state = 4
+            
         self.pub_tlv_state.publish(Int8(state))
 
     def need_update(self):
         if self.final_path == None:
             return 0
-        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 2
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 1.5
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1
@@ -166,20 +177,32 @@ class SafeDistance:
                     hlv_idx = hi
                     find = True
                     break
-        if find:
+
+        if find and not self.confirm_safety and self.hlv_signal != 0:
             self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
             now_idx = p.find_nearest_idx(self.final_path, self.ego_pos)
             d1 = (inter_idx-now_idx)*self.IDX_TO_M
             d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v) if self.hlv_v != 0 else 0
             d2_idx = int(d2*self.M_TO_IDX) + now_idx 
             dg = d1-d2
-            ds = self.ego_v*3.6-self.d_c #m
-            
+            ds = self.ego_v*3.6#-self.d_c #m
+                      
             if inter_idx <= now_idx+10:
-                self.safety = 0
+                safety = 0  
             else:
-                self.safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
+                safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
             
+            if self.safety != safety and len(self.check_safety) == 0:
+                self.check_safety.append(safety)
+                self.safety = safety
+            elif self.safety == safety and len(self.check_safety) > 0:
+                self.check_safety.append(safety)
+            elif self.safety != safety and len(self.check_safety) > 0:
+                self.confirm_safety = True
+            elif self.safety == safety and len(self.check_safety) == 4:
+                self.confirm_safety = True
+                
+
             if self.safety == 1:
                 self.pub_intersection.publish(Sphere('intersection', 0, inter_pt, 5.0, (33/255, 255/255, 144/255, 0.7)))
             elif self.safety == 2:

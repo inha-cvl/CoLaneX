@@ -146,6 +146,10 @@ class MyApp(QMainWindow):
         button1_tab1.setFixedHeight(100)
         button1_tab1.setStyleSheet('font-size: 40px; font-weight: bold;')
         button1_tab1.clicked.connect(lambda:self.click_hlv(1))
+        button3_tab1 = QPushButton('^', tab1)
+        button3_tab1.setFixedHeight(100)
+        button3_tab1.setStyleSheet('font-size: 40px; font-weight: bold;')
+        button3_tab1.clicked.connect(lambda:self.click_hlv(3))
         button2_tab1 = QPushButton('>', tab1)
         button2_tab1.setFixedHeight(100)
         button2_tab1.setStyleSheet('font-size: 40px; font-weight: bold;')
@@ -155,6 +159,10 @@ class MyApp(QMainWindow):
         button1_tab2.setFixedHeight(100)
         button1_tab2.setStyleSheet('font-size: 40px; font-weight: bold;')
         button1_tab2.clicked.connect(lambda:self.click_tlv(1))
+        button3_tab2 = QPushButton('-', tab2)
+        button3_tab2.setFixedHeight(100)
+        button3_tab2.setStyleSheet('font-size: 40px; font-weight: bold;')
+        button3_tab2.clicked.connect(lambda:self.click_tlv(3))
         button2_tab2 = QPushButton('X', tab2)
         button2_tab2.setFixedHeight(100)
         button2_tab2.setStyleSheet('font-size: 40px; font-weight: bold;')
@@ -171,6 +179,7 @@ class MyApp(QMainWindow):
 
         button_layout_tab1 = QHBoxLayout()  # Use QHBoxLayout for horizontal layout
         button_layout_tab1.addWidget(button1_tab1)
+        button_layout_tab1.addWidget(button3_tab1)
         button_layout_tab1.addWidget(button2_tab1)
 
         layout_tab1 = QVBoxLayout()
@@ -179,6 +188,7 @@ class MyApp(QMainWindow):
 
         button_layout_tab2 = QHBoxLayout()  # Use QHBoxLayout for horizontal layout
         button_layout_tab2.addWidget(button1_tab2)
+        button_layout_tab2.addWidget(button3_tab2)
         button_layout_tab2.addWidget(button2_tab2)
 
         layout_tab2 = QVBoxLayout()

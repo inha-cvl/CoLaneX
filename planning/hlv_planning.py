@@ -100,7 +100,7 @@ class DynamicPath:
         if self.temp_signal != self.signal and self.signal != 0:
             self.temp_signal = self.signal
             return 2
-        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 1.4
+        threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 1.5
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
         if len(self.final_path) - idx <= threshold:
             return 1
