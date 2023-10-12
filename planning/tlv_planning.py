@@ -185,7 +185,7 @@ class SafeDistance:
             d2 = self.ego_v * ((hlv_idx*self.IDX_TO_M)/self.hlv_v) if self.hlv_v != 0 else 0
             d2_idx = int(d2*self.M_TO_IDX) + now_idx 
             dg = d1-d2
-            ds = self.ego_v*3.6#-self.d_c #m
+            ds = self.ego_v*3.6-self.d_c #m
                       
             if inter_idx <= now_idx+10:
                 safety = 0  
