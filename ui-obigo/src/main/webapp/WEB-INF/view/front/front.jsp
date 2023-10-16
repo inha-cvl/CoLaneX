@@ -52,7 +52,10 @@
 							<img src="/images/left-btn.png">
 							Left
 						</div>
-						<div class="info-btn" onclick="setHlvClick(3)">
+						<div class="info-btn-m" onclick="setHlvClick(3)">
+							Straight
+						</div>
+						<div class="info-btn" onclick="setHlvClick(2)">
 							Right
 							<img src="/images/right-btn.png">
 						</div>
@@ -71,6 +74,9 @@
 					<div class="info-body">
 						<div class="info-btn" onclick="setTlvClick(1)">
 							Accept
+						</div>
+						<div class="info-btn-m" onclick="setTlvClick(3)">
+							Init
 						</div>
 						<div class="info-btn" onclick="setTlvClick(2)">
 							Reject

@@ -6,16 +6,18 @@ const MAP_LAT = 37.39984828837143;
 const MAP_LNG2 = 127.11067253000084;
 const MAP_LAT2 = 37.39980936847563;
 
+const hlv_text = ['대기', '왼쪽으로 차선 변경', '오른쪽으로 차선 변경', '  TLV가 차선 변경 수락', 'TLV가 차선 변경 거절', '종료'];
+const tlv_text = ['대기', '오른쪽 차 합류 요청', '왼쪽 차 합류 요청', '  HLV가 합류 시 안전함', 'HLV가 합류 시 위험함', '종료']
 
 let api = {
     buildings: true
 };
 
-let minZoom = 17;
+let minZoom = 15;
 let mapConfig = {
     map: {
         center: [MAP_LNG, MAP_LAT],
-        zoom: 25,
+        zoom: 20,
         pitch: 60,
         bearing: -65
     },
@@ -28,7 +30,7 @@ let mapConfig = {
             y: 0,
             z: 0
         },
-        scale: 0.05,
+        scale: 0.03,
         startRotation: {
             x: 0,
             y: 0,
@@ -45,7 +47,7 @@ let mapConfig = {
             y: 0,
             z: 0
         },
-        scale: 0.05,
+        scale: 0.03,
         startRotation: {
             x: 0,
             y: 0,
@@ -299,76 +301,28 @@ let vehicleData = {};
 //ROS 차량 위치 변경 함수
 const updateVehicle = function(id, data) {
 
-    let vehicleObj = vehicleArr[id];
-    if(typeof(vehicleObj) == "undefined") return;
-    const arrLat = data.x;
-    const arrLng =data.y;
-    const lat = vehicleObj.coordinates[1];
-    const lng = vehicleObj.coordinates[0];
-    let deg = getBearing(lng,lat,arrLng,arrLat);
-    vehicleObj.setRotation(data.z-90);
-    vehicleData[id] = data;
-    if(modeId== 'hlvMode' && id == 'hlv') {
-        vehicleArr[id].setCoords([arrLng, arrLat]);
-        // console.log(vehicleData['tlv'])
-        let tlvObj = vehicleArr['tlv'];
-        tlvObj.setCoords([vehicleData['tlv']['y'], vehicleData['tlv']['x']]);
+    vehicleArr[id].setCoords([data.y, data.x]);
+    vehicleArr[id].setRotation(data.z-90);
+    if (modeId == 'hlvMode' && id =='hlv') {
         let options = {
-            center: vehicleObj.coordinates,
-            bearing: deg,
+            center: [data.y, data.x],
+            bearing: data.z + 90,
             easing: easing
         };
-
         map.jumpTo(options);
-    }
-    else if(modeId== 'tlvMode' && id == 'tlv') {
-        vehicleArr[id].setCoords([arrLng, arrLat]);
-        let hlvObj = vehicleArr['hlv'];
-        hlvObj.setCoords([vehicleData['hlv']['y'], vehicleData['hlv']['x']]);
+    }else if (modeId == 'tlvMode' && id =='tlv') {
         let options = {
-            center: vehicleObj.coordinates,
-            bearing: deg,
+            center: [data.y, data.x],
+            bearing: data.z + 90,
             easing: easing
         };
-
         map.jumpTo(options);
     }
-
-
 }
 
 //ROS 업데이트 라인 함수
 const updateLine = function(id, data) {
     map.getSource(id).setData(data);
-}
-
-
-//메시지 함수
-const getMessage = function(id, status) {
-
-    let hlvMessage = [];
-    hlvMessage[0]= 'Wait';
-    hlvMessage[1]= 'Attempt to Merge into the Left Lane';
-    hlvMessage[2]= 'Attempt to Merge into the Right Lane';
-    hlvMessage[3]= 'TLV Accepts Request to Join Lane';
-    hlvMessage[4]= 'TLV Rejects Request to Join Lane';
-    hlvMessage[5]= 'Over';
-
-    let tlvMessage = [];
-    tlvMessage[0]= 'Wait';
-    tlvMessage[1]= 'Lane Merge Request from Right HLV';
-    tlvMessage[2]= 'Lane Merge Request from Left HLV';
-    tlvMessage[3]= 'Safe for opposing HLV to merge into lane';
-    tlvMessage[4]= 'Dangerous for opposing HLV to merge into lane';
-    tlvMessage[5]= 'Over';
-
-    if(modeId == id) {
-        return hlvMessage[status];
-    }
-    else {
-        return tlvMessage[status]
-    }
-
 }
 
 
@@ -384,26 +338,16 @@ const updateSystem = function(id,data) {
         getID('speed').innerText = speed.toFixed(3);
         updateIcon('gpsStatus', gps, 'gps');
         updateIcon('v2xStatus', v2x, 'v2x');
-        getID('hlvMessageTxt').innerText = getMessage(id, state);
-
-        if(state == 5) {
-            hlvSignalTopic.publish({ data: 0 });
-        }
+        getID('hlvMessageTxt').innerText = hlv_text[state];
     }
     else {
         getID('latency').innerText = latency.toFixed(2);
         getID('speed').innerText = speed.toFixed(3);
         updateIcon('gpsStatus', gps, 'gps');
         updateIcon('v2xStatus', v2x, 'v2x');
-        getID('tlvMessageTxt').innerText = getMessage(id, state);
-
-
-        if(state == 5) {
-            tlvSignalTopic.publish({ data: 0 });
-        }
+        getID('tlvMessageTxt').innerText = tlv_text[state];
     }
 }
-
 
 const updateIcon = function(id, status, icon) {
 
@@ -417,39 +361,43 @@ const updateIcon = function(id, status, icon) {
 }
 
 
-
 //hlv 클릭 이벤트
 const setHlvClick = function(signalData) {
-    let signal = signalData
-    if (signalData == 3) {
-        signal = 2
-    }
     const interval = setInterval(() => {
-        hlvSignalTopic.publish({ data: signal });
+        hlvSignalTopic.publish({ data: signalData });
     }, 200);
 
     setTimeout(() => {
         clearInterval(interval);
-    }, 100);
+    }, 10000);
 }
-
 
 
 //tlv 클릭 이벤트
 const setTlvClick = function(signalData) {
-    let signal = signalData
-    if (signalData == 3) {
-        signal = 2
-    }
     const interval = setInterval(() => {
         tlvSignalTopic.publish({ data: signalData });
     }, 200);
-
     setTimeout(() => {
         clearInterval(interval);
-    }, 100);
-
+    }, 10000);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

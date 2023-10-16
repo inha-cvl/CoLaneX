@@ -37,19 +37,21 @@ const tlvPoseTopic = new ROSLIB.Topic({
     name: "/car/tlv_pose",
 });
 
-
-
-const hlvModeTopic = new ROSLIB.Topic({
+const hlvV2XPoseTopic = new ROSLIB.Topic({
     ros: ros,
-    name: "/mode",
-    messageType: "std_msgs/Int8"
+    name: "/v2x/hlv_pose",
 });
 
+
+const tlvV2XPoseTopic = new ROSLIB.Topic({
+    ros: ros,
+    name: "/v2x/tlv_pose",
+});
 
 const hlvSignalTopic = new ROSLIB.Topic({
     ros: ros,
     name: "/hlv_signal",
-    // messageType: "std_msgs/Int8"
+    messageType: "std_msgs/Int8"
 });
 
 const tlvSignalTopic = new ROSLIB.Topic({
@@ -77,6 +79,14 @@ const initRos = function() {
         updateVehicle('tlv' , message.position);
     });
 
+    hlvV2XPoseTopic.subscribe(function (message) {
+        updateVehicle('hlv' , message.position);
+    });
+
+    tlvV2XPoseTopic.subscribe(function (message) {
+        updateVehicle('tlv' , message.position);
+    });
+
 
     hlvGeojsonTopic.subscribe(function (message) {
         const lineObj = JSON.parse(message.data);
@@ -89,13 +99,12 @@ const initRos = function() {
         
     });
 
-
     hlvSystemTopic.subscribe(function (message) {
         updateSystem('hlvMode' , message.data);
     });
 
     tlvSystemTopic.subscribe(function (message) {
-        updateSystem('hlvMode' , message.data);
+        updateSystem('tlvMode' , message.data);
     });
 
 
