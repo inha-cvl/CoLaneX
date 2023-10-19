@@ -6,8 +6,8 @@ import sys
 
 class RateDistanceCalculator:
     def __init__(self, vehicle_type):
-        self.rate_sum = [0.0] * 11  # 0m부터 10m까지의 거리마다 rate의 합을 저장
-        self.count = [0] * 11       # 0m부터 10m까지의 거리마다 데이터 개수를 저장
+        self.rate_sum = [0.0] * 51  # 0m부터 10m까지의 거리마다 rate의 합을 저장
+        self.count = [0] * 51       # 0m부터 10m까지의 거리마다 데이터 개수를 저장
 
         rospy.init_node('rate_distance_calculator', anonymous=True)
         rospy.Subscriber(f'/{vehicle_type}_system', Float32MultiArray, self.callback)
@@ -36,10 +36,10 @@ class RateDistanceCalculator:
             num += 1
 
         with open(file_name, 'a') as file:
-            for i in range(11):
+            for i in range(51):
                 if self.count[i] > 0:
                     average_rate = self.rate_sum[i] / self.count[i]
-                    file.write(f"Average rate for {i*10}m to {(i+1)*10}m distance: {average_rate:.2f} cnt= [{int(self.count[i]/10)}]\n")
+                    file.write(f"Average rate for {i*10}m to {(i+1)*10}m distance: {average_rate:.2f} cnt= [{int(self.count[i])}]\n")
                     # print()
 
 if __name__ == '__main__':
