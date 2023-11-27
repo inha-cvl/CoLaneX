@@ -2,7 +2,7 @@
     "common": {
         "sampling_rate": 10,
         "vehicle_length": 4,
-        "wheelbase": 2.8
+        "wheelbase": 3.8
     },
     "map": {
         "name": "KIAPI",
@@ -14,7 +14,7 @@
     },
     "planning": {
         "velocity_profile": {
-            "max_velocity": 80.0,
+            "max_velocity": 60.0,
             "road_friction": 0.15,
             "window_size": 25
         },

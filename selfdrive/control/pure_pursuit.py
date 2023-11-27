@@ -8,7 +8,7 @@ class PurePursuit(object):
         self.max_lfd = max_lfd
 
     def calculate_steering_angle(self, vehicle_state, path):
-        lfd = self.lfd_gain * (vehicle_state.velocity/3.6)
+        lfd = self.lfd_gain * vehicle_state.velocity
         lfd = np.clip(lfd, self.min_lfd, self.max_lfd)
 
         steering_angle = 0.
