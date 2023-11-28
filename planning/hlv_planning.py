@@ -163,7 +163,8 @@ class DynamicPath:
             if final_path == None or len(final_path) <= 0:
                 return
 
-            self.final_path = p.ref_interpolate(final_path, self.precision)[0]
+            #self.final_path = p.ref_interpolate(final_path, self.precision)[0]
+            self.final_path = p.smooth_interpolate(final_path, self.precision)
             self.hlv_path = p.limit_path_length(self.final_path, 50) 
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
                     

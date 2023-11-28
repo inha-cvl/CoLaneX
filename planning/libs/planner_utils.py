@@ -3,6 +3,8 @@ import numpy as np
 import pymap3d as pm
 import copy
 import json
+from scipy.ndimage import gaussian_filter1d
+
 from libs.quadratic_spline_interpolate import QuadraticSplineInterpolate
 
 M_TO_IDX = 1/0.5
@@ -160,6 +162,24 @@ def get_straight_path(s_n, s_i, path_len):
         wps += u_wp
     r = wps[s_i:e_i]
     return r, u_n, u_i
+
+def gaussian_smoothing_2d(points, sigma=1):
+    wx, wy = zip(*points)
+    smoothed_wx = gaussian_filter1d(wx, sigma=sigma)
+    smoothed_wy = gaussian_filter1d(wy, sigma=sigma)
+    return list(zip(smoothed_wx, smoothed_wy))
+
+def smooth_interpolate(points, precision):
+    points = filter_same_points(points)
+    smoothed_path = gaussian_smoothing_2d(points)
+    wx, wy = zip(*smoothed_path)
+    itp = QuadraticSplineInterpolate(list(wx), list(wy))
+    itp_points = []
+    for ds in np.arange(0.0, itp.s[-1], precision):
+        x, y = itp.calc_position(ds)
+        itp_points.append((float(x), float(y)))
+
+    return itp_points
 
 def ref_interpolate(points, precision):
     points = filter_same_points(points)

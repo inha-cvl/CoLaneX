@@ -14,7 +14,7 @@
     },
     "planning": {
         "velocity_profile": {
-            "max_velocity": 60.0,
+            "max_velocity": 120.0,
             "road_friction": 0.15,
             "window_size": 25
         },
@@ -31,9 +31,9 @@
             "d_gain": 0.025
         },
         "pure_pursuit": {
-            "lfd_gain": 1.5,
+            "lfd_gain": 0.33,
             "min_lfd": 4,
-            "max_lfd": 60
+            "max_lfd": 33
         }
     }
 }

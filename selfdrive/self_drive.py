@@ -24,7 +24,8 @@ class SelfDrive:
 
         local_path, planned_velocity = self.pm.get_local_path(vehicle_state)
         self.acc.check_objects(local_path)
-        target_velocity = self.acc.get_target_velocity(vehicle_state.velocity, planned_velocity)
+        _, co = self.acc.calculate_curvature(local_path)
+        target_velocity = self.acc.get_target_velocity(vehicle_state.velocity, planned_velocity, co)
         acc_cmd = self.pid.get_output(target_velocity, vehicle_state.velocity)
         steer_cmd = self.pure_pursuit.calculate_steering_angle(vehicle_state, local_path)
 

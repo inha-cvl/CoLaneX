@@ -511,15 +511,13 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: true
+      Enabled: false
       Marker Topic: /micro_lanelet_graph
       Name: MarkerArray
       Namespaces:
-        edge_arrow: true
-        edge_line: true
-        graph_id: true
+        {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /simulator/hlv_info
@@ -553,13 +551,13 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
-      Enabled: true
+      Enabled: false
       Marker Topic: /simulator/hlv_path
       Name: Marker
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
+      Value: false
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /simulator/tlv_path
@@ -582,6 +580,14 @@ Visualization Manager:
       Name: Marker
       Namespaces:
         {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /planning/hlv_ipath
+      Name: Marker
+      Namespaces:
+        final_path: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -612,7 +618,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 45.780941009521484
+      Distance: 57.217281341552734
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -628,9 +634,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7147972583770752
+      Pitch: 0.3447974920272827
       Target Frame: car
-      Yaw: 3.0559468269348145
+      Yaw: 3.09093976020813
     Saved: ~
 Window Geometry:
   Displays:

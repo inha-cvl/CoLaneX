@@ -1,4 +1,5 @@
-from tabulate import tabulate
+import numpy as np 
+import scipy.interpolate
 
 class AdaptiveCruiseControl:
     def __init__(self,  vehicle_length, velocity_gain, distance_gain, time_gap):
@@ -18,22 +19,40 @@ class AdaptiveCruiseControl:
             if distance_from_path<=distance_threshold:
                 self.object_dist = goal.distance(path[0])-(self.vehicle_length*2)
                 self.object_vel = 0
+    
+    def calculate_curvature(self, path):
+        path_array = np.array(path)
+        tck, u = scipy.interpolate.splprep([path_array[:, 0], path_array[:, 1]], s=0)
+        new_points = scipy.interpolate.splev(np.linspace(0, 1, 1000), tck)
+        x, y = new_points[0], new_points[1]
+        dx_dt, dy_dt = np.gradient(x), np.gradient(y)
+        d2x_dt2, d2y_dt2 = np.gradient(dx_dt), np.gradient(dy_dt)
+        curvature = (dx_dt * d2y_dt2 - d2x_dt2 * dy_dt) / ((dx_dt**2 + dy_dt**2)**1.5)        
+        avg_curvature = abs(np.mean(curvature))*1000
+        co = self.smoothed_deceleration(avg_curvature)
+        return avg_curvature, co
 
-    def get_target_velocity(self, ego_vel, target_vel):
+    
+    def smoothed_deceleration(self, avg_curvature):
+        if 5<avg_curvature <= 11:
+            co = 0.35
+        elif 2<avg_curvature<=5:
+            co = 0.2
+        elif 0.7<avg_curvature<=2:
+            co = 0.1
+        else:
+            co = 0
+        return co
+
+    def get_target_velocity(self, ego_vel, target_vel, co):
         
         vel_error = ego_vel - self.object_vel
         safe_distance = ego_vel*self.time_gap
         dist_error = safe_distance-self.object_dist
 
         acceleration = -(self.vel_gain*vel_error + self.dist_gain*dist_error)
+        target_vel = max(40, target_vel-target_vel*(co))
         out_vel = min(ego_vel+acceleration, target_vel)
-
-        data = [
-            ["ego_vel", "object_dist", "vel_error", "safe_distance", "dist_error", "acceleration", "out_vel"],
-            [ego_vel, self.object_dist, vel_error, safe_distance, dist_error, acceleration, out_vel]
-        ]
-        # print("Get Target Velocity")
-        # print(tabulate(data,  tablefmt="grid"))
 
         return out_vel
     

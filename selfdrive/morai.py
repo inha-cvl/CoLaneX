@@ -40,8 +40,8 @@ class Morai():
 
     def actuator_cb(self, data):
         self.ctrl_msg.steering = data.x
-        self.ctrl_msg.accel = self.rmin(data.y*5, 100)*0.01
-        self.ctrl_msg.brake = self.rmin(data.z*80/65, 100)*0.01
+        self.ctrl_msg.accel = data.y#self.rmin(data.y*5, 100)*0.01
+        self.ctrl_msg.brake = data.z#self.rmin(data.z*80/65, 100)*0.01
 
     def object_topic_cb(self, data):
         object_list = PoseArray()
