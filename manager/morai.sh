@@ -1,11 +1,10 @@
 #!/bin/bash
 cd ../car
-python3 morai_car.py&
+python3 morai.py&
 cd ../simulator
 python3 rviz_simulator.py hlv&
-python3 simple_ui.py &
+python3 control_ui.py &
 cd ../planning
 python3 hlv_planning.py &
 cd ../selfdrive
-python3 main.py hlv &
-python3 morai.py 
+python3 main.py hlv 

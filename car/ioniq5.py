@@ -93,7 +93,18 @@ class IONIQ5():
                 RL = res['Gway_Wheel_Velocity_RL']
                 RR = res['Gway_Wheel_Velocity_RR']
                 self.pose.orientation.x = (RR + RL)/7.2
-
+            if(data.arbitration_id == 656):
+                res = self.db.decode_message(data.arbitration_id, data.data)
+                steer = res['Gway_Steering_Angle']
+                self.pose.orientation.y = steer
+            if (data.arbitration_id == 368):
+                res = self.db.decode_message(data.arbitration_id, data.data)
+                accel = res['Gway_Accel_Pedal_Position']
+                self.pose.orientation.z = accel
+            if (data.arbitration_id == 304):
+                res = self.db.decode_message(data.arbitration_id, data.data)
+                brake= res['Gway_Brake_Cylinder_Pressure']
+                self.pose.orientation.w = brake
             if (data.arbitration_id == 784):
                 res = self.db.decode_message(data.arbitration_id, data.data)
                 self.Accel_Override = res['Accel_Override']

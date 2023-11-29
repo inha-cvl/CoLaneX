@@ -17,7 +17,10 @@ class SelfDrive:
         self.base_lla = config['map']['base_lla']
         self.start_point = Point()
 
-    def execute(self, vehicle_state, path):
+    def execute(self, mode, vehicle_state, path):
+        if mode == 0:
+            return Actuator(-100, vehicle_state.heading), [], 0
+        
         if np.all(path[0] != self.start_point):
             self.pm.update_path(path)
             self.start_point = path[0]
@@ -29,7 +32,7 @@ class SelfDrive:
         acc_cmd = self.pid.get_output(target_velocity, vehicle_state.velocity)
         steer_cmd = self.pure_pursuit.calculate_steering_angle(vehicle_state, local_path)
 
-        return Actuator(acc_cmd, steer_cmd), local_path
+        return Actuator(acc_cmd, steer_cmd), local_path, target_velocity
         
 def main():
     self_drive = SelfDrive()

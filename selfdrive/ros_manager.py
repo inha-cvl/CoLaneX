@@ -2,6 +2,7 @@ import pymap3d as pm
 import rospy
 from geometry_msgs.msg import Pose,Vector3
 from geometry_msgs.msg import Point as GPoint
+from std_msgs.msg import Float32, Int8
 from visualization_msgs.msg import Marker
 from math import radians
 
@@ -26,6 +27,7 @@ class RosManager:
         self.self_drive = self_drive
         self.vehicle_state = VehicleState()
         self.path = None
+        self.mode = 0
         
     def execute(self):
         print("Start Simulation")
@@ -33,21 +35,26 @@ class RosManager:
         
         while not rospy.is_shutdown():
             if self.path != None:
-                actuators, local_path = self.self_drive.execute(self.vehicle_state, self.path)
-                self.send_data(actuators,local_path)
+                actuators, local_path, target_velocity = self.self_drive.execute(self.mode, self.vehicle_state, self.path)
+                self.send_data(actuators,local_path, target_velocity)
             self.ros_rate.sleep()
 
     def set_protocol(self):
         rospy.Subscriber(f'/car/{self.vehicle_type}_pose', Pose, self.pose_cb)
         rospy.Subscriber(f'/planning/{self.vehicle_type}_ipath',Marker, self.path_cb)
+        rospy.Subscriber('/mode', Int8,self.mode_cb)
 
         self.actuator_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_actuator', Vector3, queue_size=1)
         self.local_path_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_local_path', Marker, queue_size=1)
+        self.target_velocity_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_target_velocity', Float32, queue_size=1)
 
 
     def conver_to_enu(self, lat, lng):
         x, y, _ = pm.geodetic2enu(lat, lng, 20, self.base_lla['latitude'], self.base_lla['longitude'], self.base_lla['altitude'])
         return x, y
+
+    def mode_cb(self, msg):
+        self.mode = msg.data 
 
     def pose_cb(self, msg):
         x, y = self.conver_to_enu(msg.position.x, msg.position.y)
@@ -56,7 +63,7 @@ class RosManager:
     def path_cb(self, msg):
         self.path = [Point(pt.x, pt.y) for pt in msg.points]
 
-    def send_data(self, actuators, local_path):
+    def send_data(self, actuators, local_path, target_velocity):
         vector3 = Vector3()
         vector3.x = actuators.steering
         vector3.y = actuators.accel
@@ -84,6 +91,7 @@ class RosManager:
             marker.points.append(GPoint(x=pt.x, y=pt.y, z=0.5))
         self.local_path_pub.publish(marker)
         
+        self.target_velocity_pub.publish(Float32(target_velocity/3.6))
 
 
     
