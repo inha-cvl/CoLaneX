@@ -145,19 +145,23 @@ class GaugeWidget(QWidget):
     def __init__(self, title, parent=None):
         super().__init__(parent)
         self.value = 0
+        self.v = 0
+        self.target = 0
+        self.t = 0
         self.gauge_label = QLabel(self)
         self.gauge_label.setAlignment(Qt.AlignCenter)
         self.update_gauge()
         layout = QVBoxLayout()
         layout.addWidget(self.gauge_label)
         label = QLabel(self)
+        label.setFixedHeight(20)
         label.setAlignment(Qt.AlignCenter)
         label.setText(title)
         layout.addWidget(label)
         self.setLayout(layout)
     
     def update_gauge(self):
-        gradient = QLinearGradient(0, 0, 0, 250)
+        gradient = QLinearGradient(0, 0, 0, 400)
         gradient.setColorAt(0, QColor(255, 0, 0, max(30, int(255 * (self.value / 100)))))  # 빨간색 (시작)
         gradient.setColorAt(1, QColor(255, 255, 0, int(255 * (self.value / 100))))  # 노란색 (끝)
         brush = QBrush(gradient)
@@ -165,7 +169,7 @@ class GaugeWidget(QWidget):
         self.gauge_label.setPixmap(pixmap)
 
     def draw_gauge(self, brush):
-        pixmap = self.create_gauge_pixmap(50, 250, brush)
+        pixmap = self.create_gauge_pixmap(100, 400, brush)
         return pixmap
 
     def create_gauge_pixmap(self, width, height, brush):
@@ -175,19 +179,39 @@ class GaugeWidget(QWidget):
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
 
+        mini_height = 385
+
         gauge_rect = pixmap.rect()
-        fill_height = int((self.value / 100) * pixmap.height())
+        fill_height = int((self.value / 100) * mini_height)
         pos = gauge_rect.height()-fill_height
         fill_rect = gauge_rect.translated(0, pos)
+
+        
         painter.setBrush(brush)
         painter.drawRect(fill_rect)
+
+        # Draw the target triangle
+        target_pos = gauge_rect.height() - int((self.target / 100) * mini_height)
+        target_triangle = [QPointF(0, target_pos), QPointF(10, target_pos-10), QPointF(10, target_pos)]    
+        painter.setBrush(Qt.blue)
+        painter.drawPolygon(*target_triangle)
+
+
         painter.setFont(QFont('Arial', 10))
-        painter.drawText(QPointF(10, pos-10), f"{self.value:.2f}")
+        painter.drawText(QPointF(75, pos-3), f"{self.v:.2f}")
+        painter.drawText(QPointF(15, target_pos-3), f"{self.t:.2f}")
+
 
         painter.end()
 
         return pixmap
 
     def set_value(self, value):
+        self.v = value
         self.value = max(0, min(100, value))
+        self.update_gauge()
+    
+    def set_target(self, value):
+        self.t = value
+        self.target= max(0, min(100, value))
         self.update_gauge()

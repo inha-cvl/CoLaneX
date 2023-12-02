@@ -63,8 +63,11 @@ class MyApp(QMainWindow):
     def updateUI(self):
         self.speedometer_widget.set_speed(self.inform['e_v'], self.inform['t_v'])
         self.wheel_widget.set_yaw(self.inform['e_y'], self.inform['t_y'])
-        self.accel_widget.set_value(self.inform['t_a'])
-        self.brake_widget.set_value(self.inform['t_b'])
+        self.accel_widget.set_value(self.inform['e_a'])
+        self.brake_widget.set_value(self.inform['e_b'])
+        self.accel_widget.set_target(self.inform['t_a'])
+        self.brake_widget.set_target(self.inform['t_b'])
+
 
     def click_hlv(self, v):
         self.hlv_sig = v
