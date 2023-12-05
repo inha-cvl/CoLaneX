@@ -2,7 +2,7 @@
     "common": {
         "sampling_rate": 10,
         "vehicle_length": 4,
-        "wheelbase": 2.8
+        "wheelbase": 3.8
     },
     "map": {
         "name": "songdo-site",
@@ -31,9 +31,9 @@
             "d_gain": 0.025
         },
         "pure_pursuit": {
-            "lfd_gain": 1.5,
+            "lfd_gain": 0.33,
             "min_lfd": 4,
-            "max_lfd": 60
+            "max_lfd": 33
         }
     }
 }
