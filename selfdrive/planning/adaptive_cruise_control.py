@@ -51,7 +51,7 @@ class AdaptiveCruiseControl:
         dist_error = safe_distance-self.object_dist
 
         acceleration = -(self.vel_gain*vel_error + self.dist_gain*dist_error)
-        target_vel = max(40, target_vel-target_vel*(co))
+        target_vel = max(15, target_vel-target_vel*(co))
         out_vel = min(ego_vel+acceleration, target_vel)
 
         return out_vel

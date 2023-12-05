@@ -42,7 +42,7 @@ class RosManager:
     def set_protocol(self):
         rospy.Subscriber(f'/car/{self.vehicle_type}_pose', Pose, self.pose_cb)
         rospy.Subscriber(f'/planning/{self.vehicle_type}_ipath',Marker, self.path_cb)
-        rospy.Subscriber('/mode', Int8,self.mode_cb)
+        rospy.Subscriber('/car/mode', Int8,self.mode_cb)
 
         self.actuator_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_actuator', Vector3, queue_size=1)
         self.local_path_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_local_path', Marker, queue_size=1)

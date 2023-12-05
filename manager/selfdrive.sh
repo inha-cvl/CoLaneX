@@ -1,10 +1,9 @@
 #!/bin/bash
-cd ../car/src
+cd ../car
 python3 ioniq5.py &
-python3 transceiver.py &
-cd ../../simulator
+cd ../simulator
 python3 rviz_simulator.py hlv &
-python3 simple_ui.py &
+python3 control_ui.py &
 cd ../planning
 python3 hlv_planning.py &
 cd ../selfdrive

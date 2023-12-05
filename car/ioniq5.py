@@ -3,6 +3,7 @@
 import can
 import cantools
 import time
+import math
 from tabulate import tabulate
 
 
@@ -10,6 +11,9 @@ import rospy
 from std_msgs.msg import Int8
 from geometry_msgs.msg import Vector3, Pose
 from novatel_oem7_msgs.msg import INSPVA
+
+STEER_RATIO = 13.5
+
 
 class IONIQ5():
     def __init__(self):
@@ -19,35 +23,52 @@ class IONIQ5():
         self.control_state = {'pa_enable': 0x0, 'lon_enable': 0x0 }
         self.target_actuators = {'steer': 0, 'accel': 0, 'brake': 0}
         self.signal = {'left':0, 'right': 0}
-        self.tick = {0.01: 0, 0.02: 0, 0.2: 0, 0.5: 0, 0.09: 0, 1: 0}
+        self.tick = {0.01: 0, 0.02: 0, 0.1: 0, 0.2: 0, 0.5: 0, 0.09: 0, 1: 0}
         self.Accel_Override = 0
         self.Break_Override = 0
         self.Steering_Overide = 0
+        self.PA_Enable_Status = 0
+        self.LON_Enable_Status = 0
         self.alv_cnt = 0
-        self.mode = 0
+        self.car_mode = 0
+        self.user_mode = 0
+        self.reset = 0
 
         self.pose = Pose() 
         self.pub_mode = rospy.Publisher('/car/mode', Int8, queue_size=1)
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
         rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
-        rospy.Subscriber('/mode', Int8, self.mode_cb)
-        rospy.Subscriber('/hlv_signal', Int8, self.hlv_signal_cb)
-        rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.inspva_cb)
+        rospy.Subscriber('/mode', Int8, self.user_mode_cb)
+        rospy.Subscriber('/hlv_signal', Int8, self.signal_cb)
+        rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.novatel_cb)
 
-    def mode_cb(self, msg):
+    def reset_trigger(self):
+        if self.Accel_Override or self.Break_Override or self.Steering_Overide:
+            self.reset = 1
+        elif self.reset and (self.Accel_Override and self.Break_Override and self.Steering_Overide) == 0:
+            self.reset = 0
+
+    def user_mode_cb(self, msg):
+        self.user_mode = msg.data
+    
+    def mode_receiver(self):
         state = self.control_state
-
-        if msg.data == 0:  
+        if self.user_mode == 0:  
+            self.reset_trigger()
             state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x0}
-        elif msg.data == 1:  # Full
+        elif self.user_mode == 1:  # Full
             state = {**state, 'pa_enable': 0x1, 'lon_enable': 0x1}
-        elif msg.data == 2:  # Only Lateral
+            self.Accel_Override = 0
+            self.Break_Override = 0
+            self.Steering_Overide = 0 
+        elif self.user_mode == 2:  # Only Lateral
             state = {**state, 'pa_enable': 0x1, 'lon_enable': 0x0}
-        elif msg.data == 3:  # Only Longitudinal
+        elif self.user_mode == 3:  # Only Longitudinal
             state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x1}
+
         if any((self.Accel_Override, self.Break_Override, self.Steering_Overide)):
             state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x0}
-
+            self.reset_trigger()
         self.control_state = state 
     
     def signal_cb(self, msg):
@@ -59,15 +80,16 @@ class IONIQ5():
             self.signal = {**self.signal, 'left':0, 'right':0}
 
     def actuator_cb(self, msg):
-        if self.mode == 1:
-            self.target_actuators = {**self.target_actuators, 'steer':msg.x, 'accel':msg.y, 'brake':msg.z}
-            # self.target_actuators['steer'] = msg.x
-            # self.target_actuators['accel'] = msg.y
-            # self.target_actuators['brake'] = msg.z
+        if self.car_mode == 1:
+            gain = 3
+            #self.target_actuators = {**self.target_actuators, 'steer':msg.x, 'accel':msg.y, 'brake':msg.z}
+            self.target_actuators['steer'] = math.degrees(msg.x)*5
+            self.target_actuators['accel'] = min(100, msg.y*gain)
+            self.target_actuators['brake'] = min(100, msg.z*gain)
         else:
             self.target_actuators = {**self.target_actuators, 'steer':0, 'accel':0, 'brake':0}
 
-    def novatel_callback(self, msg):
+    def novatel_cb(self, msg):
         self.pose.position.x = msg.latitude
         self.pose.position.y = msg.longitude
         self.pose.position.z = 89 - msg.azimuth  
@@ -106,14 +128,14 @@ class IONIQ5():
             print(e)
     
     def check_mode(self):
-        if self.PA_Esnable_Status == 0 and self.LON_Enable_Status == 0:
-            self.mode = 0
+        if self.PA_Enable_Status == 0 and self.LON_Enable_Status == 0:
+            self.car_mode = 0
         elif self.PA_Enable_Status == 1 and self.LON_Enable_Status == 1:
-            self.mode = 1
+            self.car_mode = 1
         elif self.PA_Enable_Status == 1 and self.LON_Enable_Status == 0:
-            self.mode = 2
+            self.car_mode = 2
         elif self.PA_Enable_Status == 0 and self.LON_Enable_Status == 1:
-            self.mode = 3
+            self.car_mode = 3
 
     def sender(self):
         self.alv_cnt = (self.alv_cnt + 1) % 256
@@ -127,7 +149,7 @@ class IONIQ5():
     
     def publisher(self):
         self.pub_pose.publish(self.pose)
-        self.pub_mode.publish(Int8(self.mode))
+        self.pub_mode.publish(Int8(self.car_mode))
     
     def checker(self):
         print("Enable & Override Status")
@@ -135,11 +157,11 @@ class IONIQ5():
             ["PA Enable", "LON Enable", "Accel Override", "Brake Override", "Steering Override"],
             [self.PA_Enable_Status, self.LON_Enable_Status, self.Accel_Override, self.Break_Override, self.Steering_Overide]
         ]
-        print(tabulate(data), tableformat="grid")
+        print(tabulate(data, tablefmt="grid"))
         print("Ego Pose")
         data = [
             ["Latitude","Longitude", "Heading", "Velocity", "Accel", "Brake", "Steer"],
-            self.pose
+            [self.pose.position.x, self.pose.position.y, self.pose.position.z, self.pose.orientation.x, self.pose.orientation.y, self.pose.orientation.z, self.pose.orientation.w]
         ]
         print(tabulate(data,  tablefmt="grid"))
         print("Target Controls")
@@ -165,8 +187,10 @@ class IONIQ5():
         while not rospy.is_shutdown():
             if self.timer(0.02):
                 self.sender()
+            if self.timer(0.1):
                 self.publisher()
                 self.checker()
+                self.mode_receiver()
             self.receiver()
         rospy.on_shutdown(self.cleanup)
     

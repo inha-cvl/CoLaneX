@@ -34,7 +34,7 @@ class MyApp(QMainWindow):
         rospy.Subscriber('/car/hlv_pose',Pose, self.hlv_pose_cb)
         rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/selfdrive/hlv_target_velocity', Float32, self.target_velocity_cb)
-        self.mode_pub = rospy.Publisher("/mode", Int8, queue_size=10)
+        self.mode_pub = rospy.Publisher("/mode", Int8, queue_size=1)
         self.hlv_signal_pub = rospy.Publisher("/hlv_signal", Int8, queue_size=10)
         
         # QTimer 인스턴스 생성
