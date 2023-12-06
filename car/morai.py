@@ -15,22 +15,27 @@ class Morai:
         self.pose = Pose()
         self.ctrl_msg = CtrlCmd()
         self.lamps = Lamps()
+        self.mode = 0
                 
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
         self.ctrl_pub = rospy.Publisher('/ctrl_cmd', CtrlCmd, queue_size=1)  # Vehicl Control
         self.lamp_pub = rospy.Publisher('/lamps', Lamps, queue_size=1)
         self.obj_list_pub = rospy.Publisher('/morai/object_list', PoseArray, queue_size=1)
+        self.mode_pub = rospy.Publisher('/car/mode', Int8, queue_size=1)
         rospy.Subscriber("/gps", GPSMessage, self.gps_cb)
         rospy.Subscriber("/imu", Imu, self.imu_cb)
         rospy.Subscriber("/Ego_topic", EgoVehicleStatus, self.ego_topic_cb)
         rospy.Subscriber("/Object_topic", ObjectStatusList,self.object_topic_cb)
         rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/hlv_signal', Int8, self.hlv_signal_cb)
-
+        rospy.Subscriber('/mode', Int8, self.mode_cb)
         
     def gps_cb(self, msg):
         self.pose.position.x = msg.latitude
         self.pose.position.y = msg.longitude
+    
+    def mode_cb(self, msg):
+        self.mode = msg.data
 
     def imu_cb(self, msg):
         quaternion = (msg.orientation.x, msg.orientation.y,msg.orientation.z, msg.orientation.w)
@@ -47,7 +52,7 @@ class Morai:
         self.lamps.turnSignal = msg.data
 
     def actuator_cb(self, data):
-        self.ctrl_msg.steering = data.x
+        self.ctrl_msg.steering = math.radians(data.x)
         self.ctrl_msg.accel = data.y
         self.ctrl_msg.brake = data.z
 
@@ -73,6 +78,7 @@ class Morai:
         self.pub_pose.publish(self.pose)
         self.ctrl_pub.publish(self.ctrl_msg)
         self.lamp_pub.publish(self.lamps)
+        self.mode_pub.publish(Int8(self.mode))
 
     def run(self):
         rate = rospy.Rate(10)

@@ -19,14 +19,14 @@ def signal_handler(sig, frame):
 
 class DynamicPath:
     def __init__(self):
-        #self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
-        self.base_lla = [37.383378,126.656798, 7] #SONGDO-SITE
+        self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
+        #self.base_lla = [37.383378,126.656798, 7] #SONGDO-SITE
         self.tile_size = 5.0
         self.cut_dist = 15.0
         self.precision = 0.5
 
-        self.lmap = LaneletMap("songdo-site.json")
-        #self.lmap = LaneletMap("KIAPI.json")
+        #self.lmap = LaneletMap("songdo-site.json")
+        self.lmap = LaneletMap("KIAPI.json")
         self.tmap = TileMap(self.lmap.lanelets, self.tile_size)
         self.graph = MicroLaneletGraph(self.lmap, self.cut_dist).graph
         self.M_TO_IDX = 1/self.precision
@@ -42,7 +42,10 @@ class DynamicPath:
         self.temp_signal = self.signal
         self.x_p = 3
         self.x_c = 50
-        self.x2_i = 10
+        self.x2_i = 30
+        self.x2_v_th = 27
+        self.merging_point = None
+        self.hlv_merged = 0
         self.x3_c = 7
         self.final_path = None
         self.tlv_signal = 0 # 0 : none, 1 : ok, 2 : no
@@ -57,6 +60,7 @@ class DynamicPath:
         self.pub_hlv_state = rospy.Publisher('/hlv_state', Int8, queue_size=1)
         self.pub_hlv_geojson = rospy.Publisher('/planning/hlv_geojson', String, queue_size=1)
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
+        self.pub_hlv_merged = rospy.Publisher('/planning/hlv_merged', Int8, queue_size=1)
         
         lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
         self.pub_lanelet_map.publish(lanelet_map_viz)
@@ -76,6 +80,8 @@ class DynamicPath:
             self.pub_tlv_geojson.publish(tlv_geojson)
 
     def hlv_signal_cb(self, msg):
+        if msg.data == 4:
+            self.hlv_merged = 0
         self.signal = msg.data
 
     def publish_state(self):
@@ -144,13 +150,20 @@ class DynamicPath:
             final_path = r0+r1
         else:
 
-            x2 = self.x2_i + self.ego_v * self.x_p
+            x2 = self.x2_i if self.ego_v < self.x2_v_th else self.ego_v * self.x_p
             _, n2, i2 = self.get_change_path(n1, i1, x2, self.signal)
+            self.merging_point = n2
             x3 = self.x3_c + self.ego_v * self.x_p
             r3, _, _ = p.get_straight_path( n2, i2, x3)
             final_path = r0+r1+r3
 
         return final_path 
+
+    def check_is_merged(self):
+        now_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
+        if now_lanelets[0] == self.merging_point:
+            self.hlv_merged = 1
+        self.pub_hlv_merged.publish(Int8(self.hlv_merged))
 
     def get_node_path(self):
         if self.ego_pos == None:
@@ -163,7 +176,6 @@ class DynamicPath:
             if final_path == None or len(final_path) <= 0:
                 return
 
-            #self.final_path = p.ref_interpolate(final_path, self.precision)[0]
             self.final_path = p.smooth_interpolate(final_path, self.precision)
             self.hlv_path = p.limit_path_length(self.final_path, 50) 
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
@@ -181,7 +193,7 @@ class DynamicPath:
         while not rospy.is_shutdown():
             self.publish_state()
             self.get_node_path()
-
+            self.check_is_merged()
             rate.sleep()
 
 def main():

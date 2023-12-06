@@ -70,9 +70,9 @@ class IONIQ5():
         elif self.user_mode == 3:  # Only Longitudinal
             state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x1}
 
-        # if any((self.Accel_Override, self.Break_Override, self.Steering_Overide)):
-        #     state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x0}
-        #     self.reset_trigger()
+        if any((self.Accel_Override, self.Break_Override, self.Steering_Overide)):
+            state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x0}
+            self.reset_trigger()
         self.control_state = state 
     
     def signal_cb(self, msg):

@@ -2,7 +2,10 @@
     "common": {
         "sampling_rate": 10,
         "vehicle_length": 4,
-        "wheelbase": 3.8
+        "wheelbase": 3.8,
+        "steer_ratio":14.26,
+        "steer_max":270,
+        "mass":1948
     },
     "map": {
         "name": "KIAPI",

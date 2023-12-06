@@ -14,8 +14,8 @@ def signal_handler(sig, frame):
 
 class RVizSimulator:
     def __init__(self, vehicle_type):
-        #self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
-        self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+        self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
+        #self.base_lla = [37.383378,126.656798,7] # Sondo-Site
 
         another_type = 'tlv' if vehicle_type == 'hlv' else 'hlv'
         car_color = [241, 76, 152, 1] if vehicle_type == 'hlv' else [94,204, 243, 1]
