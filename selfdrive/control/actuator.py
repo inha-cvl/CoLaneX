@@ -2,7 +2,7 @@ import numpy as np
 
 A_CRUISE_MAX_VALS = [25, 20, 18, 15]
 A_CRUISE_MAX_BP = [0., 10.0, 25., 50.]
-B_CRUISE_MAX_VALS = [10, 15, 20, 25]
+B_CRUISE_MAX_VALS = [30, 25, 20, 15]
 A_CRUISE_MIN = 15
 
 class Actuator:
@@ -12,7 +12,7 @@ class Actuator:
             self.brake = 0.
         else:
             self.accel = 0.
-            self.brake = self.get_actual_brake(-acc*150, v)
+            self.brake = self.get_actual_brake(-acc*200, v)
         
         self.steering = steer
     
