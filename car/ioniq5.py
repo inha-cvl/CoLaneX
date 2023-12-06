@@ -3,17 +3,12 @@
 import can
 import cantools
 import time
-import math
 from tabulate import tabulate
-
 
 import rospy
 from std_msgs.msg import Int8
 from geometry_msgs.msg import Vector3, Pose
 from novatel_oem7_msgs.msg import INSPVA
-
-STEER_RATIO = 13.5
-
 
 class IONIQ5():
     def __init__(self):
@@ -79,13 +74,15 @@ class IONIQ5():
         else:
             self.signal = {**self.signal, 'left':0, 'right':0}
 
+    
+
+    
     def actuator_cb(self, msg):
         if self.car_mode == 1:
-            gain = 3
             #self.target_actuators = {**self.target_actuators, 'steer':msg.x, 'accel':msg.y, 'brake':msg.z}
-            self.target_actuators['steer'] = math.degrees(msg.x)*5
-            self.target_actuators['accel'] = min(100, msg.y*gain)
-            self.target_actuators['brake'] = min(100, msg.z*gain)
+            self.target_actuators['steer'] = msg.x
+            self.target_actuators['accel'] = msg.y
+            self.target_actuators['brake'] = msg.z
         else:
             self.target_actuators = {**self.target_actuators, 'steer':0, 'accel':0, 'brake':0}
 
@@ -164,6 +161,8 @@ class IONIQ5():
             [self.pose.position.x, self.pose.position.y, self.pose.position.z, self.pose.orientation.x, self.pose.orientation.y, self.pose.orientation.z, self.pose.orientation.w]
         ]
         print(tabulate(data,  tablefmt="grid"))
+
+
         print("Target Controls")
         data = [
             ["PA Enable", "LON Enable", "Accel", "Brake", "Steer", "L Signal", "R Signal", "Alive", "Reset"],

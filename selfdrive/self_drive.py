@@ -13,7 +13,7 @@ class SelfDrive:
         self.pm = PathManager(config['planning']['velocity_profile']['max_velocity'])        
         self.acc = AdaptiveCruiseControl(config['common']['vehicle_length'], **config['planning']['adaptive_cruise_control'])
         self.pid = PID(sampling_time = 1/float(config['common']['sampling_rate']), **config['control']['pid'])
-        self.pure_pursuit = PurePursuit(wheelbase=config['common']['wheelbase'], **config['control']['pure_pursuit'])
+        self.pure_pursuit = PurePursuit(wheelbase=config['common']['wheelbase'], steer_ratio=config['common']['steer_ratio'],steer_max=config['common']['steer_max'], **config['control']['pure_pursuit'])
         self.base_lla = config['map']['base_lla']
         self.start_point = Point()
 
@@ -32,7 +32,7 @@ class SelfDrive:
         acc_cmd = self.pid.get_output(target_velocity, vehicle_state.velocity)
         steer_cmd = self.pure_pursuit.calculate_steering_angle(vehicle_state, local_path)
 
-        return Actuator(acc_cmd, steer_cmd), local_path, target_velocity
+        return Actuator(acc_cmd, steer_cmd, vehicle_state.velocity), local_path, target_velocity
         
 def main():
     self_drive = SelfDrive()
