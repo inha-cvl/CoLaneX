@@ -3,6 +3,7 @@
 import can
 import cantools
 import time
+import os
 from tabulate import tabulate
 
 import rospy
@@ -28,6 +29,7 @@ class IONIQ5():
         self.car_mode = 0
         self.user_mode = 0
         self.reset = 0
+        self.saver_time = time.time()
 
         self.pose = Pose() 
         self.pub_mode = rospy.Publisher('/car/mode', Int8, queue_size=1)
@@ -36,6 +38,10 @@ class IONIQ5():
         rospy.Subscriber('/mode', Int8, self.user_mode_cb)
         rospy.Subscriber('/hlv_signal', Int8, self.signal_cb)
         rospy.Subscriber('/novatel/oem7/inspva', INSPVA, self.novatel_cb)
+
+        if not os.path.exists('./log/'):
+            os.makedirs('./log/')
+        self.path = f'./log/{time.time()}.txt'
 
     def reset_trigger(self):
         if self.Accel_Override or self.Break_Override or self.Steering_Overide:
@@ -162,7 +168,6 @@ class IONIQ5():
         ]
         print(tabulate(data,  tablefmt="grid"))
 
-
         print("Target Controls")
         data = [
             ["PA Enable", "LON Enable", "Accel", "Brake", "Steer", "L Signal", "R Signal", "Alive", "Reset"],
@@ -170,7 +175,13 @@ class IONIQ5():
              self.target_actuators['steer'], self.signal['left'], self.signal['right'], self.alv_cnt, self.reset]
         ]
         print(tabulate(data, tablefmt="grid"))
-
+    
+    def saver(self):
+        elapsed = time.time()-self.saver_time
+        data = f"{elapsed} {self.pose.orientation.x} {self.pose.orientation.y} {self.pose.orientation.z}\n"
+        with open(self.path, 'a') as f:
+            f.writelines(data)
+        self.saver_time = time.time()
 
     def timer(self, sec):
         if time.time() - self.tick[sec] > sec:
@@ -189,6 +200,7 @@ class IONIQ5():
             if self.timer(0.1):
                 self.publisher()
                 self.checker()
+                self.saver()
                 self.mode_receiver()
             self.receiver()
         rospy.on_shutdown(self.cleanup)
