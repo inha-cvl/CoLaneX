@@ -19,14 +19,14 @@ def signal_handler(sig, frame):
 
 class DynamicPath:
     def __init__(self):
-        self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
-        #self.base_lla = [37.383378,126.656798, 7] #SONGDO-SITE
+        #self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
+        self.base_lla = [37.383378,126.656798, 7] #SONGDO-SITE
         self.tile_size = 5.0
         self.cut_dist = 15.0
         self.precision = 0.5
 
-        #self.lmap = LaneletMap("songdo-site.json")
-        self.lmap = LaneletMap("KIAPI.json")
+        self.lmap = LaneletMap("songdo-site.json")
+        #self.lmap = LaneletMap("KIAPI.json")
         self.tmap = TileMap(self.lmap.lanelets, self.tile_size)
         self.graph = MicroLaneletGraph(self.lmap, self.cut_dist).graph
         self.M_TO_IDX = 1/self.precision
@@ -160,6 +160,8 @@ class DynamicPath:
         return final_path 
 
     def check_is_merged(self):
+        if self.ego_pos == None:
+            return
         now_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
         if now_lanelets[0] == self.merging_point:
             self.hlv_merged = 1

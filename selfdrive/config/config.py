@@ -8,7 +8,7 @@ class Config(object):
         if not isinstance(cls._instance, cls):
             cls._instance = object.__new__(cls)
 
-            with io.open(os.path.join(os.path.dirname(__file__), 'config-kiapi.json'), 'r', encoding='utf-8') as f:
+            with io.open(os.path.join(os.path.dirname(__file__), 'config-songdo.json'), 'r', encoding='utf-8') as f:
                 config = json.load(f)
                 cls._instance.__dict__ = config
 

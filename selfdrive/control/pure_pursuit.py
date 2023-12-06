@@ -8,7 +8,7 @@ class PurePursuit(object):
         self.steer_max = steer_max
         self.min_lfd = min_lfd
         self.max_lfd = max_lfd
-        self.saturation_th = 10
+        self.saturation_th = 14
 
     def calculate_steering_angle(self, vehicle_state, path):
         lfd = self.lfd_gain * vehicle_state.velocity
@@ -25,7 +25,7 @@ class PurePursuit(object):
                     steering_angle = np.arctan2(2*self.wheelbase*np.sin(theta), lfd)
                     break
         
-        steering_angle_deg = math.degrees(steering_angle)
+        steering_angle_deg = math.degrees(steering_angle*self.steer_ratio)
         if steering_angle_deg<0:
             final_steering_angle = max(-self.steer_max, steering_angle_deg)
         else:
