@@ -4,6 +4,8 @@ import can
 import cantools
 import time
 import os
+import sys
+import signal
 from tabulate import tabulate
 
 import rospy
@@ -11,6 +13,7 @@ from std_msgs.msg import Int8
 from geometry_msgs.msg import Vector3, Pose
 from novatel_oem7_msgs.msg import INSPVA
 
+over = False
 class IONIQ5():
     def __init__(self):
         self.bus = can.ThreadSafeBus(interface='socketcan', channel='can0', bitrate=500000)
@@ -67,9 +70,9 @@ class IONIQ5():
         elif self.user_mode == 3:  # Only Longitudinal
             state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x1}
 
-        if any((self.Accel_Override, self.Break_Override, self.Steering_Overide)):
-            state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x0}
-            self.reset_trigger()
+        # if any((self.Accel_Override, self.Break_Override, self.Steering_Overide)):
+        #     state = {**state, 'pa_enable': 0x0, 'lon_enable': 0x0}
+        #     self.reset_trigger()
         self.control_state = state 
     
     def signal_cb(self, msg):
@@ -79,14 +82,11 @@ class IONIQ5():
             self.signal = {**self.signal, 'left':0, 'right':1}
         else:
             self.signal = {**self.signal, 'left':0, 'right':0}
-
-    
-
     
     def actuator_cb(self, msg):
         if self.car_mode == 1:
             #self.target_actuators = {**self.target_actuators, 'steer':msg.x, 'accel':msg.y, 'brake':msg.z}
-            self.target_actuators['steer'] = msg.x
+            self.target_actuators['steer'] = msg.x 
             self.target_actuators['accel'] = msg.y
             self.target_actuators['brake'] = msg.z
         else:
@@ -164,7 +164,7 @@ class IONIQ5():
         print("Ego Pose")
         data = [
             ["Latitude","Longitude", "Heading", "Velocity", "Accel", "Brake", "Steer"],
-            [self.pose.position.x, self.pose.position.y, self.pose.position.z, self.pose.orientation.x, self.pose.orientation.y, self.pose.orientation.z, self.pose.orientation.w]
+            [f"{self.pose.position.x:.4f}", f"{self.pose.position.y:.4f}", f"{self.pose.position.z:.2f}", f"{self.pose.orientation.x:3f}", f"{self.pose.orientation.z:3f}", f"{self.pose.orientation.w:3f}", f"{self.pose.orientation.y:2f}"]
         ]
         print(tabulate(data,  tablefmt="grid"))
 
@@ -178,7 +178,7 @@ class IONIQ5():
     
     def saver(self):
         elapsed = time.time()-self.saver_time
-        data = f"{elapsed} {self.pose.orientation.x} {self.pose.orientation.y} {self.pose.orientation.z}\n"
+        data = f"{elapsed:.2f} {self.pose.orientation.x} {self.pose.orientation.z} {self.pose.orientation.w}\n"
         with open(self.path, 'a') as f:
             f.writelines(data)
         self.saver_time = time.time()
@@ -199,13 +199,21 @@ class IONIQ5():
                 self.sender()
             if self.timer(0.1):
                 self.publisher()
-                self.checker()
-                self.saver()
+                # self.checker()
+                # self.saver()
                 self.mode_receiver()
             self.receiver()
+            if over:
+                print("breake")
+                break
         rospy.on_shutdown(self.cleanup)
-    
+
+def signal_handler(sig, frame):
+    over = True 
+    sys.exit(0)
+
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
     rospy.init_node('IONIQ5', anonymous=False)
     i5 = IONIQ5()
     i5.run()

@@ -45,14 +45,14 @@ class MyApp(QMainWindow):
 
     def hlv_pose_cb(self, msg):
         self.inform['e_v'] = int(msg.orientation.x*MPS_TO_KPH)
-        self.inform['e_y'] = msg.orientation.y*STEER_RATIO
-        self.inform['e_a'] = min(msg.orientation.z*10,100)
-        self.inform['e_b'] = min(msg.orientation.w*10, 100)
-
+        self.inform['e_y'] = msg.orientation.y
+        self.inform['e_a'] = msg.orientation.z
+        self.inform['e_b'] = msg.orientation.w
+        
     def actuator_cb(self, msg):
-        self.inform['t_y'] = math.degrees(msg.x)*STEER_RATIO
-        self.inform['t_a'] = min(msg.y*10, 100)
-        self.inform['t_b'] = min(msg.z*10,100)
+        self.inform['t_y'] = msg.x
+        self.inform['t_a'] = msg.y
+        self.inform['t_b'] = msg.z
 
     def target_velocity_cb(self, msg):
         self.inform['t_v'] = int(msg.data*MPS_TO_KPH)

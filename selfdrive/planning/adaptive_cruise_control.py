@@ -2,14 +2,16 @@ import numpy as np
 import scipy.interpolate
 
 class AdaptiveCruiseControl:
-    def __init__(self,  vehicle_length, velocity_gain, distance_gain, time_gap):
+    def __init__(self,  vehicle_length, velocity_gain, distance_gain, time_gap, max_velocity):
         self.vel_gain = velocity_gain #bigger : sensitive with velocity
         self.dist_gain = distance_gain #smaller : sensitive with distance
         self.time_gap = time_gap
         self.vehicle_length = vehicle_length
+        self.max_velocity = max_velocity
 
         self.object_dist= 0
         self.object_vel = 0
+        self.dist_th = 9
     
     def check_objects(self, path):
         goal = path[-1]
@@ -51,8 +53,9 @@ class AdaptiveCruiseControl:
         dist_error = safe_distance-self.object_dist
 
         acceleration = -(self.vel_gain*vel_error + self.dist_gain*dist_error)
-        target_vel = max(15, target_vel-target_vel*(co))
+        target_vel = max(self.max_velocity, target_vel-target_vel*(co))
         out_vel = min(ego_vel+acceleration, target_vel)
-
+        if -dist_error < self.dist_th:
+             out_vel -= 1.5
         return out_vel
     
