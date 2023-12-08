@@ -1,17 +1,27 @@
 import numpy as np 
+import pymap3d as pm
+import math
 import scipy.interpolate
+from scipy.spatial import KDTree
+from planning.obstacle_utils import ObstacleUtils
 
 class AdaptiveCruiseControl:
-    def __init__(self,  vehicle_length, velocity_gain, distance_gain, time_gap, max_velocity):
+    def __init__(self,  vehicle_length, velocity_gain, distance_gain, time_gap, max_velocity, latitude, longitude, altitude):
         self.vel_gain = velocity_gain #bigger : sensitive with velocity
         self.dist_gain = distance_gain #smaller : sensitive with distance
         self.time_gap = time_gap
         self.vehicle_length = vehicle_length
         self.max_velocity = max_velocity
 
+        self.base_lat = latitude
+        self.base_lng = longitude
+        self.base_alt = altitude
+
         self.object_dist= 0
         self.object_vel = 0
         self.dist_th = 9
+
+        self.dangerous = 0
     
     def check_objects(self, path):
         goal = path[-1]
@@ -22,6 +32,23 @@ class AdaptiveCruiseControl:
                 self.object_dist = goal.distance(path[0])-(self.vehicle_length*2)
                 self.object_vel = 0
     
+    def check_bsd(self, path, vehicle_state, lidar_object ):
+        local_point = KDTree(path)
+        bsd = []
+        for obj in lidar_object:
+            nx, ny = ObstacleUtils.object2enu((vehicle_state.position.x, vehicle_state.position.y, math.degrees(vehicle_state.heading)), obj[0], obj[1])
+            s, d = ObstacleUtils.object2frenet(local_point, path, (nx, ny))
+            #if tracked object, just left, right lane
+            if obj[4] >= 1 and (-3.8 < obj[1] < 3.8):
+                lat, lng, _ = pm.enu2geodetic(nx, ny, 10, self.base_lat, self.base_lng, self.base_alt) 
+                bsd.append((lat, lng, obj[2], obj[3], s, d, obj[0], obj[1])) #x,y,heading, velocity
+        if len(bsd) > 0:
+            bsd.sort(key=lambda x:abs(x[4]))
+            out = bsd[0]
+        else:
+            out = []
+        return out
+
     def calculate_curvature(self, path):
         path_array = np.array(path)
         tck, u = scipy.interpolate.splprep([path_array[:, 0], path_array[:, 1]], s=0)

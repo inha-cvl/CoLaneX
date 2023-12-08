@@ -15,12 +15,17 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 class HLVSimulator:
-    def __init__(self):
-        self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
-        #self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+    def __init__(self, map):
+        if map == 'songdo-site':
+            self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+            self.ego = Vehicle(-3800.520, 3840.930, -3.133, 0.0, 2.367) #Songdo
+        elif map == 'KIAPI':
+            self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
+            self.ego = Vehicle(-127.595, 418.819, 2.380, 0.0, 2.367)
+        else:
+            self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
+            self.ego = Vehicle(0,0,0,0, 2.376)
 
-        self.ego = Vehicle(-127.595, 418.819, 2.380, 0.0, 2.367) #KIAPI
-        #self.ego = Vehicle(-3800.520, 3840.930, -3.133, 0.0, 2.367)
         self.roll = 0.0
         self.pitch = 0.0
 
@@ -98,7 +103,8 @@ class HLVSimulator:
 def main():
     signal.signal(signal.SIGINT, signal_handler)
     rospy.init_node('HLVSimulator', anonymous=False)
-    st = HLVSimulator()
+    map = sys.argv[1]
+    st = HLVSimulator(map)
     st.run()
 
 if __name__ == "__main__":

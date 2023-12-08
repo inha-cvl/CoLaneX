@@ -1,0 +1,42 @@
+{
+    "common": {
+        "sampling_rate": 10,
+        "vehicle_length": 4,
+        "wheelbase": 3.8,
+        "steer_ratio":14.26,
+        "steer_max":270,
+        "mass":1948
+    },
+    "map": {
+        "name": "KCity",
+        "base_lla": {
+            "latitude" : 37.2292221592864,
+            "longitude" : 126.76912499027308,
+            "altitude" : 29.18400001525879
+        }
+    },
+    "planning": {
+        "velocity_profile": {
+            "max_velocity": 40.0,
+            "road_friction": 0.15,
+            "window_size": 25
+        },
+        "adaptive_cruise_control": {
+            "velocity_gain": 0.8,
+            "distance_gain": 1.5,
+            "time_gap": 0.65
+        }
+    },
+    "control": {
+        "pid": {
+            "p_gain": 0.075,
+            "i_gain": 0.0001,
+            "d_gain": 0.025
+        },
+        "pure_pursuit": {
+            "lfd_gain": 0.33,
+            "min_lfd": 4,
+            "max_lfd": 33
+        }
+    }
+}

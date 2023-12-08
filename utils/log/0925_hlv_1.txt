@@ -1,6 +1,0 @@
-Average rate for 0m to 10m distance: 74.13 cnt= [20]
-Average rate for 10m to 20m distance: 40.74 cnt= [13]
-Average rate for 20m to 30m distance: 57.14 cnt= [3]
-Average rate for 30m to 40m distance: 100.00 cnt= [0]
-Average rate for 40m to 50m distance: 100.00 cnt= [0]
-Average rate for 60m to 70m distance: 5.88 cnt= [5]

@@ -18,15 +18,18 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 class DynamicPath:
-    def __init__(self):
-        self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
-        #self.base_lla = [37.383378,126.656798, 7] #SONGDO-SITE
+    def __init__(self, map):
+        if map == 'songdo-site':
+            self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+        elif map == 'KIAPI':
+            self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
+        else:
+            self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
         self.tile_size = 5.0
         self.cut_dist = 15.0
         self.precision = 0.5
 
-        #self.lmap = LaneletMap("songdo-site.json")
-        self.lmap = LaneletMap("KIAPI.json")
+        self.lmap = LaneletMap(f"{map}.json")
         self.tmap = TileMap(self.lmap.lanelets, self.tile_size)
         self.graph = MicroLaneletGraph(self.lmap, self.cut_dist).graph
         self.M_TO_IDX = 1/self.precision
@@ -35,6 +38,8 @@ class DynamicPath:
         self.hlv_path = []
         self.hlv_geojson = None
 
+        self.dangerous_update = 1
+        self.dangerous = 0
 
         self.path_make_cnt = 0
         self.ego_v = 12 #m/s -> callback velocity
@@ -45,6 +50,7 @@ class DynamicPath:
         self.x2_i = 30
         self.x2_v_th = 27
         self.merging_point = None
+        self.merging_point_update_needed = True
         self.hlv_merged = 0
         self.x3_c = 7
         self.final_path = None
@@ -54,6 +60,7 @@ class DynamicPath:
         rospy.Subscriber('/v2x/tlv_path', Marker, self.tlv_path_cb)
         rospy.Subscriber('/v2x/tlv_pose', Pose, self.tlv_pose_cb)
         rospy.Subscriber('/hlv_signal', Int8, self.hlv_signal_cb)
+        rospy.Subscriber('/lidar_dangerous', Int8, self.lidar_dangerous_cb)
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
         self.pub_hlv_path = rospy.Publisher('/planning/hlv_path', Marker, queue_size=1)
         self.pub_hlv_ipath = rospy.Publisher('/planning/hlv_ipath', Marker, queue_size=1)
@@ -72,6 +79,10 @@ class DynamicPath:
 
     def tlv_pose_cb(self, msg):
         self.tlv_signal = msg.orientation.y
+        if self.tlv_signal == 0:
+            self.dangerous = 0
+        elif self.tlv_signal == 2:
+            self.dangerous = 1
 
     def tlv_path_cb(self,msg):
         tlv_path = [(pt.x, pt.y) for pt in msg.points]
@@ -83,6 +94,9 @@ class DynamicPath:
         if msg.data == 4:
             self.hlv_merged = 0
         self.signal = msg.data
+    
+    def lidar_dangerous_cb(self, msg):
+        self.dangerous = msg.data
 
     def publish_state(self):
         state = 0
@@ -102,10 +116,13 @@ class DynamicPath:
         if self.temp_signal != self.signal and self.signal != 0:
             self.temp_signal = self.signal
             return 2
+        if self.dangerous_update == 2:
+            self.dangerous_update = 3
+            return 3
         threshold = ((self.ego_v * MPS_TO_KPH)*self.M_TO_IDX) * 2.5
         idx = p.find_nearest_idx(self.final_path, self.ego_pos)
 
-        if len(self.final_path) - idx <= threshold:
+        if len(self.final_path) - idx <= threshold :
             return 1
         else:
             return -1
@@ -128,7 +145,7 @@ class DynamicPath:
     def make_path(self, update_type):
         r0 = []
         c = 0
-        if update_type == 0 or update_type == 2:
+        if update_type == 0 or update_type == 2 or update_type == 3:
             start_pose = self.ego_pos
         else:
             start_pose = self.final_path[-1]
@@ -146,24 +163,35 @@ class DynamicPath:
         
         x1 = self.ego_v * MPS_TO_KPH + c if self.ego_v > 0.5 else 50
         r1, n1, i1 = p.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
-        if self.signal == 0 or self.signal == 3:
+        if self.signal == 0 or self.signal == 3 or update_type == 3:
             final_path = r0+r1
         else:
 
             x2 = self.x2_i if self.ego_v < self.x2_v_th else self.ego_v * self.x_p
             _, n2, i2 = self.get_change_path(n1, i1, x2, self.signal)
-            self.merging_point = n2
+            if self.hlv_merged == 0 and self.merging_point_update_needed:
+                self.merging_point = n2
+                self.merging_point_update_needed = False
             x3 = self.x3_c + self.ego_v * self.x_p
             r3, _, _ = p.get_straight_path( n2, i2, x3)
             final_path = r0+r1+r3
 
-        return final_path 
-
+        return final_path
+                
     def check_is_merged(self):
         now_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
         if now_lanelets[0] == self.merging_point:
             self.hlv_merged = 1
+            self.merging_point_update_needed = True
         self.pub_hlv_merged.publish(Int8(self.hlv_merged))
+
+    def check_is_dangerous(self):
+        if self.dangerous_update == 1 and self.dangerous == 1 :
+            self.dangerous_update = 2
+        elif self.dangerous_update == 3:
+            self.dangerous_update = 0
+        elif self.dangerous == 0:
+            self.dangerous_update = 1
 
     def get_node_path(self):
         if self.ego_pos == None:
@@ -171,7 +199,7 @@ class DynamicPath:
         
         final_path = []
         need_update = self.need_update()
-        if need_update != -1:
+        if need_update != -1 :
             final_path = self.make_path(need_update)
             if final_path == None or len(final_path) <= 0:
                 return
@@ -194,12 +222,14 @@ class DynamicPath:
             self.publish_state()
             self.get_node_path()
             self.check_is_merged()
+            self.check_is_dangerous()
             rate.sleep()
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
     rospy.init_node('DynamicPath', anonymous=False)
-    dp = DynamicPath()
+    map = sys.argv[1]
+    dp = DynamicPath(map)
     dp.run()
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import time
 import json
 import rospy
 from geometry_msgs.msg import Pose, PoseArray, Vector3
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, Float32MultiArray
 
 from ttc_calculator import calculate_ttc
 
@@ -14,9 +14,18 @@ class TestLogger():
         self.state = 'wait'
         self.path = f"./log/{file_name}.json"
         self.passthorugh_start = 0
-        self.log_data = {}
+        self.log_data = {
+            'report':{},
+            'communication':{'rate_by_distance':{},},
+            'time_stamp':[],
+            'hlv_system':[],
+            'ego':[],
+            'target':[],
+            'ttc':[]
+        }
 
         self.hlv_merged = 0
+        self.hlv_system = [0,0,0,0,0,0,0]
         self.ego = [0,0,0]
         self.v2x_target = [0,0,0]
         self.lidar_target = [0,0,0]
@@ -26,6 +35,9 @@ class TestLogger():
         self.mode = 0
         self.signal_start = None
         self.detection_time = 0
+
+        self.rate_sum = [0.0] * 51  # 0m부터 10m까지의 거리마다 rate의 합을 저장
+        self.count = [0] * 51       # 0m부터 10m까지의 거리마다 데이터 개수를 저장
         
 
         rospy.Subscriber('/car/mode', Int8, self.mode_cb)
@@ -33,7 +45,8 @@ class TestLogger():
         rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/planning/hlv_merged', Int8, self.hlv_merged_cb)
         rospy.Subscriber('/hlv_signal', Int8, self.hlv_signal_cb)
-        
+        rospy.Subscriber('/selfdrive/lidar_bsd', Pose, self.lidar_bsd_cb)
+        rospy.Subscriber('/hlv_system', Float32MultiArray, self.hlv_system_cb)
 
     def mode_cb(self, msg):
         if self.mode == 0 and msg.data == 1:
@@ -50,7 +63,7 @@ class TestLogger():
     
     def tlv_pose_cb(self, msg):
         self.v2x_target = [msg.position.x, msg.position.y, msg.orientation.x]
-        if self.signal_start == None:
+        if self.signal_start != None:
             self.detection_time = time.time()-self.signal_start
             self.signal_start = None
 
@@ -60,7 +73,23 @@ class TestLogger():
     def hlv_signal_cb(self, msg):
         if msg.data == 1 or msg.data == 2:
             self.signal_start = time.time()
+    
+    def lidar_bsd_cb(self, msg):
+        self.lidar_target = [msg.position.x, msg.position.y, msg.orientation.x]
+        if self.signal_start != None:
+            self.detection_time = time.time()-self.signal_start
+            self.signal_start = None
         
+    def hlv_system_cb(self, msg):
+        if len(msg.data) == 7:
+            distance = msg.data[6]
+            rate = msg.data[5]
+            distance_index = min(int(distance / 10), 10)
+            
+            self.rate_sum[distance_index] += rate
+            self.count[distance_index] += 1
+
+            self.hlv_system = [msg.data[0], msg.data[1], msg.data[2], msg.data[3], msg.data[4], msg.data[5], msg.data[6]]
 
     def calc_ttc(self):
         ttc = calculate_ttc(ego=self.ego, target=self.target)
@@ -69,30 +98,44 @@ class TestLogger():
         if ttc <= 3:
             self.ttc_count[1] += 1
         self.ttc_count[2] += 1
+        return ttc
+
+    def calculate_averages(self):
+        for i in range(51):
+            if self.count[i] > 0:
+                average_rate = self.rate_sum[i] / self.count[i]
+                self.log_data['communication']['rate_by_distance'][f'{i*10}~{(i+1)*10}'] = [f'{average_rate:.2f}',str(int(self.count[i]))]
 
     def logger(self):
+        self.log_data['time_stamp'].append(time.time())
         if self.test_mode == 'lidar':
             self.target = self.lidar_target
         elif self.test_mode == 'v2x':
             self.target = self.v2x_target
         
-        if self.hlv_merged:
-            self.calc_ttc()
+        self.log_data['ego'].append(self.ego)
+        self.log_data['target'].append(self.target)
+        self.log_data['hlv_system'].append(self.hlv_system)
 
+        ttc = float('inf')
+        if self.hlv_merged:
+            ttc = self.calc_ttc()
+        self.log_data['ttc'].append(ttc)
     
     def data_set(self):
-        self.log_data['bsd detection time'] = round(self.detection_time, 5)
-        self.log_data['ttc 2sec cnt'] = self.ttc_count[0]
-        self.log_data['ttc 3sec cnt'] = self.ttc_count[1]
-        self.log_data['ttc total cnt'] = self.ttc_count[2]
-        self.log_data['passthrough time'] = round(self.passthorugh_time, 5)
+        self.log_data['report']['bsd detection time'] = round(self.detection_time, 2)
+        self.log_data['report']['ttc 2sec cnt'] = self.ttc_count[0]
+        self.log_data['report']['ttc 3sec cnt'] = self.ttc_count[1]
+        self.log_data['report']['ttc total cnt'] = self.ttc_count[2]
+        self.log_data['report']['passthrough time'] = round(self.passthorugh_time, 2)
+        self.calculate_averages()
 
     def save_to_json(self):
         with open(self.path, 'w') as f:
             json.dump(self.log_data, f, indent=2)
 
     def run(self):
-        rate = rospy.Rate(100)
+        rate = rospy.Rate(10)
         while True:
             if self.state  == 'wait':
                 pass

@@ -1,1 +1,0 @@
-Average rate for 0m to 10m distance: 0.00 cnt= [22]

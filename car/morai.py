@@ -8,6 +8,8 @@ from sensor_msgs.msg import Imu
 from morai_msgs.msg import ObjectStatusList, CtrlCmd, Lamps
 from geometry_msgs.msg import Pose, PoseArray, Vector3
 from std_msgs.msg import Int8
+from jsk_recognition_msgs.msg import BoundingBoxArray, BoundingBox
+
 
 class Morai:
     def __init__(self):
@@ -16,11 +18,12 @@ class Morai:
         self.ctrl_msg = CtrlCmd()
         self.lamps = Lamps()
         self.mode = 0
+        self.egoxy = [0,0]
                 
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
         self.ctrl_pub = rospy.Publisher('/ctrl_cmd', CtrlCmd, queue_size=1)  # Vehicl Control
         self.lamp_pub = rospy.Publisher('/lamps', Lamps, queue_size=1)
-        self.obj_list_pub = rospy.Publisher('/morai/object_list', PoseArray, queue_size=1)
+        self.obj_list_pub = rospy.Publisher('/mobinha/perception/lidar/track_box', BoundingBoxArray, queue_size=1)
         self.mode_pub = rospy.Publisher('/car/mode', Int8, queue_size=1)
         rospy.Subscriber("/gps", GPSMessage, self.gps_cb)
         rospy.Subscriber("/imu", Imu, self.imu_cb)
@@ -48,6 +51,9 @@ class Morai:
         self.pose.orientation.z = msg.accel
         self.pose.orientation.w = msg.brake
 
+        self.egoxy[0] = msg.position.x
+        self.egoxy[1] = msg.position.y
+
     def hlv_signal_cb(self, msg):
         self.lamps.turnSignal = msg.data
 
@@ -57,21 +63,27 @@ class Morai:
         self.ctrl_msg.brake = data.z
 
     def object_topic_cb(self, data):
-        object_list = PoseArray()
+        object_list = BoundingBoxArray()
         for obj in data.npc_list:
+            bbox = BoundingBox()
             pose = Pose()
-            pose.position.x = obj.position.x
-            pose.position.y = obj.position.y
-            pose.position.z = obj.heading
-            pose.orientation.w = obj.velocity.x
-            object_list.poses.append(pose)
+            pose.position.y = -(self.egoxy[0] - obj.position.x)
+            pose.position.x = self.egoxy[1] - obj.position.y
+            pose.orientation.z = obj.heading
+            bbox.pose = pose
+            bbox.value = obj.velocity.x/3.6
+            bbox.label = 1
+            object_list.boxes.append(bbox)
         for obj in data.obstacle_list:
+            bbox = BoundingBox()
             pose = Pose()
-            pose.position.x = obj.position.x
-            pose.position.y = obj.position.y
-            pose.position.z = obj.heading
-            pose.orientation.w = obj.velocity.x
-            object_list.poses.append(pose)
+            pose.position.y = -(self.egoxy[0] - obj.position.x)
+            pose.position.x = self.egoxy[1] - obj.position.y
+            pose.orientation.z = obj.heading
+            bbox.pose = pose
+            bbox.value = obj.velocity.x/3.6
+            bbox.label = 1
+            object_list.boxes.append(bbox)
         self.obj_list_pub.publish(object_list)
 
     def publisher(self):

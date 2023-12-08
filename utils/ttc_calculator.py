@@ -13,11 +13,11 @@ def haversine(lat1, lon1, lat2, lon2):
 def calculate_ttc(ego, target):
     ego_lat, ego_lng, ego_v = ego
     target_lat, target_lng, target_v = target
-    current_distance = haversine(ego_lat, ego_lng, target_lat, target_lng)
+    current_distance = haversine(ego_lat, ego_lng, target_lat, target_lng) * 1000
     current_relative_speed = target_v - ego_v
-
+    
     if current_relative_speed != 0:
-        ttc = current_distance / current_relative_speed
+        ttc = abs(current_distance / current_relative_speed)
         return ttc
     else:
         return float('inf')

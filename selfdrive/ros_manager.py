@@ -2,8 +2,11 @@ import pymap3d as pm
 import rospy
 from geometry_msgs.msg import Pose,Vector3
 from geometry_msgs.msg import Point as GPoint
+from morai_msgs.msg import GPSMessage, EgoVehicleStatus
 from std_msgs.msg import Float32, Int8
 from visualization_msgs.msg import Marker
+from jsk_recognition_msgs.msg import BoundingBoxArray
+
 from math import radians
 
 from config.config import Config
@@ -11,8 +14,8 @@ from vehicle_state import VehicleState
 from localization.point import Point
 
 class RosManager:
-    def __init__(self, self_drive, vehicle_type):
-        config = Config()
+    def __init__(self, self_drive, vehicle_type, map):
+        config = Config(map)
         self.vehicle_type = vehicle_type
         rospy.init_node(f"{self.vehicle_type}_self_drive", anonymous=True)
 
@@ -27,7 +30,10 @@ class RosManager:
         self.self_drive = self_drive
         self.vehicle_state = VehicleState()
         self.path = None
+        self.lidar_object = [] 
         self.mode = 0
+        self.lidar_dangerous = 0
+        self.d = [0,0]
         
     def execute(self):
         print("Start Simulation")
@@ -35,18 +41,21 @@ class RosManager:
         
         while not rospy.is_shutdown():
             if self.path != None:
-                actuators, local_path, target_velocity = self.self_drive.execute(self.mode, self.vehicle_state, self.path)
-                self.send_data(actuators,local_path, target_velocity)
+                actuators, local_path, target_velocity, lidar_bsd = self.self_drive.execute(self.mode, self.vehicle_state, self.path, self.lidar_object)
+                self.send_data(actuators,local_path, target_velocity, lidar_bsd)
             self.ros_rate.sleep()
 
     def set_protocol(self):
         rospy.Subscriber(f'/car/{self.vehicle_type}_pose', Pose, self.pose_cb)
         rospy.Subscriber(f'/planning/{self.vehicle_type}_ipath',Marker, self.path_cb)
         rospy.Subscriber('/car/mode', Int8,self.mode_cb)
-
+        rospy.Subscriber('/mobinha/perception/lidar/track_box', BoundingBoxArray, self.lidar_cluster_cb)
+        
         self.actuator_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_actuator', Vector3, queue_size=1)
         self.local_path_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_local_path', Marker, queue_size=1)
         self.target_velocity_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_target_velocity', Float32, queue_size=1)
+        self.lidar_bsd_pub = rospy.Publisher(f'/selfdrive/lidar_bsd', Pose, queue_size=1)
+        self.pub_lidar_dangerous = rospy.Publisher('/lidar_dangerous', Int8, queue_size=1)
 
 
     def conver_to_enu(self, lat, lng):
@@ -63,7 +72,17 @@ class RosManager:
     def path_cb(self, msg):
         self.path = [Point(pt.x, pt.y) for pt in msg.points]
 
-    def send_data(self, actuators, local_path, target_velocity):
+    def lidar_cluster_cb(self, msg):
+        objects = []
+        for obj in msg.boxes:
+            x, y = obj.pose.position.x, obj.pose.position.y
+            v_rel = obj.value #velocity
+            track_id = obj.label # 1~: tracking
+            w = obj.pose.orientation.z #heading
+            objects.append([x, y, w, v_rel, track_id])
+        self.lidar_object = objects
+
+    def send_data(self, actuators, local_path, target_velocity, lidar_bsd):
         vector3 = Vector3()
         vector3.x = actuators.steering
         vector3.y = actuators.accel
@@ -92,6 +111,16 @@ class RosManager:
         self.local_path_pub.publish(marker)
         
         self.target_velocity_pub.publish(Float32(target_velocity/3.6))
-
-
-    
+        
+        if len(lidar_bsd) > 0:
+            pose = Pose()
+            pose.position.x = lidar_bsd[0]
+            pose.position.y = lidar_bsd[1]
+            pose.position.z = lidar_bsd[2]
+            pose.orientation.x = lidar_bsd[3]
+            self.lidar_bsd_pub.publish(pose)
+            if -20 < lidar_bsd[6] < 20:
+                self.lidar_dangerous = 1
+            else:
+                self.lidar_dangerous = 0
+            self.pub_lidar_dangerous.publish(Int8(self.lidar_dangerous))

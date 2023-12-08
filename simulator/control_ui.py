@@ -19,6 +19,7 @@ class MyApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.hlv_sig = 0
+        self.hlv_merged = 0
         self.hlv_in = False
         self.hlv_timer = QTimer(self)
         self.hlv_timer.timeout.connect(self.pub_hlv_signal)
@@ -74,7 +75,7 @@ class MyApp(QMainWindow):
         if not self.hlv_in:
             self.hlv_in = True
             self.hlv_timer.start(500)
-            QTimer.singleShot(2000, self.stop_hlv)
+            QTimer.singleShot(5000, self.stop_hlv)
         else:
             self.stop_hlv
     
