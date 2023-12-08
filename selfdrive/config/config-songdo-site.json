@@ -34,9 +34,9 @@
             "d_gain": 0.025
         },
         "pure_pursuit": {
-            "lfd_gain": 0.33,
+            "lfd_gain": 0.48,
             "min_lfd": 4,
-            "max_lfd": 33
+            "max_lfd": 65
         }
     }
 }

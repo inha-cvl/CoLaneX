@@ -179,6 +179,8 @@ class DynamicPath:
         return final_path
                 
     def check_is_merged(self):
+        if self.ego_pos == None:
+            return
         now_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
         if now_lanelets[0] == self.merging_point:
             self.hlv_merged = 1

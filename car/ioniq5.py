@@ -199,7 +199,7 @@ class IONIQ5():
                 self.sender()
             if self.timer(0.1):
                 self.publisher()
-                # self.checker()
+                self.checker()
                 # self.saver()
                 self.mode_receiver()
             self.receiver()
