@@ -128,7 +128,10 @@ class WheelWidget(QWidget):
         painter.drawText(wheel_center+QPointF(-50, 50), f"{self.yaw:.2f}\ndeg")
 
     def draw_line(self, painter, center, angle, color):
-        dg = 90 + angle
+        if angle < 0:
+            dg = 90 + -angle
+        else:
+            dg = 90 + angle
 
         line_length = min(self.width(), self.height()) / 3.5
         line_end = center + QPointF(line_length * math.cos(math.radians(-dg)),
@@ -158,7 +161,7 @@ class GaugeWidget(QWidget):
         self.setLayout(layout)
     
     def update_gauge(self):
-        gradient = QLinearGradient(0, 0, 0, 400)
+        gradient = QLinearGradient(0, 0, 0, 300)
         gradient.setColorAt(0, QColor(255, 0, 0, max(30, int(255 * (self.value / 100)))))  # 빨간색 (시작)
         gradient.setColorAt(1, QColor(255, 255, 0, int(255 * (self.value / 100))))  # 노란색 (끝)
         brush = QBrush(gradient)
@@ -166,7 +169,7 @@ class GaugeWidget(QWidget):
         self.gauge_label.setPixmap(pixmap)
 
     def draw_gauge(self, brush):
-        pixmap = self.create_gauge_pixmap(250, 400, brush)
+        pixmap = self.create_gauge_pixmap(100, 300, brush)
         return pixmap
 
     def create_gauge_pixmap(self, width, height, brush):
@@ -176,7 +179,7 @@ class GaugeWidget(QWidget):
         painter = QPainter(pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        mini_height = 385
+        mini_height = 285
 
         gauge_rect = pixmap.rect()
         fill_height = int((self.value / 100) * mini_height)
@@ -194,8 +197,8 @@ class GaugeWidget(QWidget):
         painter.drawPolygon(*target_triangle)
 
 
-        painter.setFont(QFont('Arial', 20))
-        painter.drawText(QPointF(195, pos-3), f"{self.v:.2f}")
+        painter.setFont(QFont('Arial', 10))
+        painter.drawText(QPointF(75, pos-3), f"{self.v:.2f}")
         painter.drawText(QPointF(15, target_pos-3), f"{self.t:.2f}")
 
 

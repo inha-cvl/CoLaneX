@@ -3,7 +3,7 @@ import math
 import signal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,  QVBoxLayout, QHBoxLayout,QWidget, QTabWidget
 import rospy
-from std_msgs.msg import Int8, Float32
+from std_msgs.msg import Int8, Float32, Float32MultiArray
 from geometry_msgs.msg import Pose, Vector3
 from PyQt5.QtCore import QTimer
 from rviz import bindings as rviz
@@ -21,6 +21,11 @@ class MyApp(QMainWindow):
         self.hlv_sig = 0
         self.hlv_merged = 0
         self.hlv_in = False
+
+        self.inform = {'e_v':0, 't_v':0, 'e_y':0,'t_y':0, 'e_a':0, 't_a':0, 'e_b':0, 't_b':0}
+
+        self.hlv_message = ['대기', '왼쪽으로 차선 변경', '오른쪽으로 차선 변경', '  TLV가 차선 변경 수락', 'TLV가 차선 변경 거절', '종료']
+
         self.hlv_timer = QTimer(self)
         self.hlv_timer.timeout.connect(self.pub_hlv_signal)
 
@@ -35,6 +40,8 @@ class MyApp(QMainWindow):
         rospy.Subscriber('/car/hlv_pose',Pose, self.hlv_pose_cb)
         rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/selfdrive/hlv_target_velocity', Float32, self.target_velocity_cb)
+        rospy.Subscriber('/hlv_system', Float32MultiArray, self.hlv_system_cb)
+        rospy.Subscriber('/car/can', Float32MultiArray, self.can_cb)
         self.mode_pub = rospy.Publisher("/mode", Int8, queue_size=1)
         self.hlv_signal_pub = rospy.Publisher("/hlv_signal", Int8, queue_size=10)
         
@@ -42,7 +49,9 @@ class MyApp(QMainWindow):
         self.timer = QTimer(self)   
         self.timer.timeout.connect(self.updateUI)
         self.timer.start(100)
-        self.inform = {'e_v':0, 't_v':0, 'e_y':0,'t_y':0, 'e_a':0, 't_a':0, 'e_b':0, 't_b':0}
+        
+    def hlv_system_cb(self, msg):
+        self.label_tab1.setText(self.hlv_message[int(msg.data[0])])
 
     def hlv_pose_cb(self, msg):
         self.inform['e_v'] = int(msg.orientation.x*MPS_TO_KPH)
@@ -57,6 +66,14 @@ class MyApp(QMainWindow):
 
     def target_velocity_cb(self, msg):
         self.inform['t_v'] = int(msg.data*MPS_TO_KPH)
+    
+    def can_cb(self, msg):
+        s1 = "PA-Enable   LON-Enable   Accel-Override   Brake-Override   Steering-Override   Latitude   Longitude   Heading   Velocity   Accel   Brake   Steer   PA-Enable  LON-Enable  Accel  Brake  Steer  L-Signal  R-Signal  Alive  Reset\n"
+        s2 = ''
+        for m in msg.data:
+            s2 = s2+'   '+(str(m))
+        s = s1 + s2
+        self.can_table.setText(s)
 
     def pub_mode(self, mode):
         self.mode_pub.publish(Int8(mode))
@@ -91,7 +108,7 @@ class MyApp(QMainWindow):
             self.hlv_signal_pub.publish(Int8(0))
         
     def initUI(self):
-        self.setGeometry(4000, 100, 1920,1080)
+        self.setGeometry(0,0,1920,1080)
         self.setWindowTitle('CoLaneX - Selfdrive')
 
         button1_layout = QHBoxLayout()
@@ -130,6 +147,11 @@ class MyApp(QMainWindow):
         button_layout.addLayout(button1_layout)
         button_layout.addLayout(button2_layout)
 
+        self.label_tab1 = QLabel("대기", self)
+        self.label_tab1.setAlignment(Qt.AlignCenter)  # Center-align the text
+        self.label_tab1.setStyleSheet("font-size: 30px; font-weight: bold;")  # Increase the font size
+        button_layout.addWidget(self.label_tab1)
+
         tab_widget = QTabWidget(self)
         tab1 = QWidget()
         cluster_layout = QHBoxLayout()
@@ -137,11 +159,17 @@ class MyApp(QMainWindow):
         cluster_layout.addWidget(self.wheel_widget)
         cluster_layout.addWidget(self.accel_widget)
         cluster_layout.addWidget(self.brake_widget)
-
         tab1.setLayout(cluster_layout)
+        
         tab2 = QWidget()
+        can_layout = QHBoxLayout()
+        self.can_table = QLabel('table', self)
+        can_layout.addWidget(self.can_table)
+        tab2.setLayout(can_layout)
+
+
         tab_widget.addTab(tab1, "Cluster")
-        tab_widget.addTab(tab2, "-")
+        tab_widget.addTab(tab2, "CAN")
 
         central_widget = QWidget(self)
         central_layout = QVBoxLayout()

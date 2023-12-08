@@ -9,7 +9,7 @@ import signal
 from tabulate import tabulate
 
 import rospy
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, Float32MultiArray
 from geometry_msgs.msg import Vector3, Pose
 from novatel_oem7_msgs.msg import INSPVA
 
@@ -37,6 +37,7 @@ class IONIQ5():
         self.pose = Pose() 
         self.pub_mode = rospy.Publisher('/car/mode', Int8, queue_size=1)
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
+        self.pub_can = rospy.Publisher('/car/can', Float32MultiArray, queue_size=1)
         rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/mode', Int8, self.user_mode_cb)
         rospy.Subscriber('/hlv_signal', Int8, self.signal_cb)
@@ -153,6 +154,9 @@ class IONIQ5():
     def publisher(self):
         self.pub_pose.publish(self.pose)
         self.pub_mode.publish(Int8(self.car_mode))
+        can_data = [self.PA_Enable_Status, self.LON_Enable_Status, self.Accel_Override, self.Break_Override, self.Steering_Overide,self.pose.position.x, self.pose.position.y, self.pose.position.z, self.pose.orientation.x, self.pose.orientation.y, self.pose.orientation.z, self.pose.orientation.w, self.control_state['pa_enable'], self.control_state['lon_enable'], self.target_actuators['accel'], self.target_actuators['brake'],
+             self.target_actuators['steer'], self.signal['left'], self.signal['right'], self.alv_cnt, self.reset]
+        self.pub_can.publish(Float32MultiArray(data=can_data))
     
     def checker(self):
         print("Enable & Override Status")
@@ -175,6 +179,7 @@ class IONIQ5():
              self.target_actuators['steer'], self.signal['left'], self.signal['right'], self.alv_cnt, self.reset]
         ]
         print(tabulate(data, tablefmt="grid"))
+
     
     def saver(self):
         elapsed = time.time()-self.saver_time
@@ -199,7 +204,7 @@ class IONIQ5():
                 self.sender()
             if self.timer(0.1):
                 self.publisher()
-                self.checker()
+                #self.checker()
                 # self.saver()
                 self.mode_receiver()
             self.receiver()

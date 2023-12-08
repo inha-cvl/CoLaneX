@@ -7,7 +7,7 @@ from morai_msgs.msg import GPSMessage, EgoVehicleStatus
 from sensor_msgs.msg import Imu
 from morai_msgs.msg import ObjectStatusList, CtrlCmd, Lamps
 from geometry_msgs.msg import Pose, PoseArray, Vector3
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, Float32MultiArray
 from jsk_recognition_msgs.msg import BoundingBoxArray, BoundingBox
 
 
@@ -25,6 +25,7 @@ class Morai:
         self.lamp_pub = rospy.Publisher('/lamps', Lamps, queue_size=1)
         self.obj_list_pub = rospy.Publisher('/mobinha/perception/lidar/track_box', BoundingBoxArray, queue_size=1)
         self.mode_pub = rospy.Publisher('/car/mode', Int8, queue_size=1)
+        self.pub_can = rospy.Publisher('/car/can', Float32MultiArray, queue_size=1)
         rospy.Subscriber("/gps", GPSMessage, self.gps_cb)
         rospy.Subscriber("/imu", Imu, self.imu_cb)
         rospy.Subscriber("/Ego_topic", EgoVehicleStatus, self.ego_topic_cb)
@@ -53,6 +54,8 @@ class Morai:
 
         self.egoxy[0] = msg.position.x
         self.egoxy[1] = msg.position.y
+        can_data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.pub_can.publish(Float32MultiArray(data=can_data))
 
     def hlv_signal_cb(self, msg):
         self.lamps.turnSignal = msg.data
