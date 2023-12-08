@@ -58,7 +58,7 @@ class Morai:
         self.lamps.turnSignal = msg.data
 
     def actuator_cb(self, data):
-        self.ctrl_msg.steering = math.radians(data.x)
+        self.ctrl_msg.steering = math.radians(data.x/12.97)
         self.ctrl_msg.accel = data.y
         self.ctrl_msg.brake = data.z
 
