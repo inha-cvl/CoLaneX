@@ -1,7 +1,7 @@
 import sys
 import math
 import signal
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,  QVBoxLayout, QHBoxLayout,QWidget, QTabWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,  QVBoxLayout, QHBoxLayout,QWidget, QTabWidget, QTableWidget, QTableWidgetItem
 import rospy
 from std_msgs.msg import Int8, Float32, Float32MultiArray
 from geometry_msgs.msg import Pose, Vector3
@@ -68,12 +68,15 @@ class MyApp(QMainWindow):
         self.inform['t_v'] = int(msg.data*MPS_TO_KPH)
     
     def can_cb(self, msg):
-        s1 = "PA-Enable   LON-Enable   Accel-Override   Brake-Override   Steering-Override   Latitude   Longitude   Heading   Velocity   Accel   Brake   Steer   PA-Enable  LON-Enable  Accel  Brake  Steer  L-Signal  R-Signal  Alive  Reset\n"
-        s2 = ''
-        for m in msg.data:
-            s2 = s2+'   '+(str(m))
-        s = s1 + s2
-        self.can_table.setText(s)
+        for i,v in enumerate(msg.data[:5]):
+            item = QTableWidgetItem(str(v))
+            self.table_widget1.setItem(0, i, item)
+        for i,v in enumerate(msg.data[5:12]):
+            item = QTableWidgetItem(str(v))
+            self.table_widget2.setItem(0, i, item)
+        for i,v in enumerate(msg.data[12:]):
+            item = QTableWidgetItem(str(v))
+            self.table_widget3.setItem(0, i, item)
 
     def pub_mode(self, mode):
         self.mode_pub.publish(Int8(mode))
@@ -162,11 +165,32 @@ class MyApp(QMainWindow):
         tab1.setLayout(cluster_layout)
         
         tab2 = QWidget()
-        can_layout = QHBoxLayout()
-        self.can_table = QLabel('table', self)
-        can_layout.addWidget(self.can_table)
+        can_layout = QVBoxLayout()
+        self.table_widget1 = QTableWidget(self)
+        self.table_widget1.setRowCount(1)
+        self.table_widget2 = QTableWidget(self)
+        self.table_widget2.setRowCount(1)
+        self.table_widget3 = QTableWidget(self)
+        self.table_widget3.setRowCount(1)
+        table1_header = ["PA-Enable","LON-Enable","Accel-Override","Brake-Override","Steering-Override"]
+        table2_header = ["Latitude","Longitude","Heading","Velocity","Accel","Brake","Steer"]
+        table3_header = ["PA-Enable","LON-Enable","Accel","Brake","Steer","L-Signal","R-Signal","Alive","Reset"]
+        self.table_widget1.setColumnCount(len(table1_header))
+        self.table_widget1.setHorizontalHeaderLabels(table1_header)
+        self.table_widget2.setColumnCount(len(table2_header))
+        self.table_widget2.setHorizontalHeaderLabels(table2_header)
+        self.table_widget3.setColumnCount(len(table3_header))
+        self.table_widget3.setHorizontalHeaderLabels(table3_header)
+        table1_label = QLabel("Enable & Override Status", self)
+        can_layout.addWidget(table1_label)
+        can_layout.addWidget(self.table_widget1)
+        table2_label = QLabel("Ego Pose", self)
+        can_layout.addWidget(table2_label)
+        can_layout.addWidget(self.table_widget2)
+        table3_label = QLabel("Target Controls", self)
+        can_layout.addWidget(table3_label)
+        can_layout.addWidget(self.table_widget3)
         tab2.setLayout(can_layout)
-
 
         tab_widget.addTab(tab1, "Cluster")
         tab_widget.addTab(tab2, "CAN")

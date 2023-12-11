@@ -2,7 +2,7 @@ import numpy as np
 
 A_CRUISE_MAX_VALS = [25, 20, 18, 15]
 A_CRUISE_MAX_BP = [0., 10.0, 25., 50.]
-B_CRUISE_MAX_VALS = [30, 25, 20, 15]
+B_CRUISE_MAX_VALS = [20, 25, 30, 35]
 A_CRUISE_MIN = 15
 
 class Actuator:
