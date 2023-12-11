@@ -182,6 +182,8 @@ class DynamicPath:
         if self.ego_pos == None:
             return
         now_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
+        if now_lanelets == None:
+            return
         if now_lanelets[0] == self.merging_point:
             self.hlv_merged = 1
             self.merging_point_update_needed = True
