@@ -45,7 +45,7 @@ class TestLogger():
         rospy.Subscriber('/car/hlv_pose', Pose, self.hlv_pose_cb)
         rospy.Subscriber('/planning/hlv_merged', Int8, self.hlv_merged_cb)
         rospy.Subscriber('/hlv_signal', Int8, self.hlv_signal_cb)
-        #rospy.Subscriber('/selfdrive/lidar_bsd', Pose, self.lidar_bsd_cb)
+        # rospy.Subscriber('/selfdrive/lidar_bsd', Pose, self.lidar_bsd_cb)
         rospy.Subscriber('/hlv_system', Float32MultiArray, self.hlv_system_cb)
 
     def mode_cb(self, msg):

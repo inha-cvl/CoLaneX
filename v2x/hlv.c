@@ -84,7 +84,7 @@ int rx_msg_cnt;
 int path_len;
 bool show_result = true;
 bool same_machine = false;
-int hz = 5;
+int hz = 2;
 int tx_packet_count = 0;
 int rx_packet_count = 0;
 
