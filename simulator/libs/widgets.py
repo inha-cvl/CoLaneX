@@ -129,9 +129,9 @@ class WheelWidget(QWidget):
 
     def draw_line(self, painter, center, angle, color):
         if angle < 0:
-            dg = 90 + -angle
+            dg = 90-angle
         else:
-            dg = 90 + angle
+            dg = 90-angle
 
         line_length = min(self.width(), self.height()) / 3.5
         line_end = center + QPointF(line_length * math.cos(math.radians(-dg)),

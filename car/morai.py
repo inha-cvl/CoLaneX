@@ -21,7 +21,7 @@ class Morai:
         self.egoxy = [0,0]
                 
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
-        self.ctrl_pub = rospy.Publisher('/ctrl_cmd', CtrlCmd, queue_size=1)  # Vehicl Control
+        self.ctrl_pub = rospy.Publisher('/ctrl_cmd_0', CtrlCmd, queue_size=1)  # Vehicl Control
         self.lamp_pub = rospy.Publisher('/lamps', Lamps, queue_size=1)
         self.obj_list_pub = rospy.Publisher('/mobinha/perception/lidar/track_box', BoundingBoxArray, queue_size=1)
         self.mode_pub = rospy.Publisher('/car/mode', Int8, queue_size=1)
@@ -61,9 +61,9 @@ class Morai:
         self.lamps.turnSignal = msg.data
 
     def actuator_cb(self, data):
-        self.ctrl_msg.steering = math.radians(data.x/12.97)
-        self.ctrl_msg.accel = data.y
-        self.ctrl_msg.brake = data.z
+        self.ctrl_msg.steering = data.x/14.6
+        self.ctrl_msg.accel = data.y/100
+        self.ctrl_msg.brake = data.z/100
 
     def object_topic_cb(self, data):
         object_list = BoundingBoxArray()

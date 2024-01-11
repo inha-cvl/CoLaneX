@@ -74,7 +74,6 @@ class AdaptiveCruiseControl:
         return co
 
     def get_target_velocity(self, ego_vel, target_vel, co):
-        
         vel_error = ego_vel - self.object_vel
         safe_distance = ego_vel*self.time_gap
         dist_error = safe_distance-self.object_dist
@@ -82,7 +81,9 @@ class AdaptiveCruiseControl:
         acceleration = -(self.vel_gain*vel_error + self.dist_gain*dist_error)
         target_vel = max(self.max_velocity, target_vel-target_vel*(co))
         out_vel = min(ego_vel+acceleration, target_vel)
+
         if -dist_error < self.dist_th:
              out_vel -= 1.5
+
         return out_vel
     

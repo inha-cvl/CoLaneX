@@ -12,7 +12,7 @@ app = None
 
 from libs.widgets import *
 
-STEER_RATIO = 13.5
+STEER_RATIO = 14.6
 MPS_TO_KPH = 3.6
 
 class MyApp(QMainWindow):
@@ -60,7 +60,7 @@ class MyApp(QMainWindow):
         self.inform['e_b'] = msg.orientation.w
         
     def actuator_cb(self, msg):
-        self.inform['t_y'] = msg.x
+        self.inform['t_y'] = math.degrees(msg.x)
         self.inform['t_a'] = msg.y
         self.inform['t_b'] = msg.z
 
@@ -111,7 +111,7 @@ class MyApp(QMainWindow):
             self.hlv_signal_pub.publish(Int8(0))
         
     def initUI(self):
-        self.setGeometry(0,0,1920,1080)
+        self.setGeometry(1080+1920,0,1920,1080)
         self.setWindowTitle('CoLaneX - Selfdrive')
 
         button1_layout = QHBoxLayout()

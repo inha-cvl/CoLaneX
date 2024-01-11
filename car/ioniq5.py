@@ -87,7 +87,7 @@ class IONIQ5():
     def actuator_cb(self, msg):
         if self.car_mode == 1:
             #self.target_actuators = {**self.target_actuators, 'steer':msg.x, 'accel':msg.y, 'brake':msg.z}
-            self.target_actuators['steer'] = msg.x*12.97
+            self.target_actuators['steer'] = msg.x*14.26
             self.target_actuators['accel'] = msg.y
             self.target_actuators['brake'] = msg.z
         else:

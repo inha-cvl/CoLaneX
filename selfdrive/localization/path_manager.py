@@ -19,7 +19,6 @@ class PathManager:
             if distance < min_distance:
                 min_distance = distance
                 current_waypoint = i
-
         if current_waypoint + self.local_path_size < len(self.path):
             local_path = self.path[current_waypoint:current_waypoint + self.local_path_size]
         else:

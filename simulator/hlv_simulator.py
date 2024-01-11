@@ -41,6 +41,7 @@ class HLVSimulator:
         self.pub_ego_car = rospy.Publisher('/car/ego_car', Marker, queue_size=1)
         self.pub_ego_car_info = rospy.Publisher('/car/ego_car_info', Marker, queue_size=1)
         self.pub_pose = rospy.Publisher('/car/hlv_pose', Pose, queue_size=1)
+        self.pub_mode = rospy.Publisher('/car/mode', Int8, queue_size=1)
         rospy.Subscriber('/selfdrive/hlv_actuator', Vector3, self.actuator_cb)
         rospy.Subscriber('/mode', Int8, self.mode_cb)
         rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.init_pose_cb)
@@ -97,7 +98,7 @@ class HLVSimulator:
             )
             self.pub_ego_car.publish(self.ego_car)
             self.pub_ego_car_info.publish(self.ego_car_info)
-
+            self.pub_mode.publish(Int8(self.mode))
             rate.sleep()
 
 def main():
