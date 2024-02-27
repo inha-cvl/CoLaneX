@@ -1,7 +1,7 @@
 import sys
 import math
 import signal
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,  QVBoxLayout, QHBoxLayout,QWidget, QTabWidget, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,  QVBoxLayout, QHBoxLayout,QWidget, QTabWidget, QTableWidget, QTableWidgetItem, QLineEdit
 import rospy
 from std_msgs.msg import Int8, Float32, Float32MultiArray
 from geometry_msgs.msg import Pose, Vector3
@@ -31,6 +31,7 @@ class MyApp(QMainWindow):
 
         self.rviz_widget = RvizWidget(self)
         self.speedometer_widget = SpeedometerWidget(self)
+        self.speed_graph = SpeedSubscriberWidget(self)
         self.wheel_widget = WheelWidget(self)
         self.accel_widget = GaugeWidget("Accel", self)
         self.brake_widget = GaugeWidget("Brake", self)
@@ -44,6 +45,7 @@ class MyApp(QMainWindow):
         rospy.Subscriber('/car/can', Float32MultiArray, self.can_cb)
         self.mode_pub = rospy.Publisher("/mode", Int8, queue_size=1)
         self.hlv_signal_pub = rospy.Publisher("/hlv_signal", Int8, queue_size=10)
+        self.pid_pub = rospy.Publisher("/pid_params", Vector3, queue_size=1)
         
         # QTimer 인스턴스 생성
         self.timer = QTimer(self)   
@@ -60,7 +62,7 @@ class MyApp(QMainWindow):
         self.inform['e_b'] = msg.orientation.w
         
     def actuator_cb(self, msg):
-        self.inform['t_y'] = math.degrees(msg.x)
+        self.inform['t_y'] = msg.x
         self.inform['t_a'] = msg.y
         self.inform['t_b'] = msg.z
 
@@ -83,6 +85,7 @@ class MyApp(QMainWindow):
 
     def updateUI(self):
         self.speedometer_widget.set_speed(self.inform['e_v'], self.inform['t_v'])
+        self.speed_graph.set_speed(self.inform['e_v'], self.inform['t_v'])
         self.wheel_widget.set_yaw(self.inform['e_y'], self.inform['t_y'])
         self.accel_widget.set_value(self.inform['e_a'])
         self.brake_widget.set_value(self.inform['e_b'])
@@ -109,9 +112,21 @@ class MyApp(QMainWindow):
             self.hlv_signal_pub.publish(Int8(self.hlv_sig))
         else:
             self.hlv_signal_pub.publish(Int8(0))
-        
+
+    def onSubmit(self):
+        # Retrieve values from the input fields
+        kkk = Vector3()
+        kp = self.kpInput.text()
+        ki = self.kiInput.text()
+        kd = self.kdInput.text()
+        kkk.x = float(kp)
+        kkk.y = float(ki)
+        kkk.z = float(kd)
+
+        self.pid_pub.publish(kkk)
+
     def initUI(self):
-        self.setGeometry(1080+1920,0,1920,1080)
+        self.setGeometry(1080,0,1080,0)
         self.setWindowTitle('CoLaneX - Selfdrive')
 
         button1_layout = QHBoxLayout()
@@ -162,9 +177,53 @@ class MyApp(QMainWindow):
         cluster_layout.addWidget(self.wheel_widget)
         cluster_layout.addWidget(self.accel_widget)
         cluster_layout.addWidget(self.brake_widget)
+        cluster_layout.addWidget(self.speed_graph)
         tab1.setLayout(cluster_layout)
         
         tab2 = QWidget()
+        pid_layout = QHBoxLayout()
+        pid_layout.addWidget(self.speed_graph)
+        k_layout = QVBoxLayout()
+        kpLayout = QHBoxLayout()
+        kiLayout = QHBoxLayout()
+        kdLayout = QHBoxLayout()
+        buttonLayout = QHBoxLayout()
+
+         # Kp Input
+        self.kpLabel = QLabel('Kp:', self)
+        self.kpInput = QLineEdit(self)
+        self.kpInput.setText(str(0.65))
+        kpLayout.addWidget(self.kpLabel)
+        kpLayout.addWidget(self.kpInput)
+
+        # Ki Input
+        self.kiLabel = QLabel('Ki:', self)
+        self.kiInput = QLineEdit(self)
+        self.kiInput.setText(str(0.0001))
+        kiLayout.addWidget(self.kiLabel)
+        kiLayout.addWidget(self.kiInput)
+
+        # Kd Input
+        self.kdLabel = QLabel('Kd:', self)
+        self.kdInput = QLineEdit(self)
+        self.kdInput.setText(str(0.001))
+        kdLayout.addWidget(self.kdLabel)
+        kdLayout.addWidget(self.kdInput)
+
+        # Submit Button
+        self.submitButton = QPushButton('Submit', self)
+        self.submitButton.clicked.connect(self.onSubmit)
+        buttonLayout.addWidget(self.submitButton)
+
+
+        k_layout.addLayout(kpLayout)
+        k_layout.addLayout(kiLayout)
+        k_layout.addLayout(kdLayout)
+        k_layout.addLayout(buttonLayout)
+        pid_layout.addLayout(k_layout)
+        tab2.setLayout(pid_layout)
+
+        tab3 = QWidget()
         can_layout = QVBoxLayout()
         self.table_widget1 = QTableWidget(self)
         self.table_widget1.setRowCount(1)
@@ -190,10 +249,11 @@ class MyApp(QMainWindow):
         table3_label = QLabel("Target Controls", self)
         can_layout.addWidget(table3_label)
         can_layout.addWidget(self.table_widget3)
-        tab2.setLayout(can_layout)
+        tab3.setLayout(can_layout)
 
         tab_widget.addTab(tab1, "Cluster")
-        tab_widget.addTab(tab2, "CAN")
+        tab_widget.addTab(tab2, "PID Tuning")
+        tab_widget.addTab(tab3, "CAN")
 
         central_widget = QWidget(self)
         central_layout = QVBoxLayout()
@@ -204,6 +264,9 @@ class MyApp(QMainWindow):
         central_layout.addWidget(tab_widget)
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
+
+   
+
 
 def main():
     rospy.init_node('control_ui', anonymous=True)

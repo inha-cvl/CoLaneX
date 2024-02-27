@@ -1,20 +1,21 @@
 import numpy as np
 
-A_CRUISE_MAX_VALS = [30, 28, 26, 24]
+A_CRUISE_MAX_VALS = [35, 32, 29, 27]
 # A_CRUISE_MAX_VALS = [24, 22, 20, 18]
+#A_CRUISE_MAX_BP = [0., 10.0, 25., 50.] #max 50
+A_CRUISE_MAX_BP = [0., 15.0, 30., 60.] #max 60
 
-A_CRUISE_MAX_BP = [0., 10.0, 25., 50.]
 B_CRUISE_MAX_VALS = [20, 23, 25, 30]
-A_CRUISE_MIN = 15
+A_CRUISE_MIN = 3
 
 class Actuator:
     def __init__(self, acc, steer, v):
         if acc > 0:
-            self.accel = self.get_actual_accel(acc*200, v)
+            self.accel = self.get_actual_accel(acc*10, v)
             self.brake = 0.
         else:
             self.accel = 0.
-            self.brake = self.get_actual_brake(-acc*200, v)
+            self.brake = self.get_actual_brake(-acc*10, v)
         
         self.steering = steer
     

@@ -10,4 +10,5 @@ cd ../selfdrive
 python3 main.py hlv KCity&
 cd ../utils
 python3 test_logger.py $1 v2x &
+python3 points_publisher.py &
 rosrun v2x hlv

@@ -216,6 +216,8 @@ class MPC(object):
         prob = cvxpy.Problem(cvxpy.Minimize(cost), constraints)
         prob.solve(solver=cvxpy.ECOS, verbose=False)
 
+        print(prob.status)
+
         if prob.status == cvxpy.OPTIMAL or prob.status == cvxpy.OPTIMAL_INACCURATE:
             # ox = self.get_nparray_from_matrix(x.value[0, :])
             # oy = self.get_nparray_from_matrix(x.value[1, :])
@@ -343,7 +345,4 @@ class MPC(object):
         if self.odelta is not None:
             di, ai = self.odelta[0], self.oa[0]
             self.state = self.update_state(self.state, ai, di)
-        
-        di = vehicle_state.heading-self.state.yaw
-
-        return ai, -di
+        return ai, di

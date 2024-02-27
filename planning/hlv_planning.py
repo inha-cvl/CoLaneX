@@ -21,6 +21,8 @@ class DynamicPath:
     def __init__(self, map):
         if map == 'songdo-site':
             self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+        elif map=='songdo':
+            self.base_lla = [37.3888319,126.6428739, 7.369]
         elif map == 'KIAPI':
             self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
         else:
@@ -48,7 +50,7 @@ class DynamicPath:
         self.x_p = 3
         self.x_c = 50
         self.x2_i = 30
-        self.x2_v_th = 27
+        self.x2_v_th = 37
         self.merging_point = None
         self.merging_point_update_needed = True
         self.hlv_merged = 0
@@ -94,6 +96,8 @@ class DynamicPath:
         if msg.data == 4:
             self.hlv_merged = 0
         self.signal = msg.data
+        if self.signal == 0:
+            self.temp_signal = 0
     
     def lidar_dangerous_cb(self, msg):
         self.dangerous = msg.data
@@ -161,12 +165,14 @@ class DynamicPath:
         if ego_lanelets == None:
             return None
         
-        x1 = self.ego_v * MPS_TO_KPH + c if self.ego_v > 0.5 else 50
+        if self.ego_v < 0.5:
+            x1 = 50
+        else:
+            x1 = 30 if self.ego_v < self.x2_v_th else self.ego_v * MPS_TO_KPH
         r1, n1, i1 = p.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
-        if self.signal == 0 or self.signal == 3 or update_type == 3:
+        if self.signal == 0 or self.signal == 3 or update_type == 3 or update_type == 1:
             final_path = r0+r1
         else:
-
             x2 = self.x2_i if self.ego_v < self.x2_v_th else self.ego_v * self.x_p
             _, n2, i2 = self.get_change_path(n1, i1, x2, self.signal)
             if self.hlv_merged == 0 and self.merging_point_update_needed:

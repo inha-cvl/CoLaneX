@@ -120,7 +120,7 @@ class MyApp(QMainWindow):
             self.tlv_signal_pub.publish(Int8(0))
 
     def initUI(self):
-        self.setGeometry(100, 100, 1920,1080)
+        self.setGeometry(1080, 100, 1080,720)
         self.setWindowTitle('CoLaneX')
         
         self.rviz_widget = RvizWidget(self)

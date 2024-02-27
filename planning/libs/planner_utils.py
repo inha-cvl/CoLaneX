@@ -1,6 +1,7 @@
 
 import numpy as np
 import pymap3d as pm
+import math
 import copy
 import json
 from scipy.ndimage import gaussian_filter1d
@@ -137,7 +138,8 @@ def get_possible_successor(node, prior='Left'):
 
         successor = most_successor
     else:
-        successor = lanelets[node]['successor'][0]
+        i = math.floor(len(lanelets[node]['successor'])/2)
+        successor = lanelets[node]['successor'][i]
 
     return successor
 

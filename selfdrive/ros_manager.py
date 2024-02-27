@@ -50,6 +50,7 @@ class RosManager:
         rospy.Subscriber(f'/planning/{self.vehicle_type}_ipath',Marker, self.path_cb)
         rospy.Subscriber('/car/mode', Int8,self.mode_cb)
         rospy.Subscriber('/mobinha/perception/lidar/track_box', BoundingBoxArray, self.lidar_cluster_cb)
+        rospy.Subscriber('/pid_params', Vector3, self.pid_params_cb)
         
         self.actuator_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_actuator', Vector3, queue_size=1)
         self.local_path_pub = rospy.Publisher(f'/selfdrive/{self.vehicle_type}_local_path', Marker, queue_size=1)
@@ -71,6 +72,10 @@ class RosManager:
 
     def path_cb(self, msg):
         self.path = [Point(pt.x, pt.y) for pt in msg.points]
+    
+    def pid_params_cb(self, msg):
+        pid_gains = [msg.x, msg.y, msg.z]
+        self.self_drive.pid_test(pid_gains)
 
     def lidar_cluster_cb(self, msg):
         objects = []
@@ -119,7 +124,7 @@ class RosManager:
             pose.position.z = lidar_bsd[2]
             pose.orientation.x = lidar_bsd[3]
             self.lidar_bsd_pub.publish(pose)
-            if -20 < lidar_bsd[6] < 20:
+            if -50 < lidar_bsd[6] < 50:
                 self.lidar_dangerous = 1
             else:
                 self.lidar_dangerous = 0

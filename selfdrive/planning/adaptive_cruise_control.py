@@ -80,10 +80,9 @@ class AdaptiveCruiseControl:
 
         acceleration = -(self.vel_gain*vel_error + self.dist_gain*dist_error)
         target_vel = max(self.max_velocity, target_vel-target_vel*(co))
-        out_vel = min(ego_vel+acceleration, target_vel)
+        out_vel = min(ego_vel+acceleration+2, target_vel)
 
         if -dist_error < self.dist_th:
              out_vel -= 1.5
-
         return out_vel
     

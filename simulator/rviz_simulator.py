@@ -16,6 +16,8 @@ class RVizSimulator:
     def __init__(self, vehicle_type, map):
         if map == 'songdo-site':
             self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+        elif map=='songdo':
+            self.base_lla = [37.3888319,126.6428739, 7.369]
         elif map == 'KIAPI':
             self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
         else:
@@ -103,7 +105,7 @@ class RVizSimulator:
             self.l_car_marker.pose.position.y = self.l_y 
             self.l_car_info.pose.position.x = self.l_x
             self.l_car_info.pose.position.y = self.l_y
-            quaternion = tf.transformations.quaternion_from_euler(0, 0, math.radians(90+(self.l_h%360)))
+            quaternion = tf.transformations.quaternion_from_euler(0, 0, math.radians((self.l_h)))
             self.l_car_marker.pose.orientation.x = quaternion[0]
             self.l_car_marker.pose.orientation.y = quaternion[1]
             self.l_car_marker.pose.orientation.z = quaternion[2]

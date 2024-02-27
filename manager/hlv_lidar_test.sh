@@ -10,3 +10,4 @@ cd ../selfdrive
 python3 main.py hlv KCity &
 cd ../utils
 python3 test_logger.py $1 lidar &
+python3 points_publisher.py 

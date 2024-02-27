@@ -17,16 +17,22 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 class SafeDistance:
-    def __init__(self):
+    def __init__(self,  map):
+        if map == 'songdo-site':
+            self.base_lla = [37.383378,126.656798,7] # Sondo-Site
+        elif map=='songdo':
+            self.base_lla = [37.3888319,126.6428739, 7.369]
+        elif map == 'KIAPI':
+            self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
+        else:
+            self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
+
         self.state = 'WAIT'
-        self.base_lla = [35.64588122580907,128.40214778762413, 46.746] #KIAPI
-        #self.base_lla = [37.383378,126.656798, 46.746] #SONGDO-SITE
         self.tile_size = 5.0
         self.cut_dist = 15.0
         self.precision = 0.5
 
-        #self.lmap = LaneletMap("songdo-site.json")
-        self.lmap = LaneletMap("KIAPI.json")
+        self.lmap = LaneletMap(f"{map}.json")
         self.tmap = TileMap(self.lmap.lanelets, self.tile_size)
         self.graph = MicroLaneletGraph(self.lmap, self.cut_dist).graph
         self.M_TO_IDX = 1/self.precision
@@ -46,6 +52,10 @@ class SafeDistance:
         self.ego_v = 12 #m/s -> callback velocity
         self.x_p = 1.5
         self.x_c = 200
+        self.x2_i = 30
+        self.x2_v_th = 27
+        self.x3_c = 30
+        self.mc = -1
         self.intersection_radius = 1.0
         self.d_c = 15 # If at noraml road || on high way == 0
 
@@ -60,6 +70,7 @@ class SafeDistance:
 
         self.pub_lanelet_map = rospy.Publisher('/planning/lanelet_map', MarkerArray, queue_size = 1, latch=True)
         self.pub_tlv_path = rospy.Publisher('/planning/tlv_path', Marker, queue_size=1)
+        self.pub_tlv_ipath = rospy.Publisher('/planning/tlv_ipath', Marker, queue_size=1)
         self.pub_intersection = rospy.Publisher('/planning/intersection', Marker, queue_size=1)
         self.pub_move = rospy.Publisher('/planning/move', Marker, queue_size=1)
         self.pub_safety = rospy.Publisher('/planning/safety', Int8, queue_size=1)
@@ -118,6 +129,36 @@ class SafeDistance:
         else:
             return -1
 
+    def make_change(self):
+        res = None
+        idx = None
+        click_point = [(-605.899, 910.478),(-746.488, 977.405),(-677.317, 320.106),(-639.355, 258.898), (-394.124, -191.119), (-39.668, -40.170),(14.158, 27.134),(133.406, 169.704), (121.856, 156.963)]
+        for i, pt in enumerate(click_point):
+            radius = 1 if i == 4 else 3
+            if self.is_insied_circle(self.ego_pos, pt, radius):
+                print(f'[{i}]')
+                if i == 8:
+                    res = 2
+                else:
+                    res = 1
+                idx = i
+                break
+        return res, idx
+
+    def get_change_path(self, s_n, s_i,  path_len, to=1):
+        wps, u_n, u_i = p.get_straight_path( s_n, s_i, path_len)
+        c_pt = wps[-1]
+        l_id, r_id = p.get_neighbor( u_n)
+        n_id = l_id if to==1 else r_id
+
+        if n_id != None:
+            r = self.lmap.lanelets[n_id]['waypoints']
+            u_n = n_id
+            u_i = p.find_nearest_idx(r, c_pt)
+        else:
+            r = wps
+        return r, u_n, u_i
+        
     def get_node_path(self):
         if self.ego_pos == None:
             return
@@ -125,7 +166,9 @@ class SafeDistance:
         final_path = []
         compress_path = []
         need_update = self.need_update()
-        if need_update != -1:
+        mc,i = self.make_change()
+        if need_update != -1 or ( mc != None and i != self.mc ):
+            
             r0 = []
             if need_update == 0:
                 start_pose = self.ego_pos
@@ -133,23 +176,36 @@ class SafeDistance:
                 start_pose = self.final_path[-1]
                 idx = p.find_nearest_idx(self.final_path, self.ego_pos)
                 r0 = self.final_path[idx:]
+            elif mc != None:
+                start_pose = self.ego_pos
 
             ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
             if ego_lanelets == None:
                 return 
             x1 = self.ego_v * MPS_TO_KPH + self.ego_v * self.x_p + self.x_c #m
-            r1, _, _ = p.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
+            if mc != None:
+                self.mc = i
+                x1 = 30
+            r1, n1, i1 = p.get_straight_path(ego_lanelets[0], ego_lanelets[1], x1)
 
-            final_path = r0+r1
-            #compress_path = do_compressing(final_path, 10)
-            self.final_path = p.ref_interpolate(final_path, self.precision)[0]
-            # cause limitation of v2x max length 
+            if mc != None:
+                x2 = self.x2_i if self.ego_v < self.x2_v_th else self.ego_v * self.x_p
+                _, n2, i2 = self.get_change_path(n1, i1, x2, mc)
+                x3 = self.x3_c + self.ego_v * self.x_p
+                r3, _, _ = p.get_straight_path( n2, i2, x3)
+                final_path = r0+r1+r3
+            else:
+                final_path = r0+r1
+
+            self.final_path = p.smooth_interpolate(final_path, self.precision)
             self.tlv_path = p.limit_path_length(self.final_path, 50)
             self.tlv_geojson = p.to_geojson(self.tlv_path, self.base_lla)
             
             
         tlv_path_viz = TLVPathViz(self.tlv_path)
+        final_path_viz = TLVPathViz(self.final_path)
         self.pub_tlv_path.publish(tlv_path_viz)
+        self.pub_tlv_ipath.publish(final_path_viz)
         self.pub_tlv_geojson.publish(self.tlv_geojson)
     
     def is_insied_circle(self, pt1, pt2, radius):
@@ -226,7 +282,8 @@ class SafeDistance:
 def main():
     signal.signal(signal.SIGINT, signal_handler)
     rospy.init_node('SafeDistance', anonymous=False)
-    sd = SafeDistance()
+    map = sys.argv[1]
+    sd = SafeDistance(map)
     sd.run()
 
 if __name__ == "__main__":

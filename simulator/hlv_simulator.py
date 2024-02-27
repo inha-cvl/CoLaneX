@@ -16,15 +16,21 @@ def signal_handler(sig, frame):
 
 class HLVSimulator:
     def __init__(self, map):
+        wheelbase = 2.97
         if map == 'songdo-site':
             self.base_lla = [37.383378,126.656798,7] # Sondo-Site
-            self.ego = Vehicle(-3800.520, 3840.930, -3.133, 0.0, 2.367) #Songdo
+            self.ego = Vehicle(-3800.520, 3840.930, -3.133, 0.0, wheelbase) #Songdo
+        elif map=='songdo':
+            self.base_lla = [37.3888319,126.6428739, 7.369]
+            #self.ego = Vehicle(148.707, 310.741,2.478, 0.0, 2.65)
+            self.ego = Vehicle(147.547, 311.788, 2.478, 0.0, wheelbase)
+           
         elif map == 'KIAPI':
             self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
-            self.ego = Vehicle(-127.595, 418.819, 2.380, 0.0, 2.367)
+            self.ego = Vehicle(-127.595, 418.819, 2.380, 0.0, wheelbase)
         else:
             self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
-            self.ego = Vehicle(0,0,0,0, 2.376)
+            self.ego = Vehicle(533.086,1779.300,-1.577,0, wheelbase)
 
         self.roll = 0.0
         self.pitch = 0.0
@@ -57,7 +63,7 @@ class HLVSimulator:
         self.ego.set(x, y, yaw)
 
     def actuator_cb(self, msg):
-        self._steer = msg.x
+        self._steer = math.radians(msg.x)
         self._accel = msg.y
         self._brake = msg.z
     
@@ -67,7 +73,7 @@ class HLVSimulator:
     def run(self):
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
-            dt = 0.1
+            dt = 0.05
             if self.mode == 1:
                 x, y, yaw, v = self.ego.next_state(
                 dt, self._steer,self._accel, self._brake)

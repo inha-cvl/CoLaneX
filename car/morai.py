@@ -61,18 +61,18 @@ class Morai:
         self.lamps.turnSignal = msg.data
 
     def actuator_cb(self, data):
-        self.ctrl_msg.steering = data.x/14.6
-        self.ctrl_msg.accel = data.y/100
-        self.ctrl_msg.brake = data.z/100
+        self.ctrl_msg.steering = math.radians(data.x)
+        self.ctrl_msg.accel = data.y/50
+        self.ctrl_msg.brake = data.z/50
 
     def object_topic_cb(self, data):
         object_list = BoundingBoxArray()
         for obj in data.npc_list:
             bbox = BoundingBox()
             pose = Pose()
-            pose.position.y = -(self.egoxy[0] - obj.position.x)
+            pose.position.y = (self.egoxy[0] - obj.position.x)
             pose.position.x = self.egoxy[1] - obj.position.y
-            pose.orientation.z = obj.heading
+            pose.orientation.z = obj.heading+90
             bbox.pose = pose
             bbox.value = obj.velocity.x/3.6
             bbox.label = 1
@@ -80,9 +80,9 @@ class Morai:
         for obj in data.obstacle_list:
             bbox = BoundingBox()
             pose = Pose()
-            pose.position.y = -(self.egoxy[0] - obj.position.x)
+            pose.position.y = (self.egoxy[0] - obj.position.x)
             pose.position.x = self.egoxy[1] - obj.position.y
-            pose.orientation.z = obj.heading
+            pose.orientation.z = obj.heading+90
             bbox.pose = pose
             bbox.value = obj.velocity.x/3.6
             bbox.label = 1
