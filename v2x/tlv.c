@@ -44,7 +44,7 @@ volatile bool is_running = true;
 /* Global Variable Value */
 V2xAction_t e_action_g = eV2xAction_ADD;
 V2xPayloadType_t e_payload_type_g = eRaw;
-V2xPsid_t psid_g = 5271;
+V2xPsid_t psid_g = 5272;
 V2XCommType_t e_comm_type_g = eV2XCommType_5GNRV2X;
 V2xPowerDbm_t tx_power_g = 20;
 V2xSignerId_t e_signer_id_g = eV2xSignerId_UNSECURED;

@@ -8,11 +8,11 @@
 cd ../car
 python3 obu.py tlv &
 cd ../simulator
-
-python3 rviz_simulator.py tlv &
+python3 rviz_simulator.py tlv KCity&
 python3 simple_ui.py &
 cd ../planning
-python3 tlv_planning.py &
+python3 tlv_planning.py KCity&
 cd ../utils
-python3 rate_by_dist.py tlv &
+python3 points_publisher.py &
+
 rosrun v2x tlv
