@@ -232,7 +232,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 		db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
 		db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-		db_v2x_tmp_p->unDeviceId =htonl(71);
+		db_v2x_tmp_p->unDeviceId =htonl(72);
 		db_v2x_tmp_p->ulTimeStamp = 0ULL;
 		db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_ADVANCED_DRIVING;
 		db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;

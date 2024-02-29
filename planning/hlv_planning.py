@@ -50,11 +50,11 @@ class DynamicPath:
         self.x_p = 3
         self.x_c = 50
         self.x2_i = 30
-        self.x2_v_th = 37
+        self.x2_v_th = 9
         self.merging_point = None
         self.merging_point_update_needed = True
         self.hlv_merged = 0
-        self.x3_c = 7
+        self.x3_c = 8
         self.final_path = None
         self.tlv_signal = 0 # 0 : none, 1 : ok, 2 : no
 
