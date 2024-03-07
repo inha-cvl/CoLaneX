@@ -1,0 +1,43 @@
+{
+  "timestamp": "2023.10.11.22:39.11973695",
+  "Ext_V2X_Tx_PDU": {
+    "ver": 1,
+    "e_payload_type": 0,
+    "psid": 5272,
+    "tx_power": 20,
+    "e_signer_id": 0,
+    "e_priority": 0,
+    "magic_num": 62450,
+    "u.config_cv2x": {
+      "transmitter_profile_id": 100,
+      "peer_l2id": 0
+    },
+    "v2x_msg": {
+      "length": 600,
+      "data": {
+        "eDeviceType": 1,
+        "eTeleCommType": 30,
+        "unDeviceId": 72,
+        "ulTimeStamp": 0,
+        "eServiceId": 4,
+        "eActionType": 1,
+        "eRegionId": 1,
+        "ePayloadType": 1,
+        "eCommId": 1,
+        "ulPayloadLength": 536,
+        "messageFrame": {
+          "coreData": {
+            "msgCnt": 97,
+            "rx_msg_cnt": 149,
+            "lat": 374179817.0,
+            "long": 1266092181.0,
+            "signal": 0.0,
+            "heading": 21440.0,
+            "velocity": 214.0
+          }
+        },
+        "path": []
+      }
+    }
+  }
+}
