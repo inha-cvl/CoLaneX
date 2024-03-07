@@ -39,7 +39,7 @@ class AdaptiveCruiseControl:
             nx, ny = ObstacleUtils.object2enu((vehicle_state.position.x, vehicle_state.position.y, math.degrees(vehicle_state.heading)), obj[0], obj[1])
             s, d = ObstacleUtils.object2frenet(local_point, path, (nx, ny))
             #if tracked object, just left, right lane
-            if obj[4] >= 1 and (-3.8 < obj[1] < 3.8):
+            if obj[4] >= 1 and (-4.2 < obj[1] < 4.2):
                 lat, lng, _ = pm.enu2geodetic(nx, ny, 10, self.base_lat, self.base_lng, self.base_alt) 
                 bsd.append((lat, lng, obj[2], obj[3], s, d, obj[0], obj[1])) #x,y,heading, velocity
         if len(bsd) > 0:

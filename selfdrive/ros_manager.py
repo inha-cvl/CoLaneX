@@ -124,7 +124,7 @@ class RosManager:
             pose.position.z = lidar_bsd[2]
             pose.orientation.x = lidar_bsd[3]
             self.lidar_bsd_pub.publish(pose)
-            if -30 < lidar_bsd[6] < 30:
+            if -35 < lidar_bsd[6] < 35:
                 self.lidar_dangerous = 1
             else:
                 self.lidar_dangerous = 0
