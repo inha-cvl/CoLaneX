@@ -104,6 +104,12 @@ class RVizSimulator:
             self.a_car_marker.pose.position.y = self.a_y 
             self.a_car_info.pose.position.x = self.a_x
             self.a_car_info.pose.position.y = self.a_y 
+            quaternion = tf.transformations.quaternion_from_euler(0, 0, math.radians((self.a_h)))
+            self.a_car_marker.pose.orientation.x = quaternion[0]
+            self.a_car_marker.pose.orientation.y = quaternion[1]
+            self.a_car_marker.pose.orientation.z = quaternion[2]
+            self.a_car_marker.pose.orientation.w = quaternion[3]
+
 
             self.l_car_marker.pose.position.x = self.l_x
             self.l_car_marker.pose.position.y = self.l_y 

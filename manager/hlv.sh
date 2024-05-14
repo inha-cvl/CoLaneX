@@ -1,8 +1,8 @@
 #!/bin/bash
 # When use sensors
-cd ../car/src
-python3 main.py &
-cd ../../simulator
+cd ../car
+python3 ioniq5.py &
+cd ../simulator
 python3 rviz_simulator.py hlv Harbor&
 python3 simple_ui.py &
 cd ../planning

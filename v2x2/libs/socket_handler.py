@@ -14,7 +14,7 @@ IP = '192.168.1.11'
 class SocketHandler:
     def __init__(self, type):
         self.type = type
-        self.interface_list = [b'', b'enp4s0', b'enx00e04c6a3d90']
+        self.interface_list = [b'', b'',b'']#b'enp4s0', b'enx00e04c6a3d90']
         pass
 
     def connect(self):
