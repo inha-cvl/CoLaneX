@@ -1,0 +1,58 @@
+{
+    "common": {
+        "sampling_rate": 10,
+        "vehicle_length": 4,
+        "vehicle_width":2,
+        "wheelbase": 2.97,
+        "steer_ratio":14.6,
+        "steer_max":45,
+        "dsteer_max":5,
+        "mass":1948
+    },
+    "map": {
+        "name": "Harbor",
+        "base_lla": {
+            "latitude" : 37.42390324724057,
+            "longitude" : 126.60753475932731,
+            "altitude" : 7.369
+        }
+    },
+    "planning": {
+        "velocity_profile": {
+            "max_velocity": 30.0,
+            "road_friction": 0.0960,
+            "window_size": 25
+        },
+        "adaptive_cruise_control": {
+            "velocity_gain": 0.8,
+            "distance_gain": 1.5,
+            "time_gap": 0.65
+        }
+    },
+    "control": {
+        "pid": {
+            "p_gain": 0.05,
+            "i_gain": 0.018,
+            "d_gain": 0.001
+        },
+        "pure_pursuit": {
+            "lfd_gain": 0.33,
+            "min_lfd": 4,
+            "max_lfd": 33
+        },
+        "mpc":{
+            "NX" : 4,
+            "NU" : 2,
+            "T" : 5,
+            "max_iter" :5,
+            "du_th" :0.1,
+            "n_ind_search" : 10,
+            "dt":0.1,
+            "max_accel" : 100,
+            "back_to_wheel" : 1.0,
+            "wheel_len" : 0.3,
+            "wheel_width" : 0.2,
+            "tread" : 0.7
+        }
+    }
+}

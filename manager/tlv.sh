@@ -5,14 +5,12 @@
 #cd ../../simulator
 
 #When Use OBU
-cd ../car
-python3 obu.py tlv &
-cd ../simulator
-python3 rviz_simulator.py tlv KCity&
+cd ../car/src
+python3 main.py &
+cd ../../simulator
+python3 rviz_simulator.py tlv Harbor&
 python3 simple_ui.py &
 cd ../planning
-python3 tlv_planning.py KCity&
-cd ../utils
-python3 points_publisher.py &
-
-rosrun v2x tlv
+python3 tlv_planning.py Harbor&
+cd ../v2x2 
+python3 main.py 2

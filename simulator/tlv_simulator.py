@@ -31,7 +31,9 @@ class TLVSimulator:
         elif map == 'Pangyo':
             self.base_lla = [37.39991792889962, 127.11264200835348,7]
             self.ego = Vehicle(-6.776, -2.992, -3.002,0,wheelbase)
-           
+        elif map == 'Harbor':
+            self.base_lla = [37.42390324724057, 126.60753475932731, 7]
+            self.ego = Vehicle(559.856, -115.704, 3.103,0, wheelbase)
         else:
             self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
             self.ego = Vehicle(533.086,1779.300,-1.577,0, wheelbase)

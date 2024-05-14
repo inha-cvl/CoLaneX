@@ -27,6 +27,8 @@ class DynamicPath:
             self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
         elif map == 'Pangyo':
             self.base_lla = [37.39991792889962, 127.11264200835348,7]
+        elif map == 'Harbor':
+            self.base_lla = [37.42390324724057, 126.60753475932731, 7]
         else:
             self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
         self.tile_size = 5.0
