@@ -23,11 +23,13 @@ class HLVSimulator:
         elif map=='songdo':
             self.base_lla = [37.3888319,126.6428739, 7.369]
             #self.ego = Vehicle(148.707, 310.741,2.478, 0.0, 2.65)
-            self.ego = Vehicle(147.547, 311.788, 2.478, 0.0, wheelbase)
-           
+            self.ego = Vehicle(147.547, 311.788, 2.478, 0.0, wheelbase)  
         elif map == 'KIAPI':
             self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
             self.ego = Vehicle(-127.595, 418.819, 2.380, 0.0, wheelbase)
+        elif map == 'Pangyo':
+            self.base_lla = [37.39991792889962, 127.11264200835348,7]
+            self.ego = Vehicle(-10.687, 0.029, -3.079,0,wheelbase)
         else:
             self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
             self.ego = Vehicle(533.086,1779.300,-1.577,0, wheelbase)

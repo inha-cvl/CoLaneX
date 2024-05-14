@@ -1,0 +1,42 @@
+{
+    "common": {
+        "sampling_rate": 10,
+        "vehicle_length": 4,
+        "wheelbase": 2.97,
+        "steer_ratio":14.26,
+        "steer_max":270,
+        "mass":1948
+    },
+    "map": {
+        "name": "Pangyo",
+        "base_lla": {
+            "latitude" : 37.39991792889962,
+            "longitude" : 127.11264200835348,
+            "altitude" : 7
+        }
+    },
+    "planning": {
+        "velocity_profile": {
+            "max_velocity": 20.0,
+            "road_friction": 0.15,
+            "window_size": 25
+        },
+        "adaptive_cruise_control": {
+            "velocity_gain": 0.8,
+            "distance_gain": 1.5,
+            "time_gap": 0.65
+        }
+    },
+    "control": {
+        "pid": {
+            "p_gain": 0.075,
+            "i_gain": 0.0001,
+            "d_gain": 0.025
+        },
+        "pure_pursuit": {
+            "lfd_gain": 1.2,
+            "min_lfd": 4,
+            "max_lfd": 55
+        }
+    }
+}

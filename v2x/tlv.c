@@ -44,7 +44,7 @@ volatile bool is_running = true;
 /* Global Variable Value */
 V2xAction_t e_action_g = eV2xAction_ADD;
 V2xPayloadType_t e_payload_type_g = eRaw;
-V2xPsid_t psid_g = 5272;
+V2xPsid_t psid_g = 5271;
 V2XCommType_t e_comm_type_g = eV2XCommType_5GNRV2X;
 V2xPowerDbm_t tx_power_g = 20;
 V2xSignerId_t e_signer_id_g = eV2xSignerId_UNSECURED;
@@ -81,7 +81,7 @@ std::vector<std::pair<int, time_t>> ts_list;
 int rx_msg_cnt;
 int path_len;
 bool show_result = true;
-bool same_machine = false;
+bool same_machine = true;
 bool server_test = false;
 int hz = 2;
 int tx_packet_count = 0;
@@ -391,7 +391,7 @@ int connect_v2x_socket(void)
 	// server_addr.sin_addr.s_addr = inet_addr(SAMPLE_LOCAL);
 	server_addr.sin_port = htons(SAMPLE_V2X_PORT_ADDR);
 	if(same_machine){
-		const char *interface_name = "enx00e04e69e57a";
+		const char *interface_name = "enx00e04c6a3d90";
 		if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface_name, strlen(interface_name)) < 0)
 		{
 			perror("Error binding socket to the interface");

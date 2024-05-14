@@ -28,6 +28,10 @@ class TLVSimulator:
         elif map == 'KIAPI':
             self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
             self.ego = Vehicle(-127.595, 418.819, 2.380, 0.0, wheelbase)
+        elif map == 'Pangyo':
+            self.base_lla = [37.39991792889962, 127.11264200835348,7]
+            self.ego = Vehicle(-6.776, -2.992, -3.002,0,wheelbase)
+           
         else:
             self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
             self.ego = Vehicle(533.086,1779.300,-1.577,0, wheelbase)

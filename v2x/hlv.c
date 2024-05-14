@@ -83,7 +83,7 @@ std::vector<std::pair<int, time_t>> ts_list;
 int rx_msg_cnt;
 int path_len;
 bool show_result = true;
-bool same_machine = false;
+bool same_machine = true;
 int hz = 2;
 int tx_packet_count = 0;
 int rx_packet_count = 0;
@@ -232,7 +232,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 		db_v2x_tmp_p->eDeviceType = DB_V2X_DEVICE_TYPE_OBU;
 		db_v2x_tmp_p->eTeleCommType = DB_V2X_TELECOMM_TYPE_5G_PC5;
-		db_v2x_tmp_p->unDeviceId =htonl(72);
+		db_v2x_tmp_p->unDeviceId =htonl(71);
 		db_v2x_tmp_p->ulTimeStamp = 0ULL;
 		db_v2x_tmp_p->eServiceId = DB_V2X_SERVICE_ID_ADVANCED_DRIVING;
 		db_v2x_tmp_p->eActionType = DB_V2X_ACTION_TYPE_REQUEST;
@@ -335,7 +335,7 @@ void *v2x_tx_cmd_process(void *arg)
 
 			json_object_object_add(dbV2XData, "eDeviceType", json_object_new_int(DB_V2X_DEVICE_TYPE_OBU));
 			json_object_object_add(dbV2XData, "eTeleCommType", json_object_new_int(DB_V2X_TELECOMM_TYPE_5G_PC5));
-			json_object_object_add(dbV2XData, "unDeviceId", json_object_new_int(72));
+			json_object_object_add(dbV2XData, "unDeviceId", json_object_new_int(71));
 			json_object_object_add(dbV2XData, "ulTimeStamp", json_object_new_int64(0ULL));
 			json_object_object_add(dbV2XData, "eServiceId", json_object_new_int(DB_V2X_SERVICE_ID_ADVANCED_DRIVING));
 			json_object_object_add(dbV2XData, "eActionType", json_object_new_int(DB_V2X_ACTION_TYPE_REQUEST));
@@ -557,7 +557,6 @@ void *v2x_rx_cmd_process(void *arg)
 			json_object_to_file_ext(filename_tx, json_object_get(Rx), JSON_C_TO_STRING_PRETTY);
 			json_object_put(Rx);
 			
-
 		}
 		usleep(1e6/hz);
 	}
@@ -591,7 +590,7 @@ int connect_v2x_socket(void)
 	server_addr.sin_port = htons(SAMPLE_V2X_PORT_ADDR);
 
 	if(same_machine){
-		const char *interface_name = "enx5ca6e6fb9ab2";
+		const char *interface_name = "enp4s0";
 		if (setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, interface_name, strlen(interface_name)) < 0)
 		{
 			perror("Error binding socket to the interface");
@@ -673,6 +672,7 @@ int v2x_wsr_cmd_process(void)
 	while (n <= 0)
 	{
 		n = recv(sock_g, &ws_resp, sizeof(ws_resp), 0);
+		printf("%d\n", n);
 		if (n < 0)
 		{
 			if (errno != EAGAIN && errno != EWOULDBLOCK)

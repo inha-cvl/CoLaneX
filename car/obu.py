@@ -22,7 +22,7 @@ def get_latitude_longitude(vehicle_type):
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     rospy.init_node(f'{vehicle_type}_obu', anonymous=False)
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(2)
     pub_pose = rospy.Publisher(f'/car/{vehicle_type}_pose', Pose, queue_size=1)
     pose = Pose()
 
@@ -44,7 +44,7 @@ def get_latitude_longitude(vehicle_type):
                     pose.position.z = heading 
                     pose.orientation.x = speed #* 0.44704 # mph to m/s
                     pub_pose.publish(pose)
-                    #print(latitude, longitude, speed*0.44704, heading)
+                    print(latitude, longitude, speed*0.44704, heading)
                 rate.sleep()
 
     except paramiko.AuthenticationException:
