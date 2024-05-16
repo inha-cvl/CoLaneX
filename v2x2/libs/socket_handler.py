@@ -120,6 +120,7 @@ class SocketHandler:
         if len(data) > SIZE_WSR_DATA:
             self.rx_cnt += 1
             self.rx_rate += 1
+            self.set_rx_values()
             hdr_ofs = V2x_App_Hdr.data.offset
             rx_ofs = V2x_App_RxMsg.data.offset
             ovr_ofs = sizeof(TLVC_Overall)
@@ -155,7 +156,7 @@ class SocketHandler:
             a = math.sin(dLat / 2) * math.sin(dLat / 2) + math.cos(lat1) * math.cos(lat2) * math.sin(dLong / 2) * math.sin(dLong / 2)
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
             distance = earthRadius * c
-            self.system[6] = distance           
+            self.system[6] = distance   
             return self.system        
 
     def calc_rate(self, hz):
@@ -214,6 +215,8 @@ class SocketHandler:
         self.rx_buf = (c_char * MAX_TX_PACKET_TO_OBU)()
         self.rx_cnt = 0
         self.rx_rate = 0
+        self.rx_latitude = 0
+        self.rx_longtude = 0
         if self.rx_buf == None:
             print("[Socket Handler] Receive memory setting error")
             return -1

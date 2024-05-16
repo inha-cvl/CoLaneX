@@ -118,7 +118,7 @@ class RosManager:
     def do_calc(self):
         while not rospy.is_shutdown():
             calc_res = self.v2v_sharing.do_calc()
-            if calc_res < 0:
+            if calc_res == -1:
                 pass
             else:
                 self.publish_calc(calc_res)
