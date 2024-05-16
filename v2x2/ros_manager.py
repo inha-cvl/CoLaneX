@@ -7,7 +7,7 @@ from geometry_msgs.msg import  Pose, Point
 from visualization_msgs.msg import Marker, MarkerArray
 from std_msgs.msg import Int8, Float32MultiArray
 
-
+Hz = 5
 class RosManager:
     def __init__(self, v2v_sharing, type):
         cars = ['', 'hlv', 'tlv']
@@ -19,8 +19,7 @@ class RosManager:
         self.v2v_sharing = v2v_sharing
         self.vehicle_path = [[0],[0]]
         self.vehicle_state = [0,0,0,0,0,0]
-        self.vehicle_system = [0,0,0,0,0,0,0] #state, GPS, V2X, RTT, mbps, Packet_rate, Distance
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(Hz)
 
     def set_protocol(self):
         rospy.Subscriber(f'/car/{self.car}_pose',Pose, self.pose_cb)
@@ -87,14 +86,16 @@ class RosManager:
 
         self.target_pose_pub.publish(target_pose)
         self.target_path_pub.publish(target_path)
+    
+    def publish_calc(self, system):
+        print(system)
+        self.system_pub.publish(Float32MultiArray(data=system))
 
     def do_tx(self):
-        cnt = 0
         while not rospy.is_shutdown():
-            tx_res = self.v2v_sharing.do_tx(cnt, self.vehicle_state, self.vehicle_path)
+            tx_res = self.v2v_sharing.do_tx(self.vehicle_state, self.vehicle_path)
             if tx_res<0:
                 return -1
-            cnt += 1
             self.rate.sleep()
     
     def do_rx(self):
@@ -105,7 +106,23 @@ class RosManager:
             else:
                 self.publish(rx_res)
             self.rate.sleep()
+    
+    def do_calc_rate(self):
+        rate = rospy.Rate(1)
+        while not rospy.is_shutdown():
+            calc_rates_res = self.v2v_sharing.do_calc_rate(Hz)
+            if calc_rates_res < 0:
+                return -1
+            rate.sleep()
 
+    def do_calc(self):
+        while not rospy.is_shutdown():
+            calc_res = self.v2v_sharing.do_calc()
+            if calc_res < 0:
+                pass
+            else:
+                self.publish_calc(calc_res)
+            self.rate.sleep()
             
 
     def execute(self):
@@ -116,21 +133,22 @@ class RosManager:
         if self.v2v_sharing.set_obu() < 0 :
             return -1
         
-        self.vehicle_system[0] = self.vehicle_state[0]
-        self.vehicle_system[1] = 1
-        self.vehicle_system[2] = 1
-        
-        
         sharing_state = 1
 
         thread1 = threading.Thread(target=self.do_tx)
         thread2 = threading.Thread(target=self.do_rx)
+        thread3 = threading.Thread(target=self.do_calc)
+        thread4 = threading.Thread(target=self.do_calc_rate)
 
         thread1.start()
         thread2.start()
+        thread3.start()
+        thread4.start()
 
         thread1.join()
         thread2.join()
+        thread3.join()
+        thread4.join()
 
         return sharing_state
 

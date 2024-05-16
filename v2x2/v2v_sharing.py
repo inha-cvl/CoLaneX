@@ -22,12 +22,15 @@ class V2VSharing:
         return 1
 
 
-    def do_tx(self, cnt, state, paths):
-        return self.socket_handler.tx(cnt, state, paths)
+    def do_tx(self, state, paths):
+        return self.socket_handler.tx(state, paths)
 
     def do_rx(self):
         return self.socket_handler.rx()
 
     def do_calc(self):
         return self.socket_handler.calc_comm()
+
+    def do_calc_rate(self, Hz):
+        return self.socket_handler.calc_rate(Hz)
 

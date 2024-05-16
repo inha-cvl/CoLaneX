@@ -3,6 +3,8 @@ import socket
 from ctypes import *
 from datetime import datetime, timedelta
 import struct
+import math
+import time
 
 from .v2x_interface import *
 from .crc16 import calc_crc16
@@ -15,7 +17,7 @@ class SocketHandler:
     def __init__(self, type):
         self.type = type
         self.interface_list = [b'', b'',b'']#b'enp4s0', b'enx00e04c6a3d90']
-        pass
+        self.system = [0,0,0,0,0,0,0] #state, GPS, V2X, RTT, mbps, Packet_rate, Distance
 
     def connect(self):
         try:
@@ -51,12 +53,13 @@ class SocketHandler:
         crc16 = pointer(c_uint16.from_buffer(buf, SIZE_WSR_DATA - 2))
         crc16.contents.value = socket.htons(_crc16)
         data = buf[:SIZE_WSR_DATA]
-
-        return self.send(data)
+        self.tx_cnt = 0
+        self.tx_start_time = time.time()
+        return self.send(data, SIZE_WSR_DATA)
     
-    def tx(self, cnt, state, paths):
-        p_overall = self.get_p_overall(cnt)
-        
+    def tx(self, state, paths):
+        p_overall = self.get_p_overall(self.tx_cnt)
+        self.set_tx_values(state)
         # size = 4
         # p_dummy = cast(addressof(p_overall.contents) + sizeof(TLVC_Overall), POINTER(V2x_App_Ext_TLVC))
         # p_dummy.contents.type = socket.htonl(EM_PT_RAW_DATA)
@@ -70,9 +73,10 @@ class SocketHandler:
         p_dummy.contents.len = socket.htons(size + 2)
 
         p_share_info = cast(addressof(p_dummy.contents.data), POINTER(SharingInformation))
-        p_share_info.contents.tx_cnt = socket.htonl(cnt)
+        p_share_info.contents.tx_cnt = socket.htonl(self.tx_cnt)
         p_share_info.contents.rx_cnt = socket.htonl(self.rx_cnt+8)
         p_share_info.contents.state = state[0]
+        
         p_share_info.contents.signal = state[1]
         p_share_info.contents.latitude = state[2]
         p_share_info.contents.longitude = state[3]
@@ -105,9 +109,9 @@ class SocketHandler:
         
         data = self.tx_buf[:send_len]
         
-        self.print_datum(send_len, cnt, self.rx_cnt, state, paths)
+        self.print_datum(send_len, self.tx_cnt, self.rx_cnt, state, paths)
 
-        return self.send(data)
+        return self.send(data, send_len)
 
     def rx(self):
         data = self.receive()
@@ -115,6 +119,7 @@ class SocketHandler:
             return None
         if len(data) > SIZE_WSR_DATA:
             self.rx_cnt += 1
+            self.rx_rate += 1
             hdr_ofs = V2x_App_Hdr.data.offset
             rx_ofs = V2x_App_RxMsg.data.offset
             ovr_ofs = sizeof(TLVC_Overall)
@@ -126,13 +131,52 @@ class SocketHandler:
         else:
             return [0, 0]
 
-    def calc_comm(self):
-        pass
+    def set_tx_values(self, state):
+        self.system[0] = state[0]
+        self.tx_latitude = state[2]
+        self.tx_longitude = state[3]
+    
+    def set_rx_values(self, sharing_information):
+        self.rx_latitude = sharing_information.latitude
+        self.rx_longtude = sharing_information.longitude
 
-    def send(self, data):
+    def calc_comm(self):
+        if self.tx_cnt < 1 or self.rx_cnt < 1:
+            return -1
+        else:
+            earthRadius = 6371000.0
+            lat1 = math.radians(self.tx_latitude)
+            long1 = math.radians(self.tx_longitude)
+            lat2 = math.radians(self.rx_latitude)
+            long2 = math.radians(self.rx_longtude)
+
+            dLat = lat2-lat1
+            dLong = long2-long1
+            a = math.sin(dLat / 2) * math.sin(dLat / 2) + math.cos(lat1) * math.cos(lat2) * math.sin(dLong / 2) * math.sin(dLong / 2)
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+            distance = earthRadius * c
+            self.system[6] = distance           
+            return self.system        
+
+    def calc_rate(self, hz):
+        if self.rx_rate == 0:
+            return -1
+        else:
+            rx_rate = (float(self.rx_rate)/hz)*100
+            self.system[5] = rx_rate
+            return 1
+
+
+    def send(self, data, send_size):
         try:
             self.fd.sendall(data)
             print("[Socket Handler] Packet Sent")
+            self.tx_cnt += 1
+            current_time = time.time()
+            tx_time = self.tx_start_time - current_time
+            mbps = (send_size/tx_time)/1000000
+            self.system[4] = mbps 
+            self.tx_start_time = current_time
             return 1
         except socket.error as e:
             print(f"[Socket Handler] {e}")
@@ -163,16 +207,19 @@ class SocketHandler:
             return -1
         else:  
             print("[Socket Handler] Tx Send Set")
+            self.system[1] = 1
             return 1
     
     def set_rx(self):
         self.rx_buf = (c_char * MAX_TX_PACKET_TO_OBU)()
         self.rx_cnt = 0
+        self.rx_rate = 0
         if self.rx_buf == None:
             print("[Socket Handler] Receive memory setting error")
             return -1
         else:  
             print("[Socket Handler] Rx Send Set")
+            self.system[2] = 1
             return 1
 
     def get_p_overall(self, cnt):
