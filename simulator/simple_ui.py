@@ -35,8 +35,8 @@ class MyApp(QMainWindow):
 
         self.initUI()
 
-        rospy.Subscriber('/hlv_state', Int8, self.hlv_state_cb)
-        rospy.Subscriber('/tlv_state', Int8, self.tlv_state_cb)
+        rospy.Subscriber('/hlv_system', Float32MultiArray, self.hlv_system_cb)
+        rospy.Subscriber('/tlv_system', Float32MultiArray, self.tlv_system_cb)
         
         self.hlv_sig = 0
         self.hlv_in = False
@@ -46,35 +46,35 @@ class MyApp(QMainWindow):
         self.tlv_in = False
         self.tlv_timer = QTimer(self)
         self.tlv_timer.timeout.connect(self.pub_tlv_signal)
-    
 
 
-    def hlv_state_cb(self, msg):
-        self.label_tab1.setText(self.hlv_message[int(msg.data)])
-        if int(msg.data) == 3:
+    def hlv_system_cb(self, msg):
+        print(msg.data)
+        self.label_tab1.setText(self.hlv_message[int(msg.data[0])])
+        if int(msg.data[0]) == 3:
             self.label_tab1.setStyleSheet('background-color: #63ffaf; font-size: 50px; font-weight: bold;')
-        elif int(msg.data) == 4:
+        elif int(msg.data[0]) == 4:
             self.label_tab1.setStyleSheet('background-color: #ff638a; font-size: 50px; font-weight: bold;')
         else:
             self.label_tab1.setStyleSheet('background-color: #fff; font-size: 50px; font-weight: bold;')
-        # self.side1.setText(f"{math.ceil(msg.data[3])}ms")
-        # self.side2.setText(f"{round(msg.data[4], 3)}mbps")
-        # self.side3.setText(f"{int(msg.data[5])}%")
-        # self.side4.setText(f"{round(msg.data[6], 2)}m")
+        self.side1.setText(f"{math.ceil(msg.data[3])}ms")
+        self.side2.setText(f"{round(msg.data[4], 3)}mbps")
+        self.side3.setText(f"{int(msg.data[5])}%")
+        self.side4.setText(f"{round(msg.data[6], 2)}m")
 
-    def tlv_state_cb(self, msg):
-        self.label_tab2.setText(self.tlv_message[int(msg.data)])
-        if int(msg.data) == 3:
+    def tlv_system_cb(self, msg):
+        self.label_tab2.setText(self.tlv_message[int(msg.data[0])])
+        if int(msg.data[0]) == 3:
             self.label_tab2.setStyleSheet('background-color: #63ffaf; font-size: 50px; font-weight: bold;')
-        elif int(msg.data) == 4:
+        elif int(msg.data[0]) == 4:
             self.label_tab2.setStyleSheet('background-color: #ff638a; font-size: 50px; font-weight: bold;')
         else:
             self.label_tab2.setStyleSheet('background-color: #fff; font-size: 50px; font-weight: bold;')
             
-        # self.side1.setText(f"{math.ceil(msg.data[3])}ms")
-        # self.side2.setText(f"{round(msg.data[4], 3)}mbps")
-        # self.side3.setText(f"{int(msg.data[5])}%")
-        # self.side4.setText(f"{round(msg.data[6], 2)}m")
+        self.side1.setText(f"{math.ceil(msg.data[3])}ms")
+        self.side2.setText(f"{round(msg.data[4], 3)}mbps")
+        self.side3.setText(f"{int(msg.data[5])}%")
+        self.side4.setText(f"{round(msg.data[6], 2)}m")
 
     def pub_mode(self, mode):
         self.mode_pub.publish(Int8(mode))
