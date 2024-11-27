@@ -51,10 +51,10 @@ plt.figure(figsize=(20, 3))
 surface_lines = process_surface_line()
 
 
-for s in list(range(17,18)):
+for s in list(range(16,17)):
 
     for line_x, line_y in zip(*surface_lines):
-        plt.plot(line_x, line_y, color='black', linewidth=0.5)
+        plt.plot(line_x, line_y, color='black', linewidth=1.5)
 
     with open(f'./log/0229/v2x/s{s}.json', 'r') as file:
         data = json.load(file)
@@ -76,35 +76,35 @@ for s in list(range(17,18)):
     )
     v2x_path = [rotated_points[0].tolist(), rotated_points[1].tolist()]
 
-    with open(f'./log/old/lidar/s11.json', 'r') as file:
+    with open(f'./log/s{s}.json', 'r') as file:
         data = json.load(file)
 
-    rotated_points = rotate_points(
-        *np.array([(get_enu(lat-0.0002, lon+0.000049)) for lat, lon, _ in data['target'] if lat != 0 and lon != 0]).T, 
-        rotation_angle
-    )
-
     # rotated_points = rotate_points(
-    #     *np.array([get_enu
-    #         (lat - 0.0002 if index > 10 else lat, lon + 0.000049 if index > 10 else lon) 
-    #         for index, (lat, lon, _) in enumerate(data['target']) if lat != 0 and lon != 0
-    #     ]).T, 
+    #     *np.array([(get_enu(lat-0.0002, lon+0.000049)) for lat, lon, _ in data['target'] if lat != 0 and lon != 0]).T, 
     #     rotation_angle
     # )
+
+    rotated_points = rotate_points(
+        *np.array([get_enu
+            (lat - 0.0002 if index > 10 else lat, lon + 0.000049 if index > 10 else lon) 
+            for index, (lat, lon, _) in enumerate(data['target']) if lat != 0 and lon != 0
+        ]).T, 
+        rotation_angle
+    )
 
 
     lidar_path = [rotated_points[0].tolist(), rotated_points[1].tolist()]
 
     # Plotting
 
-    plt.plot(ego_path[0], ego_path[1], 'r-', label='Ego Path')  # latitude on y-axis, longitude on x-axis
-    plt.plot(v2x_path[0], v2x_path[1], 'b-', label='V2X Path')  # latitude on y-axis, longitude on x-axis
-    plt.plot(lidar_path[0], lidar_path[1], 'g-', label='LiDAR Path')  # latitude on y-axis, longitude on 
+    plt.plot(ego_path[0], ego_path[1], 'r-', label='Ego Path',  linewidth=4.5)  # latitude on y-axis, longitude on x-axis
+    plt.plot(v2x_path[0], v2x_path[1], 'b-', label='V2X Path',  linewidth=4.5)  # latitude on y-axis, longitude on x-axis
+    plt.plot(lidar_path[0], lidar_path[1], 'g-', label='LiDAR Path',  linewidth=4.5)  # latitude on y-axis, longitude on 
 
     plt.grid(False)
     plt.xticks([])
     plt.yticks([])
 
     # plt.show()
-    plt.savefig(f'./png/{s}.png', transparent=True)
+    plt.savefig(f'./png/new_s{s}.png', transparent=True)
     plt.clf()

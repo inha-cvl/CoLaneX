@@ -1,0 +1,2063 @@
+2024-11-11 19:57:49,762 - v2x - DEBUG - Socket Opend
+2024-11-11 19:57:49,762 - v2x - INFO - Tx cnt:0
+2024-11-11 19:57:49,763 - v2x - INFO - 
+2024-11-11 19:57:49,763 - v2x - DEBUG - Tx Send Set
+2024-11-11 19:57:49,763 - v2x - DEBUG - Rx Send Set
+2024-11-11 19:57:49,794 - v2x - INFO - Tx cnt:1
+2024-11-11 19:57:49,794 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:49,906 - v2x - INFO - Rx cnt:36
+2024-11-11 19:57:49,906 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:49,968 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 0 mbps: 0.08822218781918198 packet_size: 347 packet_rate: 0.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:49,989 - v2x - INFO - Tx cnt:2
+2024-11-11 19:57:49,989 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:50,154 - v2x - INFO - Rx cnt:37
+2024-11-11 19:57:50,154 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:50,201 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 0 mbps: 0.014244802164971409 packet_size: 347 packet_rate: 0.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:50,217 - v2x - INFO - Tx cnt:3
+2024-11-11 19:57:50,217 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:50,355 - v2x - INFO - Rx cnt:38
+2024-11-11 19:57:50,355 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:50,431 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 366 mbps: 0.01221064565872157 packet_size: 347 packet_rate: 0.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:50,446 - v2x - INFO - Tx cnt:4
+2024-11-11 19:57:50,447 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:50,556 - v2x - INFO - Rx cnt:39
+2024-11-11 19:57:50,556 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:50,658 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 339 mbps: 0.012073469017335527 packet_size: 347 packet_rate: 0.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:50,674 - v2x - INFO - Tx cnt:5
+2024-11-11 19:57:50,674 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:50,810 - v2x - INFO - Rx cnt:40
+2024-11-11 19:57:50,811 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:50,887 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 364 mbps: 0.012187511544411809 packet_size: 347 packet_rate: 80.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:50,903 - v2x - INFO - Tx cnt:6
+2024-11-11 19:57:50,903 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:51,011 - v2x - INFO - Rx cnt:41
+2024-11-11 19:57:51,011 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:51,111 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 337 mbps: 0.012119666560494305 packet_size: 347 packet_rate: 80.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:51,129 - v2x - INFO - Tx cnt:7
+2024-11-11 19:57:51,129 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:51,247 - v2x - INFO - Rx cnt:42
+2024-11-11 19:57:51,248 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:51,324 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 344 mbps: 0.012324318844476153 packet_size: 347 packet_rate: 80.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:51,340 - v2x - INFO - Tx cnt:8
+2024-11-11 19:57:51,340 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:51,448 - v2x - INFO - Rx cnt:43
+2024-11-11 19:57:51,448 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:51,548 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 319 mbps: 0.013138155240135993 packet_size: 347 packet_rate: 80.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:51,563 - v2x - INFO - Tx cnt:9
+2024-11-11 19:57:51,563 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:51,659 - v2x - INFO - Rx cnt:44
+2024-11-11 19:57:51,659 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:51,763 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 319 mbps: 0.012445487102253112 packet_size: 347 packet_rate: 80.0 distance: 132.5003991996106
+
+
+2024-11-11 19:57:51,789 - v2x - INFO - Tx cnt:10
+2024-11-11 19:57:51,789 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:51,877 - v2x - INFO - Rx cnt:45
+2024-11-11 19:57:51,877 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:52,013 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 314 mbps: 0.012262858462069924 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:52,017 - v2x - INFO - Tx cnt:11
+2024-11-11 19:57:52,017 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:52,078 - v2x - INFO - Rx cnt:46
+2024-11-11 19:57:52,078 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:52,214 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 289 mbps: 0.012198390264242506 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:52,240 - v2x - INFO - Tx cnt:12
+2024-11-11 19:57:52,240 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:52,303 - v2x - INFO - Rx cnt:47
+2024-11-11 19:57:52,303 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:52,414 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 285 mbps: 0.012448374488685325 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:52,466 - v2x - INFO - Tx cnt:13
+2024-11-11 19:57:52,466 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:52,573 - v2x - INFO - Rx cnt:48
+2024-11-11 19:57:52,573 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:52,615 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 333 mbps: 0.012259088357675915 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:52,693 - v2x - INFO - Tx cnt:14
+2024-11-11 19:57:52,693 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:52,779 - v2x - INFO - Rx cnt:49
+2024-11-11 19:57:52,779 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:52,816 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 313 mbps: 0.012256081683436683 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:52,919 - v2x - INFO - Tx cnt:15
+2024-11-11 19:57:52,919 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:52,980 - v2x - INFO - Rx cnt:50
+2024-11-11 19:57:52,980 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:53,016 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 287 mbps: 0.012265015694441371 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:53,144 - v2x - INFO - Tx cnt:16
+2024-11-11 19:57:53,145 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:53,217 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 287 mbps: 0.012321436557774321 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:53,230 - v2x - INFO - Rx cnt:51
+2024-11-11 19:57:53,230 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:53,375 - v2x - INFO - Tx cnt:17
+2024-11-11 19:57:53,375 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:53,418 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 311 mbps: 0.012041267506207617 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:53,429 - v2x - INFO - Rx cnt:52
+2024-11-11 19:57:53,429 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:53,606 - v2x - INFO - Tx cnt:18
+2024-11-11 19:57:53,606 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:53,618 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 285 mbps: 0.01202456666735516 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:53,656 - v2x - INFO - Rx cnt:53
+2024-11-11 19:57:53,656 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:53,819 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 281 mbps: 0.01202456666735516 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:53,839 - v2x - INFO - Tx cnt:19
+2024-11-11 19:57:53,839 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:53,893 - v2x - INFO - Rx cnt:54
+2024-11-11 19:57:53,893 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:54,039 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 287 mbps: 0.011918417301652945 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:54,071 - v2x - INFO - Tx cnt:20
+2024-11-11 19:57:54,071 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:54,122 - v2x - INFO - Rx cnt:55
+2024-11-11 19:57:54,122 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:54,272 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 283 mbps: 0.011938617988230964 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:54,302 - v2x - INFO - Tx cnt:21
+2024-11-11 19:57:54,303 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:54,305 - v2x - INFO - Rx cnt:56
+2024-11-11 19:57:54,305 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:54,485 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 233 mbps: 0.012005572000098986 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:54,534 - v2x - INFO - Tx cnt:22
+2024-11-11 19:57:54,534 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:54,536 - v2x - INFO - Rx cnt:57
+2024-11-11 19:57:54,536 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:54,685 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 233 mbps: 0.01197301703601863 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:54,766 - v2x - INFO - Tx cnt:23
+2024-11-11 19:57:54,766 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:54,833 - v2x - INFO - Rx cnt:58
+2024-11-11 19:57:54,833 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:54,886 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 299 mbps: 0.012005720550205193 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:54,996 - v2x - INFO - Tx cnt:24
+2024-11-11 19:57:54,997 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:54,997 - v2x - INFO - Rx cnt:59
+2024-11-11 19:57:54,997 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:55,086 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 231 mbps: 0.012023064249949145 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:55,227 - v2x - INFO - Rx cnt:60
+2024-11-11 19:57:55,228 - v2x - INFO - Tx cnt:25
+2024-11-11 19:57:55,228 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:55,228 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:55,287 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 231 mbps: 0.011974876433430216 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:55,457 - v2x - INFO - Rx cnt:61
+2024-11-11 19:57:55,457 - v2x - INFO - Tx cnt:26
+2024-11-11 19:57:55,457 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:55,458 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:55,487 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 229 mbps: 0.01211041390586581 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:55,684 - v2x - INFO - Rx cnt:62
+2024-11-11 19:57:55,684 - v2x - INFO - Tx cnt:27
+2024-11-11 19:57:55,684 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:55,684 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:55,688 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 226 mbps: 0.012258417212379505 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:55,885 - v2x - INFO - Rx cnt:63
+2024-11-11 19:57:55,885 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:55,899 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 200 mbps: 0.012258417212379505 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:55,916 - v2x - INFO - Tx cnt:28
+2024-11-11 19:57:55,917 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:56,103 - v2x - INFO - Rx cnt:64
+2024-11-11 19:57:56,104 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:56,130 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 186 mbps: 0.011928319676103074 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:56,147 - v2x - INFO - Tx cnt:29
+2024-11-11 19:57:56,148 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:56,304 - v2x - INFO - Rx cnt:65
+2024-11-11 19:57:56,305 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:56,361 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 157 mbps: 0.012018534437946048 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:56,379 - v2x - INFO - Tx cnt:30
+2024-11-11 19:57:56,379 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:56,505 - v2x - INFO - Rx cnt:66
+2024-11-11 19:57:56,506 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:56,591 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 357 mbps: 0.012012607405206426 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:56,605 - v2x - INFO - Tx cnt:31
+2024-11-11 19:57:56,606 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:56,738 - v2x - INFO - Rx cnt:67
+2024-11-11 19:57:56,738 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:56,828 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 359 mbps: 0.012236374866400642 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:56,832 - v2x - INFO - Tx cnt:32
+2024-11-11 19:57:56,832 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:56,980 - v2x - INFO - Rx cnt:68
+2024-11-11 19:57:56,980 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:57,029 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 374 mbps: 0.012269991847677178 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:57,056 - v2x - INFO - Tx cnt:33
+2024-11-11 19:57:57,056 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:57,181 - v2x - INFO - Rx cnt:69
+2024-11-11 19:57:57,182 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:57,230 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 349 mbps: 0.012374655814714754 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:57,282 - v2x - INFO - Tx cnt:34
+2024-11-11 19:57:57,282 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:57,430 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 349 mbps: 0.01229192200067776 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:57,447 - v2x - INFO - Rx cnt:70
+2024-11-11 19:57:57,447 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:57,508 - v2x - INFO - Tx cnt:35
+2024-11-11 19:57:57,508 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:57,631 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 165 mbps: 0.012283622597399036 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:57,631 - v2x - INFO - Rx cnt:71
+2024-11-11 19:57:57,631 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:57,734 - v2x - INFO - Tx cnt:36
+2024-11-11 19:57:57,734 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:57,831 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 349 mbps: 0.01226995305684794 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:57,837 - v2x - INFO - Rx cnt:72
+2024-11-11 19:57:57,837 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:57,960 - v2x - INFO - Tx cnt:37
+2024-11-11 19:57:57,960 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:58,032 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 329 mbps: 0.012316705228739502 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:58,107 - v2x - INFO - Rx cnt:73
+2024-11-11 19:57:58,107 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:58,185 - v2x - INFO - Tx cnt:38
+2024-11-11 19:57:58,185 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:58,232 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 373 mbps: 0.012317890978183364 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:58,267 - v2x - INFO - Rx cnt:74
+2024-11-11 19:57:58,267 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:58,411 - v2x - INFO - Tx cnt:39
+2024-11-11 19:57:58,411 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:58,433 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 307 mbps: 0.012266695502572202 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:58,505 - v2x - INFO - Rx cnt:75
+2024-11-11 19:57:58,506 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:58,637 - v2x - INFO - Tx cnt:40
+2024-11-11 19:57:58,637 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 320 mbps: 0.012266695502572202 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:58,638 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:58,682 - v2x - INFO - Rx cnt:76
+2024-11-11 19:57:58,682 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:58,849 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 271 mbps: 0.0122600823039721 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:58,864 - v2x - INFO - Tx cnt:41
+2024-11-11 19:57:58,864 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:58,928 - v2x - INFO - Rx cnt:77
+2024-11-11 19:57:58,928 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:59,073 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 290 mbps: 0.012269991847677178 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:59,087 - v2x - INFO - Tx cnt:42
+2024-11-11 19:57:59,088 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:59,193 - v2x - INFO - Rx cnt:78
+2024-11-11 19:57:59,194 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:59,288 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 329 mbps: 0.012416302750199946 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:59,314 - v2x - INFO - Tx cnt:43
+2024-11-11 19:57:59,314 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:59,359 - v2x - INFO - Rx cnt:79
+2024-11-11 19:57:59,359 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:59,511 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 271 mbps: 0.012246310509304593 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:59,538 - v2x - INFO - Tx cnt:44
+2024-11-11 19:57:59,539 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:59,607 - v2x - INFO - Rx cnt:80
+2024-11-11 19:57:59,608 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:59,750 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 293 mbps: 0.012379444941321068 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:59,764 - v2x - INFO - Tx cnt:45
+2024-11-11 19:57:59,764 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:57:59,809 - v2x - INFO - Rx cnt:81
+2024-11-11 19:57:59,810 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:57:59,964 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 271 mbps: 0.012312355093283366 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:57:59,991 - v2x - INFO - Tx cnt:46
+2024-11-11 19:57:59,991 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:00,103 - v2x - INFO - Rx cnt:82
+2024-11-11 19:58:00,104 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:00,165 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 339 mbps: 0.012226121534708827 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:00,218 - v2x - INFO - Tx cnt:47
+2024-11-11 19:58:00,218 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:00,263 - v2x - INFO - Rx cnt:83
+2024-11-11 19:58:00,264 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:00,365 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 272 mbps: 0.0122140528827897 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:00,446 - v2x - INFO - Tx cnt:48
+2024-11-11 19:58:00,446 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:00,483 - v2x - INFO - Rx cnt:84
+2024-11-11 19:58:00,484 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:00,566 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 265 mbps: 0.012185483508858591 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:00,676 - v2x - INFO - Tx cnt:49
+2024-11-11 19:58:00,676 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:00,744 - v2x - INFO - Rx cnt:85
+2024-11-11 19:58:00,744 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:00,767 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 298 mbps: 0.012068613429577742 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:00,903 - v2x - INFO - Tx cnt:50
+2024-11-11 19:58:00,903 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:00,927 - v2x - INFO - Rx cnt:86
+2024-11-11 19:58:00,927 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:00,967 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 251 mbps: 0.012245112744252572 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:01,130 - v2x - INFO - Tx cnt:51
+2024-11-11 19:58:01,130 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:01,168 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 251 mbps: 0.01222247662396693 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:01,176 - v2x - INFO - Rx cnt:87
+2024-11-11 19:58:01,176 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:01,359 - v2x - INFO - Tx cnt:52
+2024-11-11 19:58:01,359 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:01,369 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 273 mbps: 0.012107013894059099 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:01,395 - v2x - INFO - Rx cnt:88
+2024-11-11 19:58:01,395 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:01,576 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 265 mbps: 0.012107013894059099 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:01,590 - v2x - INFO - Rx cnt:89
+2024-11-11 19:58:01,594 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:01,594 - v2x - INFO - Tx cnt:53
+2024-11-11 19:58:01,595 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:01,806 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 230 mbps: 0.011794666293885373 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:01,821 - v2x - INFO - Tx cnt:54
+2024-11-11 19:58:01,822 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:01,878 - v2x - INFO - Rx cnt:90
+2024-11-11 19:58:01,878 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:02,034 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 284 mbps: 0.012236117680564212 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:02,045 - v2x - INFO - Rx cnt:91
+2024-11-11 19:58:02,048 - v2x - INFO - Tx cnt:55
+2024-11-11 19:58:02,049 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:02,049 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:02,249 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 224 mbps: 0.012218385107142106 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:02,276 - v2x - INFO - Tx cnt:56
+2024-11-11 19:58:02,276 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:02,328 - v2x - INFO - Rx cnt:92
+2024-11-11 19:58:02,329 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:02,477 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 280 mbps: 0.012212016005252575 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:02,505 - v2x - INFO - Tx cnt:57
+2024-11-11 19:58:02,505 - v2x - INFO - Rx cnt:93
+2024-11-11 19:58:02,505 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:02,505 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:02,713 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 228 mbps: 0.01213458371833446 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:02,725 - v2x - INFO - Rx cnt:94
+2024-11-11 19:58:02,728 - v2x - INFO - Tx cnt:58
+2024-11-11 19:58:02,728 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:02,728 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:02,928 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 220 mbps: 0.012421508458356849 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:02,956 - v2x - INFO - Rx cnt:95
+2024-11-11 19:58:02,956 - v2x - INFO - Tx cnt:59
+2024-11-11 19:58:02,956 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:02,956 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:03,164 - v2x - INFO - Rx cnt:96
+2024-11-11 19:58:03,164 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 207 mbps: 0.0121845526242536 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:03,167 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:03,167 - v2x - INFO - Tx cnt:60
+2024-11-11 19:58:03,168 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:03,392 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 207 mbps: 0.013093639404435248 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:03,392 - v2x - INFO - Rx cnt:97
+2024-11-11 19:58:03,396 - v2x - INFO - Tx cnt:61
+2024-11-11 19:58:03,396 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:03,396 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:03,596 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 224 mbps: 0.012164846201263355 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:03,624 - v2x - INFO - Tx cnt:62
+2024-11-11 19:58:03,625 - v2x - INFO - Rx cnt:98
+2024-11-11 19:58:03,625 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:03,625 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:03,796 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 228 mbps: 0.012150729461954446 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:03,837 - v2x - INFO - Rx cnt:99
+2024-11-11 19:58:03,849 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:03,853 - v2x - INFO - Tx cnt:63
+2024-11-11 19:58:03,853 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:03,997 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 212 mbps: 0.012164922459691913 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:04,078 - v2x - INFO - Rx cnt:100
+2024-11-11 19:58:04,078 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:04,082 - v2x - INFO - Tx cnt:64
+2024-11-11 19:58:04,083 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:04,197 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 225 mbps: 0.012088272600516821 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:04,279 - v2x - INFO - Rx cnt:101
+2024-11-11 19:58:04,291 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:04,307 - v2x - INFO - Tx cnt:65
+2024-11-11 19:58:04,307 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:04,398 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 196 mbps: 0.012368043968137123 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:04,532 - v2x - INFO - Rx cnt:102
+2024-11-11 19:58:04,536 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:04,536 - v2x - INFO - Tx cnt:66
+2024-11-11 19:58:04,537 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:04,598 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 224 mbps: 0.012094023306420535 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:04,761 - v2x - INFO - Rx cnt:103
+2024-11-11 19:58:04,761 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:04,765 - v2x - INFO - Tx cnt:67
+2024-11-11 19:58:04,765 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:04,799 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 224 mbps: 0.012159243823199228 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:04,990 - v2x - INFO - Rx cnt:104
+2024-11-11 19:58:04,990 - v2x - INFO - Tx cnt:68
+2024-11-11 19:58:04,990 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:04,990 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:04,999 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 225 mbps: 0.012296582358905036 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:05,203 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 225 mbps: 0.012296582358905036 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:05,204 - v2x - INFO - Rx cnt:105
+2024-11-11 19:58:05,219 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:05,219 - v2x - INFO - Tx cnt:69
+2024-11-11 19:58:05,219 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:05,432 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 213 mbps: 0.012137012332578292 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:05,448 - v2x - INFO - Tx cnt:70
+2024-11-11 19:58:05,448 - v2x - INFO - Rx cnt:106
+2024-11-11 19:58:05,448 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:05,448 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:05,645 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 229 mbps: 0.012129135523442839 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:05,645 - v2x - INFO - Rx cnt:107
+2024-11-11 19:58:05,673 - v2x - INFO - Tx cnt:71
+2024-11-11 19:58:05,673 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:05,673 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:05,882 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 197 mbps: 0.012329304077757907 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:05,896 - v2x - INFO - Rx cnt:108
+2024-11-11 19:58:05,899 - v2x - INFO - Tx cnt:72
+2024-11-11 19:58:05,899 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:05,899 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:06,099 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 222 mbps: 0.01230196108893505 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:06,112 - v2x - INFO - Rx cnt:109
+2024-11-11 19:58:06,128 - v2x - INFO - Tx cnt:73
+2024-11-11 19:58:06,128 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:06,128 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:06,300 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 213 mbps: 0.012134899889108448 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:06,328 - v2x - INFO - Rx cnt:110
+2024-11-11 19:58:06,353 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:06,358 - v2x - INFO - Tx cnt:74
+2024-11-11 19:58:06,359 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:06,501 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 429 mbps: 0.012014528710392743 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:06,583 - v2x - INFO - Rx cnt:111
+2024-11-11 19:58:06,586 - v2x - INFO - Tx cnt:75
+2024-11-11 19:58:06,586 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:06,586 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:06,701 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 455 mbps: 0.012190944160990907 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:06,799 - v2x - INFO - Rx cnt:112
+2024-11-11 19:58:06,814 - v2x - INFO - Tx cnt:76
+2024-11-11 19:58:06,814 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:06,814 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:06,902 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 440 mbps: 0.01217311309337114 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:07,039 - v2x - INFO - Rx cnt:113
+2024-11-11 19:58:07,042 - v2x - INFO - Tx cnt:77
+2024-11-11 19:58:07,042 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:07,042 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:07,102 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 452 mbps: 0.012201164121829432 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:07,243 - v2x - INFO - Rx cnt:114
+2024-11-11 19:58:07,268 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:07,271 - v2x - INFO - Tx cnt:78
+2024-11-11 19:58:07,271 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:07,303 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 428 mbps: 0.01213431814761626 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:07,494 - v2x - INFO - Rx cnt:115
+2024-11-11 19:58:07,497 - v2x - INFO - Tx cnt:79
+2024-11-11 19:58:07,497 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:07,497 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:07,504 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 452 mbps: 0.01223908883581688 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:07,721 - v2x - INFO - Rx cnt:116
+2024-11-11 19:58:07,721 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:07,722 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 450 mbps: 0.01223908883581688 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:07,724 - v2x - INFO - Tx cnt:80
+2024-11-11 19:58:07,725 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:07,925 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 450 mbps: 0.012198147451968056 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:07,926 - v2x - INFO - Rx cnt:117
+2024-11-11 19:58:07,926 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:07,955 - v2x - INFO - Tx cnt:81
+2024-11-11 19:58:07,955 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:08,125 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 428 mbps: 0.012090406503659815 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:08,127 - v2x - INFO - Rx cnt:118
+2024-11-11 19:58:08,127 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:08,181 - v2x - INFO - Tx cnt:82
+2024-11-11 19:58:08,182 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:08,326 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 172 mbps: 0.012255849469541391 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:08,328 - v2x - INFO - Rx cnt:119
+2024-11-11 19:58:08,328 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:08,408 - v2x - INFO - Tx cnt:83
+2024-11-11 19:58:08,408 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:08,526 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 146 mbps: 0.01224853923336356 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:08,580 - v2x - INFO - Rx cnt:120
+2024-11-11 19:58:08,580 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:08,635 - v2x - INFO - Tx cnt:84
+2024-11-11 19:58:08,635 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:08,727 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 398 mbps: 0.012238651432367489 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:08,780 - v2x - INFO - Rx cnt:121
+2024-11-11 19:58:08,781 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:08,861 - v2x - INFO - Tx cnt:85
+2024-11-11 19:58:08,861 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:08,928 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 372 mbps: 0.012262871377370633 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:08,988 - v2x - INFO - Rx cnt:122
+2024-11-11 19:58:08,988 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:09,089 - v2x - INFO - Tx cnt:86
+2024-11-11 19:58:09,089 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:09,128 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 353 mbps: 0.012179225091108404 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:09,189 - v2x - INFO - Rx cnt:123
+2024-11-11 19:58:09,189 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:09,316 - v2x - INFO - Tx cnt:87
+2024-11-11 19:58:09,316 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:09,329 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 327 mbps: 0.012248294420547583 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:09,402 - v2x - INFO - Rx cnt:124
+2024-11-11 19:58:09,402 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:09,540 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 312 mbps: 0.012248294420547583 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:09,544 - v2x - INFO - Tx cnt:88
+2024-11-11 19:58:09,544 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:09,602 - v2x - INFO - Rx cnt:125
+2024-11-11 19:58:09,602 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:09,756 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 286 mbps: 0.012151959563700425 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:09,772 - v2x - INFO - Tx cnt:89
+2024-11-11 19:58:09,772 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:09,876 - v2x - INFO - Rx cnt:126
+2024-11-11 19:58:09,876 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:09,969 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 331 mbps: 0.012201228050467368 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:09,984 - v2x - INFO - Tx cnt:90
+2024-11-11 19:58:09,985 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:10,076 - v2x - INFO - Rx cnt:127
+2024-11-11 19:58:10,076 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:10,181 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 304 mbps: 0.013054193789402046 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:10,196 - v2x - INFO - Tx cnt:91
+2024-11-11 19:58:10,196 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:10,301 - v2x - INFO - Rx cnt:128
+2024-11-11 19:58:10,301 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:10,408 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 316 mbps: 0.013134731599241023 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:10,424 - v2x - INFO - Tx cnt:92
+2024-11-11 19:58:10,424 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:10,501 - v2x - INFO - Rx cnt:129
+2024-11-11 19:58:10,502 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:10,631 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 305 mbps: 0.012179033998278277 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:10,646 - v2x - INFO - Tx cnt:93
+2024-11-11 19:58:10,646 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:10,770 - v2x - INFO - Rx cnt:130
+2024-11-11 19:58:10,770 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:10,858 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 346 mbps: 0.012478873438451185 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:10,874 - v2x - INFO - Tx cnt:94
+2024-11-11 19:58:10,874 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:10,971 - v2x - INFO - Rx cnt:131
+2024-11-11 19:58:10,971 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:11,071 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 324 mbps: 0.012199527776759117 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:11,087 - v2x - INFO - Tx cnt:95
+2024-11-11 19:58:11,087 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:11,171 - v2x - INFO - Rx cnt:132
+2024-11-11 19:58:11,172 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:11,299 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 297 mbps: 0.013017269588141185 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:11,314 - v2x - INFO - Tx cnt:96
+2024-11-11 19:58:11,314 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:11,444 - v2x - INFO - Rx cnt:133
+2024-11-11 19:58:11,444 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:11,526 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 356 mbps: 0.012232029877809842 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:11,540 - v2x - INFO - Tx cnt:97
+2024-11-11 19:58:11,541 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:11,645 - v2x - INFO - Rx cnt:134
+2024-11-11 19:58:11,645 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:11,752 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 330 mbps: 0.012246336270266575 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:11,767 - v2x - INFO - Tx cnt:98
+2024-11-11 19:58:11,767 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:11,845 - v2x - INFO - Rx cnt:135
+2024-11-11 19:58:11,845 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:11,982 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 304 mbps: 0.012241353541810353 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:11,998 - v2x - INFO - Tx cnt:99
+2024-11-11 19:58:11,998 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:12,058 - v2x - INFO - Rx cnt:136
+2024-11-11 19:58:12,058 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:12,213 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 290 mbps: 0.012049005629511889 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:12,234 - v2x - INFO - Tx cnt:100
+2024-11-11 19:58:12,234 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:12,266 - v2x - INFO - Rx cnt:137
+2024-11-11 19:58:12,266 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:12,428 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 268 mbps: 0.011751893133299756 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:12,455 - v2x - INFO - Tx cnt:101
+2024-11-11 19:58:12,456 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:12,549 - v2x - INFO - Rx cnt:138
+2024-11-11 19:58:12,549 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:12,664 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 314 mbps: 0.012530038487448856 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:12,681 - v2x - INFO - Tx cnt:102
+2024-11-11 19:58:12,681 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:12,750 - v2x - INFO - Rx cnt:139
+2024-11-11 19:58:12,750 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:12,865 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 294 mbps: 0.01229355726718987 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:12,894 - v2x - INFO - Tx cnt:103
+2024-11-11 19:58:12,894 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:12,951 - v2x - INFO - Rx cnt:140
+2024-11-11 19:58:12,951 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:13,109 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 269 mbps: 0.013051837827658256 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:13,128 - v2x - INFO - Tx cnt:104
+2024-11-11 19:58:13,128 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:13,165 - v2x - INFO - Rx cnt:141
+2024-11-11 19:58:13,165 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:13,341 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 270 mbps: 0.011877456948075729 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:13,356 - v2x - INFO - Tx cnt:105
+2024-11-11 19:58:13,356 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:13,395 - v2x - INFO - Rx cnt:142
+2024-11-11 19:58:13,395 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:13,555 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 267 mbps: 0.012146039607100236 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:13,571 - v2x - INFO - Tx cnt:106
+2024-11-11 19:58:13,571 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:13,628 - v2x - INFO - Rx cnt:143
+2024-11-11 19:58:13,628 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:13,780 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 271 mbps: 0.012937658302970906 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:13,799 - v2x - INFO - Tx cnt:107
+2024-11-11 19:58:13,799 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:13,870 - v2x - INFO - Rx cnt:144
+2024-11-11 19:58:13,870 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:13,994 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 299 mbps: 0.012174767820284121 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:14,011 - v2x - INFO - Tx cnt:108
+2024-11-11 19:58:14,011 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:14,091 - v2x - INFO - Rx cnt:145
+2024-11-11 19:58:14,091 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:14,225 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 292 mbps: 0.013066763521119015 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:14,242 - v2x - INFO - Tx cnt:109
+2024-11-11 19:58:14,242 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:14,309 - v2x - INFO - Rx cnt:146
+2024-11-11 19:58:14,309 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:14,452 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 297 mbps: 0.012025460845999083 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:14,468 - v2x - INFO - Tx cnt:110
+2024-11-11 19:58:14,468 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:14,518 - v2x - INFO - Rx cnt:147
+2024-11-11 19:58:14,518 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:14,681 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 275 mbps: 0.012282676658733775 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:14,697 - v2x - INFO - Tx cnt:111
+2024-11-11 19:58:14,697 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:14,718 - v2x - INFO - Rx cnt:148
+2024-11-11 19:58:14,719 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:14,910 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 250 mbps: 0.012134267564035493 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:14,927 - v2x - INFO - Tx cnt:112
+2024-11-11 19:58:14,928 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:14,930 - v2x - INFO - Rx cnt:149
+2024-11-11 19:58:14,930 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:15,124 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 232 mbps: 0.01204327273178623 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:15,153 - v2x - INFO - Tx cnt:113
+2024-11-11 19:58:15,153 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:15,227 - v2x - INFO - Rx cnt:150
+2024-11-11 19:58:15,227 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:15,362 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 299 mbps: 0.012327058918689434 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:15,378 - v2x - INFO - Tx cnt:114
+2024-11-11 19:58:15,378 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:15,387 - v2x - INFO - Rx cnt:151
+2024-11-11 19:58:15,387 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:15,574 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 234 mbps: 0.01233029638533037 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:15,604 - v2x - INFO - Tx cnt:115
+2024-11-11 19:58:15,604 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:15,678 - v2x - INFO - Rx cnt:152
+2024-11-11 19:58:15,678 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:15,775 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 300 mbps: 0.01228122563877544 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:15,830 - v2x - INFO - Tx cnt:116
+2024-11-11 19:58:15,831 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:15,838 - v2x - INFO - Rx cnt:153
+2024-11-11 19:58:15,838 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:15,975 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 234 mbps: 0.012249235070591454 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:16,058 - v2x - INFO - Tx cnt:117
+2024-11-11 19:58:16,058 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:16,061 - v2x - INFO - Rx cnt:154
+2024-11-11 19:58:16,061 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:16,176 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 230 mbps: 0.012183966112478444 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:16,283 - v2x - INFO - Rx cnt:155
+2024-11-11 19:58:16,287 - v2x - INFO - Tx cnt:118
+2024-11-11 19:58:16,287 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:16,287 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:16,377 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 224 mbps: 0.012141847155265097 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:16,500 - v2x - INFO - Rx cnt:156
+2024-11-11 19:58:16,500 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:16,516 - v2x - INFO - Tx cnt:119
+2024-11-11 19:58:16,516 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:16,577 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 213 mbps: 0.012105465632664434 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:16,727 - v2x - INFO - Tx cnt:120
+2024-11-11 19:58:16,728 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:16,778 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 213 mbps: 0.013141061547507932 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:16,778 - v2x - INFO - Rx cnt:157
+2024-11-11 19:58:16,778 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:16,956 - v2x - INFO - Tx cnt:121
+2024-11-11 19:58:16,956 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:16,978 - v2x - INFO - Rx cnt:158
+2024-11-11 19:58:16,978 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:16,979 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 250 mbps: 0.012163664317868176 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:17,183 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 250 mbps: 0.012163664317868176 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:17,184 - v2x - INFO - Rx cnt:159
+2024-11-11 19:58:17,184 - v2x - INFO - Tx cnt:122
+2024-11-11 19:58:17,184 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:17,184 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:17,384 - v2x - INFO - Rx cnt:160
+2024-11-11 19:58:17,385 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:17,385 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 200 mbps: 0.01212288434864183 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:17,413 - v2x - INFO - Tx cnt:123
+2024-11-11 19:58:17,414 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:17,628 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 200 mbps: 0.012121294169209419 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:17,650 - v2x - INFO - Rx cnt:161
+2024-11-11 19:58:17,650 - v2x - INFO - Tx cnt:124
+2024-11-11 19:58:17,650 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:17,650 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:17,843 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 236 mbps: 0.011754977909292919 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:17,872 - v2x - INFO - Rx cnt:162
+2024-11-11 19:58:17,873 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:17,877 - v2x - INFO - Tx cnt:125
+2024-11-11 19:58:17,877 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:18,073 - v2x - INFO - Rx cnt:163
+2024-11-11 19:58:18,073 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:18,075 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 195 mbps: 0.01220269859405868 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:18,108 - v2x - INFO - Tx cnt:126
+2024-11-11 19:58:18,109 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:18,286 - v2x - INFO - Rx cnt:164
+2024-11-11 19:58:18,286 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:18,304 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 177 mbps: 0.012009299242623495 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:18,321 - v2x - INFO - Tx cnt:127
+2024-11-11 19:58:18,321 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:18,487 - v2x - INFO - Rx cnt:165
+2024-11-11 19:58:18,487 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:18,529 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 166 mbps: 0.0130721768317054 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:18,546 - v2x - INFO - Tx cnt:128
+2024-11-11 19:58:18,546 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:18,760 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 166 mbps: 0.0123220102992192 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:18,779 - v2x - INFO - Rx cnt:166
+2024-11-11 19:58:18,779 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:18,780 - v2x - INFO - Tx cnt:129
+2024-11-11 19:58:18,780 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:18,992 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 232 mbps: 0.0118733509654998 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:19,008 - v2x - INFO - Tx cnt:130
+2024-11-11 19:58:19,009 - v2x - INFO - Rx cnt:167
+2024-11-11 19:58:19,009 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:19,009 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:19,222 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 228 mbps: 0.012118178122853396 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:19,238 - v2x - INFO - Tx cnt:131
+2024-11-11 19:58:19,239 - v2x - INFO - Rx cnt:168
+2024-11-11 19:58:19,239 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:19,239 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:19,434 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 229 mbps: 0.012080634384928087 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:19,466 - v2x - INFO - Tx cnt:132
+2024-11-11 19:58:19,466 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:19,471 - v2x - INFO - Rx cnt:169
+2024-11-11 19:58:19,471 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:19,635 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 232 mbps: 0.012239436207887935 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:19,693 - v2x - INFO - Rx cnt:170
+2024-11-11 19:58:19,698 - v2x - INFO - Tx cnt:133
+2024-11-11 19:58:19,698 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:19,698 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:19,836 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 227 mbps: 0.01193738174153041 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:19,924 - v2x - INFO - Rx cnt:171
+2024-11-11 19:58:19,924 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:19,928 - v2x - INFO - Tx cnt:134
+2024-11-11 19:58:19,929 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:20,036 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 225 mbps: 0.01203147516698631 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:20,159 - v2x - INFO - Rx cnt:172
+2024-11-11 19:58:20,166 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:20,166 - v2x - INFO - Tx cnt:135
+2024-11-11 19:58:20,166 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:20,237 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 461 mbps: 0.01167667811330102 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:20,393 - v2x - INFO - Rx cnt:173
+2024-11-11 19:58:20,397 - v2x - INFO - Tx cnt:136
+2024-11-11 19:58:20,397 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:20,397 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:20,437 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 464 mbps: 0.012028964326522347 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:20,623 - v2x - INFO - Rx cnt:174
+2024-11-11 19:58:20,627 - v2x - INFO - Tx cnt:137
+2024-11-11 19:58:20,627 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:20,627 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:20,638 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 456 mbps: 0.012063899239801772 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:20,841 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 456 mbps: 0.012063899239801772 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:20,841 - v2x - INFO - Rx cnt:175
+2024-11-11 19:58:20,858 - v2x - INFO - Tx cnt:138
+2024-11-11 19:58:20,859 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:20,859 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:21,072 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 443 mbps: 0.011989439084289857 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:21,089 - v2x - INFO - Rx cnt:176
+2024-11-11 19:58:21,089 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:21,089 - v2x - INFO - Tx cnt:139
+2024-11-11 19:58:21,090 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:21,304 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 461 mbps: 0.012028902190296823 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:21,315 - v2x - INFO - Rx cnt:177
+2024-11-11 19:58:21,321 - v2x - INFO - Tx cnt:140
+2024-11-11 19:58:21,321 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:21,321 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:21,529 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 225 mbps: 0.011983466705639339 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:21,529 - v2x - INFO - Rx cnt:178
+2024-11-11 19:58:21,541 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:21,546 - v2x - INFO - Tx cnt:141
+2024-11-11 19:58:21,546 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:21,743 - v2x - INFO - Rx cnt:179
+2024-11-11 19:58:21,755 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 421 mbps: 0.012343315616005596 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:21,756 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:21,761 - v2x - INFO - Tx cnt:142
+2024-11-11 19:58:21,761 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:21,974 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 421 mbps: 0.012911260803658457 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:21,987 - v2x - INFO - Rx cnt:180
+2024-11-11 19:58:21,993 - v2x - INFO - Tx cnt:143
+2024-11-11 19:58:21,994 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:21,994 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+
+2024-11-11 19:58:22,193 - v2x - INFO - Communication Performance 
+state: 0 v2x: 1 rtt: 440 mbps: 0.01194013610665879 packet_size: 347 packet_rate: 100 distance: 132.5003991996106
+
+
+2024-11-11 19:58:22,206 - v2x - INFO - Rx cnt:181
+2024-11-11 19:58:22,219 - v2x - INFO - Shared Message
+state:0 lat:37.3998908996582 lng:127.11256408691406 h:-172.00192260742188 v:0.0
+path: x=-7.6056694984436035 y=-22.605623245239258 ~ x=-3.1796624660491943 y=-3.215193271636963
+
+2024-11-11 19:58:22,223 - v2x - INFO - Tx cnt:144
+2024-11-11 19:58:22,223 - v2x - INFO - Shared Message
+state:0 lat:0 lng:0 h:0 v:0
+Threre is no path
+

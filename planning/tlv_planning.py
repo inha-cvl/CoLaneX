@@ -202,7 +202,7 @@ class SafeDistance:
                 final_path = r0+r1
 
             self.final_path = p.smooth_interpolate(final_path, self.precision)
-            self.tlv_path = p.limit_path_length(self.final_path, 50)
+            self.tlv_path = p.limit_path_length(self.final_path, 30)
             self.tlv_geojson = p.to_geojson(self.tlv_path, self.base_lla)
             
             

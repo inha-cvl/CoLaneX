@@ -23,7 +23,6 @@ for file_name in file_list:
             match = re.search(r'Average rate for (\d+)m to (\d+)m distance: ([\d.]+) cnt=\s*\[(\d+)\]', line)
             if match:
                 start_range, end_range, average, count = map(float, match.groups())
-                print(start_range, end_range, average, count)
                 range_str = f"{start_range}m to {end_range}m"
                 if range_str in average_values:
                     average_values[range_str] += average

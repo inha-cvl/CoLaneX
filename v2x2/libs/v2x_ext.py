@@ -1,10 +1,21 @@
 from ctypes import *
 
+
+class ObstacleInformation(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ("cls", c_uint8),
+        ("enu_x", c_float),
+        ("enu_y", c_float),
+        ("heading", c_float),
+        ("velocity", c_float)
+    ]
+
 class SharingInformation(Structure):
     _pack_ = 1
     _fields_ = [
         ("tx_cnt", c_uint32),
-        ("rx_cnt", c_uint32),
+        ("tx_cnt_from_rx", c_uint32),
         ("state", c_uint8),
         ("signal", c_uint8),
         ("latitude", c_float),
@@ -12,8 +23,10 @@ class SharingInformation(Structure):
         ("heading", c_float),
         ("velocity", c_float),
     
-        ("path_x", c_float*50),
-        ("path_y", c_float*50),
+        ("path_x", c_float*30),
+        ("path_y", c_float*30),
+        ("obstacle_num", c_uint16),
+        ("obstacle", ObstacleInformation*0)
     ]
 
 
@@ -65,6 +78,19 @@ class TLVC_Overall(Structure):
         ("version", c_uint8),       # 1 byte
         ("num_package", c_uint8),   # 1 byte
         ("len_package", c_uint16),  # 2 bytes, 네트워크 바이트 오더로 설정해야 함
+        ("crc", c_uint16)           # 2 bytes, 네트워크 바이트 오더로 설정해야 함
+    ]
+
+class TLVC_Overall_V2(Structure):
+    _pack_ = 1  # 메모리 정렬을 1바이트 단위로 설정
+    _fields_ = [
+        ("type", c_uint32),         # 4 bytes, 네트워크 바이트 오더로 설정해야 함
+        ("len", c_uint16),          # 2 bytes, 네트워크 바이트 오더로 설정해야 함
+        ("magic", c_char * 4),      # 4 bytes
+        ("version", c_uint8),       # 1 byte
+        ("num_package", c_uint8),   # 1 byte
+        ("len_package", c_uint16),  # 2 bytes, 네트워크 바이트 오더로 설정해야 함
+        ("bitwize", c_uint8),
         ("crc", c_uint16)           # 2 bytes, 네트워크 바이트 오더로 설정해야 함
     ]
 

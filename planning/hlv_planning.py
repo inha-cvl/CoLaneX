@@ -219,7 +219,7 @@ class DynamicPath:
                 return
 
             self.final_path = p.smooth_interpolate(final_path, self.precision)
-            self.hlv_path = p.limit_path_length(self.final_path, 50) 
+            self.hlv_path = p.limit_path_length(self.final_path, 30) 
             self.hlv_geojson = p.to_geojson(self.hlv_path, self.base_lla)
                     
         hlv_path_viz = HLVPathViz(self.hlv_path)

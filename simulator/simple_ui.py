@@ -49,7 +49,6 @@ class MyApp(QMainWindow):
 
 
     def hlv_system_cb(self, msg):
-        print(msg.data)
         self.label_tab1.setText(self.hlv_message[int(msg.data[0])])
         if int(msg.data[0]) == 3:
             self.label_tab1.setStyleSheet('background-color: #63ffaf; font-size: 50px; font-weight: bold;')
@@ -70,7 +69,7 @@ class MyApp(QMainWindow):
             self.label_tab2.setStyleSheet('background-color: #ff638a; font-size: 50px; font-weight: bold;')
         else:
             self.label_tab2.setStyleSheet('background-color: #fff; font-size: 50px; font-weight: bold;')
-            
+        
         self.side1.setText(f"{math.ceil(msg.data[3])}ms")
         self.side2.setText(f"{round(msg.data[4], 3)}mbps")
         self.side3.setText(f"{int(msg.data[5])}%")

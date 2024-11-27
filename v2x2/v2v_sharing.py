@@ -2,12 +2,15 @@
 from libs.socket_handler import SocketHandler
 
 class V2VSharing:
-    def __init__(self, type):
-        self.socket_handler = SocketHandler(type)
-        self.type = type
+    def __init__(self, type, interface, chip):
+        self.socket_handler = SocketHandler(type, interface, chip)
+        if chip == 'out':
+            self.IP = '192.168.1.124' if type == 1 else '192.168.1.125'
+        else:
+            self.IP = '192.168.1.11'
     
     def set_obu(self):
-        if self.socket_handler.connect() < 0:
+        if self.socket_handler.connect(self.IP) < 0:
             print("[V2V Sharing] Connection Failed")
             return -1
         if self.socket_handler.register() < 0:
@@ -33,4 +36,3 @@ class V2VSharing:
 
     def do_calc_rate(self, Hz):
         return self.socket_handler.calc_rate(Hz)
-

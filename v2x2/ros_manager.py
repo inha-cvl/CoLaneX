@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 import rospy
 import threading
-
+import signal
+import math
+import tf
 
 from geometry_msgs.msg import  Pose, Point
 from visualization_msgs.msg import Marker, MarkerArray
 from std_msgs.msg import Int8, Float32MultiArray
 
-Hz = 5
+def signal_handler(sig, frame):
+    rospy.signal_shutdown("SIGINT received")
+
+
 class RosManager:
     def __init__(self, v2v_sharing, type):
         cars = ['', 'hlv', 'tlv']
@@ -19,7 +24,10 @@ class RosManager:
         self.v2v_sharing = v2v_sharing
         self.vehicle_path = [[0],[0]]
         self.vehicle_state = [0,0,0,0,0,0]
-        self.rate = rospy.Rate(Hz)
+        self.Hz = 5
+        self.rate = rospy.Rate(self.Hz)
+        self.shutdown_event = threading.Event()
+        
 
     def set_protocol(self):
         rospy.Subscriber(f'/car/{self.car}_pose',Pose, self.pose_cb)
@@ -79,6 +87,7 @@ class RosManager:
         target_path.pose.orientation.x = 0.0
         target_path.pose.orientation.y = 0.0
         target_path.pose.orientation.z = 0.0
+        
         target_path.pose.orientation.w = 1.0
 
         for i, xs in enumerate(path[0]):
@@ -88,20 +97,21 @@ class RosManager:
         self.target_path_pub.publish(target_path)
     
     def publish_calc(self, system):
-        print(system)
-        self.system_pub.publish(Float32MultiArray(data=system))
+        self.system_pub.publish(Float32MultiArray(data=list(system.values())))
 
     def do_tx(self):
-        while not rospy.is_shutdown():
+        while not rospy.is_shutdown() and not self.shutdown_event.is_set():
             tx_res = self.v2v_sharing.do_tx(self.vehicle_state, self.vehicle_path)
             if tx_res<0:
+                rospy.logerr("[V2X ROSManager] Tx Send Data Failed")
                 return -1
             self.rate.sleep()
     
     def do_rx(self):
-        while not rospy.is_shutdown():
+        while not rospy.is_shutdown() and not self.shutdown_event.is_set():
             rx_res = self.v2v_sharing.do_rx()
             if rx_res == None:
+                rospy.logerr("[V2X ROSManager] No Rx Data from Target")
                 return -1
             else:
                 self.publish(rx_res)
@@ -109,15 +119,18 @@ class RosManager:
     
     def do_calc_rate(self):
         rate = rospy.Rate(1)
-        while not rospy.is_shutdown():
-            calc_rates_res = self.v2v_sharing.do_calc_rate(Hz)
+        while not rospy.is_shutdown() and not self.shutdown_event.is_set():
+            calc_rates_res = self.v2v_sharing.do_calc_rate(self.Hz)
             if calc_rates_res < 0:
-                return -1
+                rospy.logerr("[V2X ROSManager] Rx Not Working")
+                rate.sleep()
+                continue
             rate.sleep()
 
     def do_calc(self):
-        while not rospy.is_shutdown():
+        while not rospy.is_shutdown() and not self.shutdown_event.is_set():
             calc_res = self.v2v_sharing.do_calc()
+            print(calc_res)
             if calc_res == -1:
                 pass
             else:
@@ -126,7 +139,7 @@ class RosManager:
             
 
     def execute(self):
-        print("[RosManager] V2V Sharing Start")
+        signal.signal(signal.SIGINT, signal_handler)
         self.info_received = False
         self.set_protocol()
 
@@ -145,18 +158,17 @@ class RosManager:
         thread3.start()
         thread4.start()
 
-        thread1.join()
-        thread2.join()
-        thread3.join()
-        thread4.join()
+        try:
+            thread1.join()
+            thread2.join()
+            thread3.join()
+            thread4.join()
+        except KeyboardInterrupt:
+            self.shutdown_event.set()
+            thread1.join()
+            thread2.join()
+            thread3.join()
+            thread4.join()
+            
 
         return sharing_state
-
-
-
-'''
-
-        self.vehicle_state = [1, -119.6296576810071, 191.66264680803388, 1.0471975511965976, 8.333333015441895]
-        self.vehicle_path = [[-120.30591517930621, -135.8316134018194,-149.34914193021973,-158.80599932215628,-172.9832297564156,-188.52320491162592,-212.16209478387364,-237.1665601072975], [192.3993121295486,209.36844901511554,224.10873342219435, 234.43188133205408, 249.92400778689967, 266.8801014076772, 292.69096386917386, 319.96322892745593 ]]
-        self.vehicle_obstacles = [(1, -149.359, 224.128, 1.0471975511965976,6.94444465637207), (5, -149.359, 224.128, 1.0471975511965976,6.94444465637207), (2, -149.359, 224.128, 1.0471975511965976,6.94444465637207)]
-'''
