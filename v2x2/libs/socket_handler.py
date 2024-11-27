@@ -142,7 +142,7 @@ class SocketHandler:
     def rx(self):
         data = self.receive()
         if data == None:
-            return -1
+            return [0, 0]
         if len(data) > SIZE_WSR_DATA:
             self.rx_cnt += 1
             self.rx_rate += 1

@@ -110,6 +110,7 @@ class RosManager:
     def do_rx(self):
         while not rospy.is_shutdown() and not self.shutdown_event.is_set():
             rx_res = self.v2v_sharing.do_rx()
+            print(rx_res)
             if rx_res == None:
                 rospy.logerr("[V2X ROSManager] No Rx Data from Target")
                 return -1
@@ -130,7 +131,6 @@ class RosManager:
     def do_calc(self):
         while not rospy.is_shutdown() and not self.shutdown_event.is_set():
             calc_res = self.v2v_sharing.do_calc()
-            print(calc_res)
             if calc_res == -1:
                 pass
             else:
