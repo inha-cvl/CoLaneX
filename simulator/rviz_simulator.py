@@ -24,6 +24,8 @@ class RVizSimulator:
             self.base_lla = [37.39991792889962, 127.11264200835348,7]
         elif map == 'Harbor':
             self.base_lla = [37.42390324724057, 126.60753475932731, 7]
+        elif map == 'Solbat':
+            self.base_lla = [37.370892294, 126.632218057, 7] 
         else:
             self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
 
@@ -104,7 +106,7 @@ class RVizSimulator:
             self.a_car_marker.pose.position.y = self.a_y 
             self.a_car_info.pose.position.x = self.a_x
             self.a_car_info.pose.position.y = self.a_y 
-            quaternion = tf.transformations.quaternion_from_euler(0, 0, math.radians((self.a_h)-180))
+            quaternion = tf.transformations.quaternion_from_euler(0, 0, math.radians((self.a_h)+90))
             self.a_car_marker.pose.orientation.x = quaternion[0]
             self.a_car_marker.pose.orientation.y = quaternion[1]
             self.a_car_marker.pose.orientation.z = quaternion[2]

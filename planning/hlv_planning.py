@@ -1,6 +1,8 @@
 import rospy
 import sys
 import signal
+import json
+import pickle
 
 from std_msgs.msg import Int8, String
 from geometry_msgs.msg import  Pose
@@ -19,25 +21,51 @@ def signal_handler(sig, frame):
 
 class DynamicPath:
     def __init__(self, map):
-        if map == 'songdo-site':
-            self.base_lla = [37.383378,126.656798,7] # Sondo-Site
-        elif map=='songdo':
-            self.base_lla = [37.3888319,126.6428739, 7.369]
-        elif map == 'KIAPI':
-            self.base_lla = [35.64588122580907,128.40214778762413, 46.746]
-        elif map == 'Pangyo':
-            self.base_lla = [37.39991792889962, 127.11264200835348,7]
-        elif map == 'Harbor':
-            self.base_lla = [37.42390324724057, 126.60753475932731, 7]
-        else:
-            self.base_lla = [37.2292221592864,126.76912499027308,29.18400001525879]
-        self.tile_size = 5.0
-        self.cut_dist = 15.0
-        self.precision = 0.5
+        
 
-        self.lmap = LaneletMap(f"{map}.json")
-        self.tmap = TileMap(self.lmap.lanelets, self.tile_size)
-        self.graph = MicroLaneletGraph(self.lmap, self.cut_dist).graph
+        file_path = f'{map}.json'
+        pickle_file = f'{map}.pkl'
+        self.tile_size = 5
+
+        if os.path.exists(pickle_file):
+            with open(pickle_file, 'rb') as file:
+                data = pickle.load(file)
+                self.base_lla = data['base_lla']
+                self.lmap = data['lmap']
+                self.graph = data['graph']
+                self.lanelets = data['lanelets']
+                self.tiles = data['tiles']
+                self.lmap_viz = data['lmap_viz']
+                self.mlmap_viz = data['mlmap_viz']
+        else:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+
+            self.base_lla = data['base_lla']
+            cut_dist = 15
+
+            self.lmap = LaneletMap(file_path)
+            tmap = TileMap(self.lmap.lanelets, self.tile_size)
+            mlg = MicroLaneletGraph(self.lmap, cut_dist)
+        
+            self.graph = mlg.graph
+            self.lanelets = mlg.lanelets
+            self.tiles = tmap.tiles
+
+            self.lmap_viz, self.mlmap_viz = self.get_vizs()
+            
+            with open(pickle_file, 'wb') as file:
+                pickle.dump({
+                    'base_lla': self.base_lla,
+                    'lmap': self.lmap,
+                    'graph': self.graph,
+                    'lanelets': self.lanelets,
+                    'tiles': self.tiles,
+                    'lmap_viz': self.lmap_viz,
+                    'mlmap_viz': self.mlmap_viz
+                }, file)
+
+        self.precision = 1
         self.M_TO_IDX = 1/self.precision
         self.IDX_TO_M = self.precision
         self.ego_pos = None
@@ -75,10 +103,14 @@ class DynamicPath:
         self.pub_tlv_geojson = rospy.Publisher('/planning/tlv_geojson', String, queue_size=1)
         self.pub_hlv_merged = rospy.Publisher('/planning/hlv_merged', Int8, queue_size=1)
         
-        lanelet_map_viz = LaneletMapViz(self.lmap.lanelets, self.lmap.for_viz)
-        self.pub_lanelet_map.publish(lanelet_map_viz)
+        self.pub_lanelet_map.publish(self.lmap_viz)
         p.lanelets = self.lmap.lanelets
 
+    def get_vizs(self):
+        lmap_viz = LaneletMapViz(self.lanelets, self.lmap.for_viz)
+        mlmap_viz = MicroLaneletGraphViz(self.lanelets, self.graph)
+        return lmap_viz, mlmap_viz
+    
     def hlv_pose_cb(self, msg):
         self.ego_pos = p.convert2enu(self.base_lla, msg.position.x, msg.position.y)
         self.ego_v = msg.orientation.x
@@ -162,7 +194,7 @@ class DynamicPath:
             c = self.x_c
         
        
-        ego_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, start_pose)
+        ego_lanelets = p.lanelet_matching(self.tiles, self.tile_size, start_pose)
         if ego_lanelets == None:
             return None
         
@@ -191,7 +223,7 @@ class DynamicPath:
     def check_is_merged(self):
         if self.ego_pos == None:
             return
-        now_lanelets = p.lanelet_matching(self.tmap.tiles, self.tmap.tile_size, self.ego_pos)
+        now_lanelets = p.lanelet_matching(self.tiles, self.tile_size, self.ego_pos)
         if now_lanelets == None:
             return
         if now_lanelets[0] == self.merging_point:
