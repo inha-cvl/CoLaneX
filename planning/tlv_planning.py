@@ -172,7 +172,6 @@ class SafeDistance:
         for i, pt in enumerate(click_point):
             radius = 1 if i == 4 else 3
             if self.is_insied_circle(self.ego_pos, pt, radius):
-                print(f'[{i}]')
                 if i == 8:
                     res = 2
                 else:
@@ -285,6 +284,10 @@ class SafeDistance:
             else:
                 safety = 1 if dg > ds else 2 # 1 : Safe, 2 : Dangerous
             
+            #TODO
+            safety = 1 #safe mode (scenario 1, scenario 3)
+            #safety = 2 #dangerous mode (scenario 2)
+
             if self.safety != safety and len(self.check_safety) == 0:
                 self.check_safety.append(safety)
                 self.safety = safety
